@@ -1995,14 +1995,24 @@ function completeAuth(name, handle, plat){
 /* ════════════════════════════════
    AUDIO — DÉBUT : AI HUM (05)
 ════════════════════════════════ */
+/* ════════════════════════════════
+   AUDIO — CONTEXT PARTAGÉ
+════════════════════════════════ */
+let _audioCtx = null;
+function getAudioCtx(){
+  if(!_audioCtx) _audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  if(_audioCtx.state === 'suspended') _audioCtx.resume();
+  return _audioCtx;
+}
+
 function startAnalysisAudio(){
   try{
-    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const ctx = getAudioCtx();
     const t=ctx.currentTime, dur=3;
     const master=ctx.createGain();
     master.gain.setValueAtTime(0,t);
-    master.gain.linearRampToValueAtTime(.25,t+.5);
-    master.gain.linearRampToValueAtTime(.2,t+dur*.7);
+    master.gain.linearRampToValueAtTime(.55,t+.5);  // 0.25 → 0.55
+    master.gain.linearRampToValueAtTime(.45,t+dur*.7); // 0.20 → 0.45
     master.gain.exponentialRampToValueAtTime(.001,t+dur);
     master.connect(ctx.destination);
     [60,120,180,240].forEach((freq,i)=>{
@@ -2010,7 +2020,7 @@ function startAnalysisAudio(){
       const lfo=ctx.createOscillator();lfo.frequency.value=.2+i*.05;
       const lg=ctx.createGain();lg.gain.value=freq*.015;
       lfo.connect(lg);lg.connect(o.frequency);
-      const g=ctx.createGain();g.gain.value=.25-i*.04;
+      const g=ctx.createGain();g.gain.value=.45-i*.06; // 0.25 → 0.45
       o.connect(g);g.connect(master);
       o.start(t);o.stop(t+dur);
       lfo.start(t);lfo.stop(t+dur);
@@ -2023,7 +2033,7 @@ function startAnalysisAudio(){
 ════════════════════════════════ */
 function stopAnalysisAudio(){
   try{
-    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const ctx = getAudioCtx();
     const t=ctx.currentTime;
     const master=ctx.createGain();master.connect(ctx.destination);
     // Reverb douce
@@ -2122,6 +2132,7 @@ async function startAnalysis(){
   const handle = raw.replace(/[^a-zA-Z0-9_.\-]/g,'').toLowerCase();
   if(handle.length < 3){ showErr(t('err_empty')); return; }
   document.getElementById('handle').value = handle;
+  userHandle = handle; // Toujours mettre à jour userHandle
 
   hideErr();
 
