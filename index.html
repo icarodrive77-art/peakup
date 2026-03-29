@@ -399,6 +399,19 @@ body::before{
 .testi-author{font-size:.78rem;font-weight:700;color:var(--text);font-family:'Space Grotesk',sans-serif;}
 .testi-handle{font-size:.67rem;color:var(--t3);font-family:'JetBrains Mono',monospace;margin-top:2px;}
 
+/* Conseil urgence score <= 30 */
+.urgent-advice{
+  display:flex;align-items:flex-start;gap:12px;
+  background:rgba(239,35,60,.08);
+  border:1px solid rgba(239,35,60,.3);
+  border-radius:10px;padding:16px 20px;
+  margin-bottom:16px;animation:fadeIn .5s ease;
+}
+.ua-icon{font-size:1.4rem;flex-shrink:0;margin-top:1px;}
+.ua-title{font-family:'Exo 2',sans-serif;font-weight:800;font-style:italic;
+  color:var(--danger);font-size:.92rem;margin-bottom:5px;}
+.ua-sub{font-size:.8rem;color:var(--t2);line-height:1.6;font-family:'Space Grotesk',sans-serif;}
+
 /* Compteur hero */
 .hero-counter{
   display:flex;align-items:center;gap:8px;
@@ -814,6 +827,69 @@ body::before{
 .btn-back:hover{border-color:var(--accent);color:var(--accent);}
 .btn-back svg{transition:transform .2s;}
 .btn-back:hover svg{transform:translateX(-3px);}
+
+/* Badge Verified PRO — shimmer 2 traits toutes les 4 secondes */
+@keyframes badgeShimmer{
+  0%{left:-30%;opacity:0;}
+  5%{opacity:1;}
+  20%{left:120%;opacity:0;}
+  25%{left:-30%;opacity:0;}
+  30%{opacity:1;}
+  45%{left:120%;opacity:0;}
+  100%{left:120%;opacity:0;}
+}
+.badge-shimmer-wrap{position:relative;overflow:hidden;display:inline-block;border-radius:50%;}
+.badge-shimmer-wrap::after{
+  content:'';position:absolute;top:-20%;left:-30%;
+  width:20%;height:140%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
+  transform:skewX(-15deg);
+  animation:badgeShimmer 4s ease-in-out infinite;
+  pointer-events:none;
+}
+
+/* Dashboard badge Verified */
+.dash-verified-badge{
+  display:flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,rgba(124,92,252,.1),rgba(45,10,58,.3));
+  border:1px solid rgba(124,92,252,.3);
+  border-radius:10px;padding:12px 16px;margin-top:12px;
+}
+.dash-vb-img{width:40px;height:40px;object-fit:contain;}
+.dash-vb-title{font-family:'Exo 2',sans-serif;font-weight:800;font-style:italic;font-size:.88rem;color:var(--text);}
+.dash-vb-sub{font-size:.7rem;color:var(--t2);font-family:'JetBrains Mono',monospace;margin-top:2px;}
+
+/* Banner Verified sur page résultats */
+.verified-banner{
+  display:flex;align-items:center;gap:14px;
+  background:linear-gradient(135deg,rgba(45,10,58,.6),rgba(124,92,252,.1));
+  border:1px solid rgba(124,92,252,.4);
+  border-radius:12px;padding:14px 20px;margin-top:12px;
+}
+.vb-badge{width:48px;height:48px;object-fit:contain;flex-shrink:0;}
+.vb-title{font-family:'Exo 2',sans-serif;font-weight:800;font-style:italic;font-size:.92rem;color:var(--text);}
+.vb-sub{font-size:.72rem;color:var(--t2);font-family:'Space Grotesk',sans-serif;margin-top:2px;}
+
+/* Share reward */
+.share-reward{
+  display:flex;align-items:center;gap:14px;
+  background:linear-gradient(135deg,rgba(124,92,252,.1),rgba(224,64,251,.08));
+  border:1px solid rgba(124,92,252,.3);
+  border-radius:12px;padding:16px 20px;margin-top:12px;
+}
+.sr-icon{font-size:1.5rem;flex-shrink:0;}
+.sr-content{flex:1;}
+.sr-title{font-family:'Exo 2',sans-serif;font-weight:800;font-style:italic;font-size:.9rem;margin-bottom:3px;}
+.sr-sub{font-size:.75rem;color:var(--t2);font-family:'Space Grotesk',sans-serif;}
+.sr-btn{
+  display:flex;align-items:center;gap:6px;
+  background:linear-gradient(135deg,#7c5cfc,#a855f7);
+  color:#fff;border:none;border-radius:8px;
+  padding:10px 16px;font-family:'Exo 2',sans-serif;
+  font-weight:700;font-style:italic;font-size:.8rem;
+  cursor:pointer;flex-shrink:0;white-space:nowrap;
+}
+.sr-btn.used{background:var(--s2);color:var(--t3);cursor:default;}
 
 .btn-new{
   margin-top:28px;background:transparent;border:1px solid var(--b2);
@@ -1258,6 +1334,9 @@ body::before{
     </div>
   </div>
 
+  <!-- Conseil urgence score <= 30 -->
+  <div class="urgent-advice" id="urgentAdvice" style="display:none"></div>
+
   <div class="metrics" id="metricsEl"></div>
 
   <!-- MENTION TRANSPARENCE -->
@@ -1311,6 +1390,28 @@ body::before{
   </div>
 
   <button class="btn-new" onclick="goTo('landing')" data-i="new_analysis">← Nouvelle analyse</button>
+
+  <!-- SHARE REWARD -->
+  <div class="share-reward" id="shareReward">
+    <div class="sr-icon" id="srIcon">🎁</div>
+    <div class="sr-content">
+      <div class="sr-title" id="srTitle">Partage ton score sur TikTok</div>
+      <div class="sr-sub" id="srSub">En échange, débloque une analyse bonus gratuite 🔓</div>
+    </div>
+    <button class="sr-btn" id="shareBtn" onclick="handleShareReward()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 2L14 6L10 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 6H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span id="srBtnTxt">Partager</span>
+    </button>
+  </div>
+
+  <!-- VERIFIED BADGE — affiché si le compte analysé est Verified -->
+  <div class="verified-banner" id="verifiedBanner" style="display:none">
+    <img src="https://raw.githubusercontent.com/icarodrive77-art/peakup/main/badge.png" alt="Verified" class="vb-badge" id="vbBadge">
+    <div class="vb-content">
+      <div class="vb-title" id="vbTitle">PEAKUP Verified Creator</div>
+      <div class="vb-sub" id="vbSub">Ce créateur a été certifié par PEAKUP</div>
+    </div>
+  </div>
 </div>
 
 <!-- ═══════ PAGE LÉGALE ═══════ -->
@@ -1439,6 +1540,9 @@ const COPY = {
     pw_cta:"Débloquer l'analyse complète",
     price:"9,99€",per_month:" / mois · ",cancel:"Annulable à tout moment",
     new_analysis:"← Nouvelle analyse",
+    share_title:"🎁 Partage ton score sur TikTok",
+    share_sub:"En échange, débloque une analyse bonus gratuite 🔓",
+    share_btn:"Partager →",
     transparency_note:"⚠️ Les statistiques sont des estimations IA. Les recommandations sont réelles et actionnables.",
     err_empty:"// Entre un nom d'utilisateur",
     steps:["Récupération du profil","Analyse hooks & titres","Calcul de l'engagement","Génération des recommandations"],
@@ -1524,6 +1628,9 @@ const COPY = {
     pw_cta:"Unlock full analysis",
     price:"€9.99",per_month:" / month · ",cancel:"Cancel anytime",
     new_analysis:"← New analysis",
+    share_title:"🎁 Share your score on TikTok",
+    share_sub:"In return, unlock a free bonus analysis 🔓",
+    share_btn:"Share →",
     transparency_note:"⚠️ Stats are AI estimates based on similar profiles. Recommendations are real and actionable.",
     err_empty:"// Enter a username",
     steps:["Fetching profile","Analyzing hooks & titles","Computing engagement","Generating recommendations"],
@@ -1605,6 +1712,9 @@ const COPY = {
     pw_cta:"Desbloquear análisis completo",
     price:"9,99€",per_month:" / mes · ",cancel:"Cancela cuando quieras",
     new_analysis:"← Nuevo análisis",
+    share_title:"🎁 Comparte tu score en TikTok",
+    share_sub:"A cambio, desbloquea un análisis bonus gratis 🔓",
+    share_btn:"Compartir →",
     transparency_note:"⚠️ Las estadísticas son estimaciones IA. Las recomendaciones son reales y accionables.",
     err_empty:"// Introduce un nombre de usuario",
     steps:["Obteniendo perfil","Analizando hooks y títulos","Calculando engagement","Generando recomendaciones"],
@@ -1765,13 +1875,18 @@ function goToAuth(){
   goTo('auth');
 }
 
-async function simulateSubscribe(){
+async function simulateSubscribe(fomoOverride){
   try{
     const email = loggedIn ? document.getElementById('loginBtn').textContent : '';
-    const res = await fetch('/.netlify/functions/checkout',{
+    // FOMO actif si override explicite OU timer device encore actif
+    const fomoActive = fomoOverride === true || (
+      localStorage.getItem(getFomoUsedKey()) !== 'used' &&
+      !!localStorage.getItem(getFomoKey()));
+
+    const res = await fetch('/api/checkout',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ email, fomo: fomoActive })
     });
     const data = await res.json();
     if(data.url) window.location.href = data.url;
@@ -1880,14 +1995,24 @@ function completeAuth(name, handle, plat){
 /* ════════════════════════════════
    AUDIO — DÉBUT : AI HUM (05)
 ════════════════════════════════ */
+/* ════════════════════════════════
+   AUDIO — CONTEXT PARTAGÉ
+════════════════════════════════ */
+let _audioCtx = null;
+function getAudioCtx(){
+  if(!_audioCtx) _audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  if(_audioCtx.state === 'suspended') _audioCtx.resume();
+  return _audioCtx;
+}
+
 function startAnalysisAudio(){
   try{
-    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const ctx = getAudioCtx();
     const t=ctx.currentTime, dur=3;
     const master=ctx.createGain();
     master.gain.setValueAtTime(0,t);
-    master.gain.linearRampToValueAtTime(.25,t+.5);
-    master.gain.linearRampToValueAtTime(.2,t+dur*.7);
+    master.gain.linearRampToValueAtTime(.55,t+.5);  // 0.25 → 0.55
+    master.gain.linearRampToValueAtTime(.45,t+dur*.7); // 0.20 → 0.45
     master.gain.exponentialRampToValueAtTime(.001,t+dur);
     master.connect(ctx.destination);
     [60,120,180,240].forEach((freq,i)=>{
@@ -1895,7 +2020,7 @@ function startAnalysisAudio(){
       const lfo=ctx.createOscillator();lfo.frequency.value=.2+i*.05;
       const lg=ctx.createGain();lg.gain.value=freq*.015;
       lfo.connect(lg);lg.connect(o.frequency);
-      const g=ctx.createGain();g.gain.value=.25-i*.04;
+      const g=ctx.createGain();g.gain.value=.45-i*.06; // 0.25 → 0.45
       o.connect(g);g.connect(master);
       o.start(t);o.stop(t+dur);
       lfo.start(t);lfo.stop(t+dur);
@@ -1908,7 +2033,7 @@ function startAnalysisAudio(){
 ════════════════════════════════ */
 function stopAnalysisAudio(){
   try{
-    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const ctx = getAudioCtx();
     const t=ctx.currentTime;
     const master=ctx.createGain();master.connect(ctx.destination);
     // Reverb douce
@@ -2000,12 +2125,48 @@ async function runSteps(){
    ANALYSIS
 ════════════════════════════════ */
 async function startAnalysis(){
-  const handle=document.getElementById('handle').value.trim();
-  if(!handle){ showErr(t('err_empty')); return; }
+  const raw = document.getElementById('handle').value.trim();
+  if(!raw){ showErr(t('err_empty')); return; }
+
+  // 1 — Validation handle : min 3 chars, alphanumérique + tirets/underscores
+  const handle = raw.replace(/[^a-zA-Z0-9_.\-]/g,'').toLowerCase();
+  if(handle.length < 3){ showErr(t('err_empty')); return; }
+  document.getElementById('handle').value = handle;
+  userHandle = handle; // Toujours mettre à jour userHandle
+
   hideErr();
 
-  document.getElementById('btnGo').disabled=true;
+  // 2 — Rate limiting : désactiver le bouton pendant l'analyse
+  const btnGo = document.getElementById('btnGo');
+  const btnMobile = document.querySelector('.mobile-analyse-btn');
+  if(btnGo) { btnGo.disabled=true; }
+  if(btnMobile) { btnMobile.disabled=true; btnMobile.style.opacity='.5'; }
   document.getElementById('btnGoTxt').textContent='...';
+
+  // 3 — Cache : vérifier si ce handle+platform a déjà été analysé (gratuit)
+  const cacheKey = `peakup_cache_${platform}_${handle}`;
+  const cached = localStorage.getItem(cacheKey);
+  if(cached){
+    try{
+      const {text, platName, ts} = JSON.parse(cached);
+      // Cache valide 7 jours
+      if(Date.now() - ts < 7 * 24 * 60 * 60 * 1000){
+        ['pageLanding','pageResults'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+        document.getElementById('pageLoading').classList.remove('hidden');
+        currentPage='loading';
+        runSteps();
+        startAnalysisAudio();
+        await delay(2000); // Animation courte pour le cache
+        if(btnGo) { btnGo.disabled=false; }
+        if(btnMobile) { btnMobile.disabled=false; btnMobile.style.opacity=''; }
+        document.getElementById('btnGoTxt').textContent=t('analyze_btn');
+        renderResults(handle, platName, text);
+        return;
+      } else {
+        localStorage.removeItem(cacheKey); // Cache expiré
+      }
+    }catch(e){ localStorage.removeItem(cacheKey); }
+  }
 
   ['pageLanding','pageResults'].forEach(id=>document.getElementById(id).classList.add('hidden'));
   document.getElementById('pageLoading').classList.remove('hidden');
@@ -2014,8 +2175,8 @@ async function startAnalysis(){
   runSteps();
   startAnalysisAudio();
 
-  const platName=platform==='tiktok'?'TikTok':'YouTube';
-  const langMap={fr:'français',en:'English',es:'español'};
+  const platName = platform==='tiktok' ? 'TikTok' : 'YouTube';
+  const langMap = {fr:'français', en:'English', es:'español'};
 
   const prompt=`You are PEAKUP, an elite AI analytics tool for content creators.
 Analyze the ${platName} profile @${handle}. Respond ONLY in ${langMap[lang]}.
@@ -2047,7 +2208,7 @@ KEY_OPPORTUNITY: [1 paragraph]
 If profile is unknown, extrapolate realistically from similar creator profiles.`;
 
   try{
-    const res=await fetch('/.netlify/functions/analyze',{
+    const res=await fetch('/api/analyze',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({prompt})
@@ -2055,13 +2216,23 @@ If profile is unknown, extrapolate realistically from similar creator profiles.`
     if(!res.ok) throw new Error('API '+res.status);
     const data=await res.json();
     if(data.error) throw new Error(data.error);
-    const text=data.text||'';
+    const text = data.text || '';
     await delay(2800);
-    renderResults(handle,platName,text);
+
+    // 4 — Sauvegarder en cache (empêche analyses répétées gratuites)
+    try{
+      localStorage.setItem(cacheKey, JSON.stringify({text, platName, ts: Date.now()}));
+    }catch(e){}
+
+    if(btnGo) { btnGo.disabled=false; }
+    if(btnMobile) { btnMobile.disabled=false; btnMobile.style.opacity=''; }
+    document.getElementById('btnGoTxt').textContent=t('analyze_btn');
+    renderResults(handle, platName, text);
   }catch(e){
     document.getElementById('pageLoading').classList.add('hidden');
     document.getElementById('pageLanding').classList.remove('hidden');
-    document.getElementById('btnGo').disabled=false;
+    if(btnGo) { btnGo.disabled=false; }
+    if(btnMobile) { btnMobile.disabled=false; btnMobile.style.opacity=''; }
     document.getElementById('btnGoTxt').textContent=t('analyze_btn');
     showErr('// Erreur : '+e.message);
     currentPage='landing';
@@ -2099,12 +2270,71 @@ function renderResults(handle,platName,text){
   const lvl=score<20?levels[0]:score<40?levels[1]:score<60?levels[2]:score<80?levels[3]:levels[4];
   document.getElementById('scoreTtl').textContent=lvl;
 
+  // Couleur du score selon la tranche
+  let scoreColor, scoreGlow, barColor;
+  if(score <= 30){
+    scoreColor = '#ef233c'; // Rouge
+    scoreGlow = 'rgba(239,35,60,.4)';
+    barColor = '#ef233c';
+  } else if(score <= 49){
+    scoreColor = '#ff9f1c'; // Jaune/orange
+    scoreGlow = 'rgba(255,159,28,.35)';
+    barColor = '#ff9f1c';
+  } else if(score <= 69){
+    scoreColor = '#06d6a0'; // Vert
+    scoreGlow = 'rgba(6,214,160,.35)';
+    barColor = '#06d6a0';
+  } else {
+    scoreColor = '#7c5cfc'; // Dark purple PEAKUP
+    scoreGlow = 'rgba(124,92,252,.5)';
+    barColor = 'var(--grad)';
+  }
+
+  // Appliquer la couleur au score ring et au numéro
+  document.getElementById('scoreN').style.color = scoreColor;
+
   setTimeout(()=>{
-    document.getElementById('barFill').style.width=score+'%';
+    document.getElementById('barFill').style.background = barColor;
+    document.getElementById('barFill').style.width = score+'%';
     animNum('scoreN',0,score,1200);
     const deg=Math.round(score*3.6);
-    document.getElementById('scoreRing').style.background=
-      `conic-gradient(var(--accent) 0deg, var(--accent2) ${deg}deg, var(--b2) ${deg}deg)`;
+    document.getElementById('scoreRing').style.background =
+      `conic-gradient(${scoreColor} 0deg, ${scoreColor}99 ${deg}deg, var(--b2) ${deg}deg)`;
+    document.getElementById('scoreRing').style.boxShadow =
+      `0 0 0 1px var(--b2), 0 8px 32px ${scoreGlow}`;
+
+    // Rebond si score >= 70
+    if(score >= 70){
+      setTimeout(()=>{
+        const ring = document.getElementById('scoreRing');
+        ring.style.transition = 'transform .15s cubic-bezier(.4,0,.2,1)';
+        ring.style.transform = 'scale(1.18)';
+        setTimeout(()=>{
+          ring.style.transform = 'scale(0.95)';
+          setTimeout(()=>{
+            ring.style.transform = 'scale(1)';
+            setTimeout(()=>{ ring.style.transition = ''; }, 200);
+          }, 150);
+        }, 150);
+      }, 1300);
+    }
+
+    // Conseil d'urgence si score <= 30
+    if(score <= 30){
+      const urgentEl = document.getElementById('urgentAdvice');
+      if(urgentEl){
+        urgentEl.style.display = 'flex';
+        urgentEl.innerHTML = `
+          <div class="ua-icon">🚨</div>
+          <div class="ua-content">
+            <div class="ua-title">${lang==='fr'?'Action urgente requise':lang==='es'?'Acción urgente requerida':'Urgent action required'}</div>
+            <div class="ua-sub">${lang==='fr'?'Ton profil est en danger. Publie immédiatement 3 vidéos avec des hooks percutants dans les 48h pour relancer l\'algorithme.':lang==='es'?'Tu perfil está en peligro. Publica 3 videos con hooks potentes en las próximas 48h.':'Your profile is at risk. Post 3 videos with strong hooks in the next 48h to reactivate the algorithm.'}</div>
+          </div>`;
+      }
+    } else {
+      const urgentEl = document.getElementById('urgentAdvice');
+      if(urgentEl) urgentEl.style.display = 'none';
+    }
   },300);
 
   // Metrics avec icônes
@@ -2157,6 +2387,8 @@ function renderResults(handle,platName,text){
   setTimeout(()=>{
     playPaywallSound();
     initFomo(handle);
+    initVerifiedBanner(handle);
+    updateShareRewardUI();
   }, 600);
 
   // Social proof counter — légère variation aléatoire
@@ -2288,49 +2520,163 @@ function animNum(id,from,to,dur){
 }
 
 /* ════════════════════════════════
-   FOMO — TIMER + OFFRE UNIQUE PAR HANDLE
+   SHARE REWARD
 ════════════════════════════════ */
-let fomoInterval = null;
-const FOMO_DURATION = 10 * 60; // 10 minutes en secondes
-const FOMO_PRICE_ID = 'price_1TFx1T24qOkbqtXoDeWNdq79'; // normal
-// TODO Phase prod : créer un price_id pour 4,99€ sur Stripe
-const FOMO_PRICE_ID_PROMO = 'price_1TFx1T24qOkbqtXoDeWNdq79'; // même pour l'instant
+function handleShareReward(){
+  const btn = document.getElementById('shareBtn');
+  if(btn.classList.contains('used')) return;
 
-function getFomoKey(handle){ return `peakup_fomo_${handle.toLowerCase()}`; }
-function getFomoUsedKey(handle){ return `peakup_fomo_used_${handle.toLowerCase()}`; }
+  const score = document.getElementById('scoreN')?.textContent || '?';
+  const handle = userHandle || 'mon compte';
+  const text = `🚀 Mon score viral PEAKUP : ${score}/100 pour @${handle} — Analyse ton profil TikTok gratuitement sur scoreviral.eu`;
 
-function initFomo(handle){
-  const usedKey = getFomoUsedKey(handle);
-  const fomoKey = getFomoKey(handle);
+  const isMobile = /iPhone|Android/i.test(navigator.userAgent);
+  if(isMobile){
+    window.open(`https://www.tiktok.com/share?text=${encodeURIComponent(text)}`, '_blank');
+  } else {
+    navigator.clipboard?.writeText(text).catch(()=>{});
+  }
 
-  // Offre déjà utilisée pour ce handle → pas de FOMO
-  if(localStorage.getItem(usedKey) === 'used'){
-    document.getElementById('pwFomo').style.display = 'none';
+  const rewardKey = 'peakup_share_reward';
+  const isPro = localStorage.getItem('peakup_is_pro') === 'true';
+
+  if(localStorage.getItem(rewardKey) !== 'used'){
+    localStorage.setItem(rewardKey, 'used');
+
+    if(isPro){
+      // Reward PRO — obtenir le badge Verified
+      localStorage.setItem('peakup_verified', 'true');
+      if(userHandle) localStorage.setItem(`peakup_verified_${userHandle}`, 'true');
+      showVerifiedBadgeInDash();
+      showToast('🏆 ' + (lang==='fr' ? 'Badge PEAKUP Verified Creator débloqué ! Visible dans ton dashboard.' :
+        lang==='es' ? '¡Insignia PEAKUP Verified Creator desbloqueada!' :
+        'PEAKUP Verified Creator badge unlocked!'), 'success');
+    } else {
+      // Reward FREE — analyse bonus (efface le cache)
+      if(userHandle){
+        const cacheKey = `peakup_cache_${platform}_${userHandle}`;
+        localStorage.removeItem(cacheKey);
+      }
+      showToast('🎁 ' + (lang==='fr' ? 'Analyse bonus débloquée ! Relance une analyse.' :
+        lang==='es' ? '¡Análisis bonus desbloqueado!' :
+        'Bonus analysis unlocked! Relaunch to get fresh recommendations.'), 'success');
+    }
+  }
+
+  btn.classList.add('used');
+  btn.innerHTML = '<span>✓ ' + (lang==='fr'?'Partagé !':lang==='es'?'¡Compartido!':'Shared!') + '</span>';
+}
+
+function showVerifiedBadgeInDash(){
+  // Afficher le badge dans le dashboard PRO
+  const existing = document.getElementById('dashVerifiedBadge');
+  if(existing) return;
+  const dash = document.getElementById('pageDashboard');
+  if(!dash) return;
+  const wrap = document.createElement('div');
+  wrap.id = 'dashVerifiedBadge';
+  wrap.className = 'dash-verified-badge';
+  wrap.innerHTML = `
+    <div class="badge-shimmer-wrap">
+      <img src="https://raw.githubusercontent.com/icarodrive77-art/peakup/main/badge.png" class="dash-vb-img" alt="Verified">
+    </div>
+    <div>
+      <div class="dash-vb-title">PEAKUP Verified Creator</div>
+      <div class="dash-vb-sub">// STATUT CERTIFIÉ · ${userHandle ? '@'+userHandle : 'PEAKUP PRO'}</div>
+    </div>`;
+  dash.insertBefore(wrap, dash.firstChild);
+}
+
+function initVerifiedBanner(handle){
+  // Afficher le banner si le compte analysé est Verified
+  const isVerified = localStorage.getItem(`peakup_verified_${handle.toLowerCase()}`) === 'true';
+  const banner = document.getElementById('verifiedBanner');
+  if(!banner) return;
+  if(isVerified){
+    banner.style.display = 'flex';
+    // Wrap le badge avec shimmer
+    const img = document.getElementById('vbBadge');
+    if(img && !img.parentElement.classList.contains('badge-shimmer-wrap')){
+      const wrap = document.createElement('div');
+      wrap.className = 'badge-shimmer-wrap';
+      img.parentNode.insertBefore(wrap, img);
+      wrap.appendChild(img);
+    }
+    const vbTitle = document.getElementById('vbTitle');
+    const vbSub = document.getElementById('vbSub');
+    if(vbTitle) vbTitle.textContent = 'PEAKUP Verified Creator';
+    if(vbSub) vbSub.textContent = lang==='fr' ? `@${handle} a été certifié par PEAKUP` :
+      lang==='es' ? `@${handle} está certificado por PEAKUP` :
+      `@${handle} is certified by PEAKUP`;
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function updateShareRewardUI(){
+  // Adapter le texte du reward selon FREE ou PRO
+  const isPro = localStorage.getItem('peakup_is_pro') === 'true';
+  const alreadyUsed = localStorage.getItem('peakup_share_reward') === 'used';
+  const icon = document.getElementById('srIcon');
+  const title = document.getElementById('srTitle');
+  const sub = document.getElementById('srSub');
+  const btn = document.getElementById('shareBtn');
+  const btnTxt = document.getElementById('srBtnTxt');
+  if(!icon) return;
+
+  if(alreadyUsed){
+    if(btn) { btn.classList.add('used'); btn.innerHTML = '<span>✓ '+(lang==='fr'?'Partagé !':'Shared!')+'</span>'; }
     return;
   }
 
-  // Vérifier si timer existant
-  let stored = localStorage.getItem(fomoKey);
+  if(isPro){
+    if(icon) icon.textContent = '🏆';
+    if(title) title.textContent = lang==='fr' ? 'Partage ton score · Obtiens le badge Verified' :
+      lang==='es' ? 'Comparte · Obtén el badge Verified' :
+      'Share your score · Get Verified badge';
+    if(sub) sub.textContent = lang==='fr' ? 'Badge PEAKUP Verified Creator visible dans ton dashboard 🔵' :
+      lang==='es' ? 'Badge PEAKUP Verified Creator en tu dashboard 🔵' :
+      'PEAKUP Verified Creator badge in your dashboard 🔵';
+  } else {
+    if(icon) icon.textContent = '🎁';
+    if(title) title.textContent = lang==='fr' ? 'Partage ton score sur TikTok' :
+      lang==='es' ? 'Comparte tu score en TikTok' :
+      'Share your score on TikTok';
+    if(sub) sub.textContent = lang==='fr' ? 'En échange, débloque une analyse bonus gratuite 🔓' :
+      lang==='es' ? 'A cambio, desbloquea un análisis bonus gratis 🔓' :
+      'In return, unlock a free bonus analysis 🔓';
+  }
+  if(btnTxt) btnTxt.textContent = lang==='fr' ? 'Partager →' : lang==='es' ? 'Compartir →' : 'Share →';
+}
+
+let fomoInterval = null;
+const FOMO_DURATION = 10 * 60;
+
+function getFomoKey(){ return 'peakup_fomo_device'; }
+function getFomoUsedKey(){ return 'peakup_fomo_device_used'; }
+
+function initFomo(handle){
+  if(localStorage.getItem(getFomoUsedKey()) === 'used'){
+    document.getElementById('pwFomo').style.display = 'none';
+    return;
+  }
+  let stored = localStorage.getItem(getFomoKey());
   let remaining;
   if(stored){
     const data = JSON.parse(stored);
     remaining = data.expires - Math.floor(Date.now()/1000);
     if(remaining <= 0){
-      // Timer expiré → marquer comme utilisé
-      localStorage.setItem(usedKey, 'used');
-      localStorage.removeItem(fomoKey);
+      localStorage.setItem(getFomoUsedKey(), 'used');
+      localStorage.removeItem(getFomoKey());
       document.getElementById('pwFomo').style.display = 'none';
       return;
     }
   } else {
-    // Premier passage → démarrer le timer
     remaining = FOMO_DURATION;
-    localStorage.setItem(fomoKey, JSON.stringify({
+    localStorage.setItem(getFomoKey(), JSON.stringify({
       expires: Math.floor(Date.now()/1000) + FOMO_DURATION
     }));
   }
-
-  // Afficher le FOMO
   document.getElementById('pwFomo').style.display = 'block';
   document.getElementById('pwBtn').classList.add('fomo-active');
   document.getElementById('pwBtnText').textContent =
@@ -2341,14 +2687,12 @@ function initFomo(handle){
     lang==='fr' ? '4,99€ ce mois, puis 9,99€/mois' :
     lang==='es' ? '4,99€ este mes, luego 9,99€/mes' :
     '€4.99 first month, then €9.99/mo';
-  // Cacher le span /mois car déjà dans le prix
   const perMonthEl = document.getElementById('pwPerMonth');
   if(perMonthEl) perMonthEl.style.display='none';
-
-  startFomoTimer(remaining, handle);
+  startFomoTimer(remaining);
 }
 
-function startFomoTimer(remaining, handle){
+function startFomoTimer(remaining){
   if(fomoInterval) clearInterval(fomoInterval);
   updateTimerDisplay(remaining);
   fomoInterval = setInterval(()=>{
@@ -2356,17 +2700,18 @@ function startFomoTimer(remaining, handle){
     updateTimerDisplay(remaining);
     if(remaining <= 0){
       clearInterval(fomoInterval);
-      localStorage.setItem(getFomoUsedKey(handle), 'used');
-      localStorage.removeItem(getFomoKey(handle));
-      // Timer expiré → retour au prix normal
+      localStorage.setItem(getFomoUsedKey(), 'used');
+      localStorage.removeItem(getFomoKey());
       document.getElementById('pwFomo').style.display = 'none';
       document.getElementById('pwBtn').classList.remove('fomo-active');
       document.getElementById('pwBtnText').textContent =
-        lang==='fr' ? 'Débloquer l\'analyse complète' :
+        lang==='fr' ? "Débloquer l'analyse complète" :
         lang==='es' ? 'Desbloquear análisis completo' :
         'Unlock full analysis';
       document.getElementById('pwPriceAmt').textContent =
         lang==='fr' ? '9,99€' : lang==='es' ? '9,99€' : '€9.99';
+      const perMonthEl = document.getElementById('pwPerMonth');
+      if(perMonthEl) perMonthEl.style.display='';
     }
   }, 1000);
 }
@@ -2379,10 +2724,11 @@ function updateTimerDisplay(sec){
 }
 
 function handlePaywallCTA(){
-  simulateSubscribe();
-  // Marquer l'offre comme utilisée une fois cliqué
-  if(userHandle) localStorage.setItem(getFomoUsedKey(userHandle), 'used');
+  const fomoVisible = document.getElementById('pwFomo')?.style.display !== 'none';
+  simulateSubscribe(fomoVisible);
+  localStorage.setItem(getFomoUsedKey(), 'used');
 }
+
 
 /* Son paywall */
 function playPaywallSound(){
@@ -2425,7 +2771,8 @@ function checkStripeReturn(){
   if(params.get('success')==='true'){
     window.history.replaceState({},'','/');
     showToast('🎉 '+(lang==='fr'?'Abonnement activé ! Bienvenue dans PEAKUP Pro.':lang==='es'?'¡Suscripción activada!':'Subscription activated! Welcome to PEAKUP Pro.'),'success');
-    simulateLogin();
+    // Ne pas activer Pro automatiquement — nécessite Firebase (Phase 3)
+    // simulateLogin() supprimé pour éviter accès Pro sans paiement réel
   }
   if(params.get('canceled')==='true'){
     window.history.replaceState({},'','/');
@@ -2498,6 +2845,11 @@ function showLegal(type){
 renderStatic();
 renderDashboard();
 checkStripeReturn();
+
+// Afficher le badge Verified dans le dashboard si déjà obtenu
+if(localStorage.getItem('peakup_verified') === 'true'){
+  setTimeout(showVerifiedBadgeInDash, 500);
+}
 
 // Synchroniser le compteur hero avec localStorage au chargement
 (function(){

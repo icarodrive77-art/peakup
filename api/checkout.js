@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   if (!STRIPE_SECRET_KEY) return res.status(500).json({ error: 'Stripe key not configured' });
 
   try {
-    const { email } = req.body;
+    const { email, fomo } = req.body;
     const origin = req.headers.origin || 'https://scoreviral.eu';
 
     const params = new URLSearchParams({
@@ -14,12 +14,17 @@ export default async function handler(req, res) {
       'line_items[0][quantity]': '1',
       'success_url': `${origin}/?success=true`,
       'cancel_url': `${origin}/?canceled=true`,
-      'allow_promotion_codes': 'true',
+      'allow_promotion_codes': 'false',
       'billing_address_collection': 'auto',
       'payment_method_types[0]': 'card',
     });
 
     if (email) params.append('customer_email', email);
+
+    // Appliquer le coupon FOMO si demandé (4,99€ premier mois → 9,99€/mois ensuite)
+    if (fomo === true) {
+      params.append('discounts[0][coupon]', 'jDchbN7O');
+    }
 
     const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
