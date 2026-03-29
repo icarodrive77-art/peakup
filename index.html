@@ -379,13 +379,38 @@ body::before{
 .social{padding:60px 48px;max-width:900px;margin:0 auto;}
 .testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
 .testi{
-  background:var(--s1);border:1px solid var(--b1);
-  border-radius:10px;padding:22px;
+  background:linear-gradient(135deg,var(--s1),var(--s2));
+  border:1px solid var(--b2);border-radius:12px;padding:24px;
+  position:relative;overflow:hidden;
 }
-.testi-stars{color:var(--gold);font-size:.85rem;margin-bottom:10px;letter-spacing:2px;}
-.testi-text{font-size:.83rem;color:var(--t2);line-height:1.6;margin-bottom:14px;font-style:italic;}
-.testi-author{font-size:.75rem;font-weight:600;color:var(--text);}
-.testi-handle{font-size:.7rem;color:var(--t3);font-family:'JetBrains Mono',monospace;}
+.testi::before{
+  content:'❝';position:absolute;top:10px;right:14px;
+  font-size:3.5rem;color:var(--accent);opacity:.1;
+  font-family:serif;line-height:1;pointer-events:none;
+}
+.testi-stars{color:var(--gold);font-size:.85rem;margin-bottom:12px;letter-spacing:2px;}
+.testi-text{font-size:.84rem;color:var(--t2);line-height:1.65;margin-bottom:16px;font-style:italic;}
+.testi-footer{display:flex;align-items:center;gap:10px;}
+.testi-avatar{
+  width:36px;height:36px;border-radius:10px;flex-shrink:0;
+  background:var(--grad);display:flex;align-items:center;justify-content:center;
+  font-family:'Exo 2',sans-serif;font-weight:900;font-size:.9rem;color:#fff;
+}
+.testi-author{font-size:.78rem;font-weight:700;color:var(--text);font-family:'Space Grotesk',sans-serif;}
+.testi-handle{font-size:.67rem;color:var(--t3);font-family:'JetBrains Mono',monospace;margin-top:2px;}
+
+/* Compteur hero */
+.hero-counter{
+  display:flex;align-items:center;gap:8px;
+  justify-content:center;margin-top:16px;
+  font-family:'JetBrains Mono',monospace;font-size:.68rem;
+  letter-spacing:.1em;color:var(--t2);
+}
+.hc-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--success);
+  animation:livePulse 2s infinite;flex-shrink:0;
+}
 
 /* ── BUTTON EFFECTS ── */
 .btn-go,.btn-cta,.pw-btn,.btn-ch,.btn-pro{position:relative;overflow:hidden;}
@@ -1079,6 +1104,11 @@ body::before{
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <div class="err" id="errBar"></div>
+      <!-- Compteur social hero — synchronisé avec FOMO -->
+      <div class="hero-counter" id="heroCounter">
+        <div class="hc-dot"></div>
+        <span id="heroCounterTxt">847 créateurs analysés cette semaine</span>
+      </div>
     </div>
   </section>
 
@@ -1434,9 +1464,9 @@ const COPY = {
       {icon:"🆚",cls:"fi-blue",name:"Benchmark Créateurs",desc:"Compare-toi à des profils similaires dans ta niche et vois où tu en es dans le classement."},
     ],
     testimonials:[
-      {stars:"★★★★★",text:"\"En 3 semaines j'ai doublé mon taux d'engagement. Les recommandations sont chirurgicales.\"",name:"Lucas M.",handle:"@lucascreates · 180K abonnés"},
-      {stars:"★★★★★",text:"\"Le défi de la semaine m'a forcé à tester un format que j'évitais. Ma meilleure vidéo à ce jour.\"",name:"Sofia R.",handle:"@sofiavibe · 94K abonnés"},
-      {stars:"★★★★★",text:"\"Enfin un outil qui comprend vraiment TikTok. Pas du blabla, des actions concrètes.\"",name:"Karim T.",handle:"@karimtok · 310K abonnés"},
+      {stars:"★★★★★",text:"\"En 3 semaines j'ai doublé mon taux d'engagement. Les recommandations sont chirurgicales. Je n'aurais jamais trouvé ça tout seul.\"",name:"Lucas M.",handle:"Créateur TikTok · 180K abonnés"},
+      {stars:"★★★★★",text:"\"Le défi de la semaine m'a forcé à tester un format que j'évitais. Résultat : ma meilleure vidéo à ce jour avec 2.3M de vues.\"",name:"Sofia R.",handle:"Créatrice lifestyle · 94K abonnés"},
+      {stars:"★★★★★",text:"\"Enfin un outil qui comprend vraiment TikTok. Pas du blabla, des actions concrètes. Mon score est passé de 41 à 78 en un mois.\"",name:"Karim T.",handle:"Créateur gaming · 310K abonnés"},
     ],
     plans:[
       {badge:"GRATUIT",cls:"pb-free",name:"Free",price:"0",period:"/mois",features:[
@@ -1519,9 +1549,9 @@ const COPY = {
       {icon:"🆚",cls:"fi-blue",name:"Creator Benchmark",desc:"Compare yourself to similar profiles in your niche and see where you stand in the rankings."},
     ],
     testimonials:[
-      {stars:"★★★★★",text:'"In 3 weeks I doubled my engagement rate. The recommendations are surgical."',name:"Lucas M.",handle:"@lucascreates · 180K followers"},
-      {stars:"★★★★★",text:'"The weekly challenge forced me to try a format I was avoiding. My best video to date."',name:"Sofia R.",handle:"@sofiavibe · 94K followers"},
-      {stars:"★★★★★",text:'"Finally a tool that truly gets TikTok. No fluff, just concrete actions."',name:"Karim T.",handle:"@karimtok · 310K followers"},
+      {stars:"★★★★★",text:'"In 3 weeks I doubled my engagement rate. The recommendations are surgical. I would never have found this on my own."',name:"Lucas M.",handle:"TikTok creator · 180K followers"},
+      {stars:"★★★★★",text:'"The weekly challenge forced me to try a format I was avoiding. Result: my best video ever with 2.3M views."',name:"Sofia R.",handle:"Lifestyle creator · 94K followers"},
+      {stars:"★★★★★",text:'"Finally a tool that truly gets TikTok. No fluff, just concrete actions. My score went from 41 to 78 in a month."',name:"Karim T.",handle:"Gaming creator · 310K followers"},
     ],
     plans:[
       {badge:"FREE",cls:"pb-free",name:"Free",price:"0",period:"/month",features:[
@@ -1600,9 +1630,9 @@ const COPY = {
       {icon:"🆚",cls:"fi-blue",name:"Benchmark Creadores",desc:"Compárate con perfiles similares en tu nicho y ve dónde te encuentras en el ranking."},
     ],
     testimonials:[
-      {stars:"★★★★★",text:'"En 3 semanas doblé mi tasa de engagement. Las recomendaciones son quirúrgicas."',name:"Lucas M.",handle:"@lucascreates · 180K seguidores"},
-      {stars:"★★★★★",text:'"El reto semanal me obligó a probar un formato que evitaba. Mi mejor vídeo hasta la fecha."',name:"Sofia R.",handle:"@sofiavibe · 94K seguidores"},
-      {stars:"★★★★★",text:'"Por fin una herramienta que entiende TikTok de verdad. Sin relleno, solo acciones concretas."',name:"Karim T.",handle:"@karimtok · 310K seguidores"},
+      {stars:"★★★★★",text:'"En 3 semanas doblé mi tasa de engagement. Las recomendaciones son quirúrgicas. Nunca lo hubiera encontrado solo."',name:"Lucas M.",handle:"Creador TikTok · 180K seguidores"},
+      {stars:"★★★★★",text:'"El reto semanal me obligó a probar un formato que evitaba. Resultado: mi mejor vídeo con 2.3M de vistas."',name:"Sofia R.",handle:"Creadora lifestyle · 94K seguidores"},
+      {stars:"★★★★★",text:'"Por fin una herramienta que entiende TikTok de verdad. Sin relleno, solo acciones concretas. Mi score pasó de 41 a 78."',name:"Karim T.",handle:"Creador gaming · 310K seguidores"},
     ],
     plans:[
       {badge:"GRATIS",cls:"pb-free",name:"Free",price:"0",period:"/mes",features:[
@@ -1663,8 +1693,13 @@ function renderStatic(){
     <div class="testi">
       <div class="testi-stars">${te.stars}</div>
       <div class="testi-text">${te.text}</div>
-      <div class="testi-author">${te.name}</div>
-      <div class="testi-handle">${te.handle}</div>
+      <div class="testi-footer">
+        <div class="testi-avatar">${te.name.charAt(0)}</div>
+        <div>
+          <div class="testi-author">${te.name}</div>
+          <div class="testi-handle">${te.handle}</div>
+        </div>
+      </div>
     </div>`).join('');
 
   // pricing
@@ -2125,12 +2160,20 @@ function renderResults(handle,platName,text){
   }, 600);
 
   // Social proof counter — légère variation aléatoire
-  const count = 820 + Math.floor(Math.random()*60);
+  // Compteur social synchronisé — même chiffre FOMO, s'incrémente avec les analyses
+  let socialCount = parseInt(localStorage.getItem('peakup_social_count') || '0');
+  if(!socialCount || socialCount < 820){
+    socialCount = 820 + Math.floor(Math.random()*40);
+    localStorage.setItem('peakup_social_count', socialCount);
+  }
+  // Incrémenter légèrement à chaque analyse
+  socialCount = Math.min(socialCount + Math.floor(Math.random()*3) + 1, 999);
+  localStorage.setItem('peakup_social_count', socialCount);
   const countEl = document.getElementById('pwSocialCount');
   if(countEl) countEl.textContent =
-    lang==='fr' ? `${count} créateurs ont débloqué leur analyse cette semaine` :
-    lang==='es' ? `${count} creadores desbloquearon su análisis esta semana` :
-    `${count} creators unlocked their analysis this week`;
+    lang==='fr' ? `${socialCount} créateurs ont débloqué leur analyse cette semaine` :
+    lang==='es' ? `${socialCount} creadores desbloquearon su análisis esta semana` :
+    `${socialCount} creators unlocked their analysis this week`;
 
   document.getElementById('btnGo').disabled=false;
   document.getElementById('btnGoTxt').textContent=t('analyze_btn');
@@ -2455,6 +2498,18 @@ function showLegal(type){
 renderStatic();
 renderDashboard();
 checkStripeReturn();
+
+// Synchroniser le compteur hero avec localStorage au chargement
+(function(){
+  const count = parseInt(localStorage.getItem('peakup_social_count') || '0');
+  const display = count >= 820 ? count : 820 + Math.floor(Math.random()*40);
+  if(!localStorage.getItem('peakup_social_count')) localStorage.setItem('peakup_social_count', display);
+  const el = document.getElementById('heroCounterTxt');
+  if(el) el.textContent =
+    lang==='fr' ? `${display} créateurs analysés cette semaine` :
+    lang==='es' ? `${display} creadores analizados esta semana` :
+    `${display} creators analyzed this week`;
+})();
 
 // Shimmer premium — toutes les 5 secondes
 (function(){
