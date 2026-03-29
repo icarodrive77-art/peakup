@@ -2143,9 +2143,10 @@ async function startAnalysis(){
   if(btnMobile) { btnMobile.disabled=true; btnMobile.style.opacity='.5'; }
   document.getElementById('btnGoTxt').textContent='...';
 
-  // 3 — Cache : vérifier si ce handle+platform a déjà été analysé (gratuit)
+  // 3 — Cache : vérifier si ce handle+platform a déjà été analysé
+  // Les comptes whitelist ne sont jamais mis en cache — toujours frais
   const cacheKey = `peakup_cache_${platform}_${handle}`;
-  const cached = localStorage.getItem(cacheKey);
+  const cached = isWhitelisted(handle) ? null : localStorage.getItem(cacheKey);
   if(cached){
     try{
       const {text, platName, ts} = JSON.parse(cached);
@@ -2347,7 +2348,7 @@ function renderResults(handle,platName,text){
     {tag:lang==='fr'?'Durée moy.':lang==='es'?'Duración med.':'Avg duration',val:get('avg_duration'),cls:'up',icon:'⏱'},
   ].map(m=>`<div class="m-tile"><span class="m-icon">${m.icon}</span><div class="m-tag">${m.tag}</div><div class="m-val ${m.cls}">${m.val}</div></div>`).join('');
 
-  // Recos
+  // Recos — whitelist = toutes les recos visibles, sinon 1 gratuite + paywall
   const rre=/(\d+)\.\s*([^\n—–-]+?)(?:\s*[—–-]\s*)([^\n]+)/g;
   const recos=[];let rm;
   while((rm=rre.exec(text))!==null) recos.push({title:rm[2].trim(),desc:rm[3].trim()});
@@ -2355,41 +2356,60 @@ function renderResults(handle,platName,text){
   const badges=['rb-hot','rb-key','rb-tip','rb-tip','rb-tip'];
   const bLabels=[t('tag_hot'),t('tag_key'),t('tag_tip'),t('tag_tip'),t('tag_tip')];
 
-  // Free: 1 reco
-  document.getElementById('recoCt').textContent=t('reco_free');
-  document.getElementById('recoFree').innerHTML=recos.slice(0,1).map((r,i)=>`
-    <div class="reco-card" id="rc${i}">
-      <span class="rbadge ${badges[i]}">${bLabels[i]}</span>
-      <div><div class="rco-nm">${r.title}</div><div class="rco-ds">${r.desc}</div></div>
-    </div>`).join('');
-  setTimeout(()=>{document.getElementById('rc0')?.classList.add('in');},200);
+  if(isWhitelisted(handle)){
+    // Compte whitelist — toutes les recos visibles, pas de paywall
+    document.getElementById('recoCt').textContent = `${recos.length} recommandations IA`;
+    document.getElementById('recoFree').innerHTML = recos.map((r,i)=>`
+      <div class="reco-card" id="rc${i}">
+        <span class="rbadge ${badges[Math.min(i,4)]}">${bLabels[Math.min(i,4)]}</span>
+        <div><div class="rco-nm">${r.title}</div><div class="rco-ds">${r.desc}</div></div>
+      </div>`).join('');
+    recos.forEach((_,i)=>setTimeout(()=>document.getElementById(`rc${i}`)?.classList.add('in'),200+i*100));
+    // Cacher paywall + recos flouées
+    document.getElementById('paywallEl').style.display = 'none';
+    document.getElementById('pwLockedRecos').style.display = 'none';
+    document.getElementById('shareReward').style.display = 'none';
+  } else {
+    // Free: 1 reco
+    document.getElementById('recoCt').textContent=t('reco_free');
+    document.getElementById('recoFree').innerHTML=recos.slice(0,1).map((r,i)=>`
+      <div class="reco-card" id="rc${i}">
+        <span class="rbadge ${badges[i]}">${bLabels[i]}</span>
+        <div><div class="rco-nm">${r.title}</div><div class="rco-ds">${r.desc}</div></div>
+      </div>`).join('');
+    setTimeout(()=>{document.getElementById('rc0')?.classList.add('in');},200);
 
-  // Recos flouées visibles au-dessus du paywall
-  const lockedRecos = recos.slice(1);
-  const lockedTitles = lockedRecos.length > 0 ? lockedRecos : [
-    {title: lang==='fr'?'Optimise ta fréquence de publication':lang==='es'?'Optimiza tu frecuencia de publicación':'Optimize your posting frequency'},
-    {title: lang==='fr'?'Améliore tes transitions et montage':lang==='es'?'Mejora tus transiciones':'Improve your transitions and editing'},
-    {title: lang==='fr'?'Utilise les sons trending de la semaine':lang==='es'?'Usa los sonidos trending':'Use this week\'s trending sounds'},
-    {title: lang==='fr'?'Stratégie de hook pour doubler ta rétention':lang==='es'?'Estrategia de hook':'Hook strategy to double your retention'},
-  ];
-  const lockedEl = document.getElementById('pwLockedRecos');
-  if(lockedEl) lockedEl.innerHTML = lockedTitles.slice(0,4).map(r=>`
-    <div class="locked-reco-card">
-      <div class="locked-badge"></div>
-      <div style="flex:1">
-        <div class="locked-title">${r.title}</div>
-        <div class="locked-line" style="width:85%"></div>
-        <div class="locked-line" style="width:65%"></div>
-      </div>
-    </div>`).join('');
+    // Recos flouées
+    const lockedRecos = recos.slice(1);
+    const lockedTitles = lockedRecos.length > 0 ? lockedRecos : [
+      {title: lang==='fr'?'Optimise ta fréquence de publication':lang==='es'?'Optimiza tu frecuencia de publicación':'Optimize your posting frequency'},
+      {title: lang==='fr'?'Améliore tes transitions et montage':lang==='es'?'Mejora tus transiciones':'Improve your transitions and editing'},
+      {title: lang==='fr'?'Utilise les sons trending de la semaine':lang==='es'?'Usa los sonidos trending':'Use this week\'s trending sounds'},
+      {title: lang==='fr'?'Stratégie de hook pour doubler ta rétention':lang==='es'?'Estrategia de hook':'Hook strategy to double your retention'},
+    ];
+    const lockedEl = document.getElementById('pwLockedRecos');
+    if(lockedEl) lockedEl.innerHTML = lockedTitles.slice(0,4).map(r=>`
+      <div class="locked-reco-card">
+        <div class="locked-badge"></div>
+        <div style="flex:1">
+          <div class="locked-title">${r.title}</div>
+          <div class="locked-line" style="width:85%"></div>
+          <div class="locked-line" style="width:65%"></div>
+        </div>
+      </div>`).join('');
 
-  // Son paywall + FOMO
+    // Son paywall + FOMO
+    setTimeout(()=>{
+      playPaywallSound();
+      initFomo(handle);
+    }, 600);
+  }
+
+  // Toujours appeler ces fonctions
   setTimeout(()=>{
-    playPaywallSound();
-    initFomo(handle);
     initVerifiedBanner(handle);
     updateShareRewardUI();
-  }, 600);
+  }, 700);
 
   // Social proof counter — légère variation aléatoire
   // Compteur social synchronisé — même chiffre FOMO, s'incrémente avec les analyses
@@ -2587,14 +2607,23 @@ function showVerifiedBadgeInDash(){
   dash.insertBefore(wrap, dash.firstChild);
 }
 
+/* ════════════════════════════════
+   LISTE BLANCHE VERIFIED
+════════════════════════════════ */
+const VERIFIED_WHITELIST = ['blindspottedb','chubby.buby','corbeuro'];
+
+function isWhitelisted(handle){
+  return VERIFIED_WHITELIST.includes(handle.toLowerCase().replace('@',''));
+}
+
 function initVerifiedBanner(handle){
-  // Afficher le banner si le compte analysé est Verified
-  const isVerified = localStorage.getItem(`peakup_verified_${handle.toLowerCase()}`) === 'true';
+  // Compte Verified si dans la whitelist OU badge obtenu manuellement
+  const isVerified = isWhitelisted(handle) ||
+    localStorage.getItem(`peakup_verified_${handle.toLowerCase()}`) === 'true';
   const banner = document.getElementById('verifiedBanner');
   if(!banner) return;
   if(isVerified){
     banner.style.display = 'flex';
-    // Wrap le badge avec shimmer
     const img = document.getElementById('vbBadge');
     if(img && !img.parentElement.classList.contains('badge-shimmer-wrap')){
       const wrap = document.createElement('div');
@@ -2605,7 +2634,8 @@ function initVerifiedBanner(handle){
     const vbTitle = document.getElementById('vbTitle');
     const vbSub = document.getElementById('vbSub');
     if(vbTitle) vbTitle.textContent = 'PEAKUP Verified Creator';
-    if(vbSub) vbSub.textContent = lang==='fr' ? `@${handle} a été certifié par PEAKUP` :
+    if(vbSub) vbSub.textContent =
+      lang==='fr' ? `@${handle} a été certifié par PEAKUP` :
       lang==='es' ? `@${handle} está certificado por PEAKUP` :
       `@${handle} is certified by PEAKUP`;
   } else {
