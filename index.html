@@ -939,7 +939,7 @@ body::before{
 /* ══════════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════════ */
-.mobile-cta-hero{display:none;}
+.mobile-analyse-btn{display:none;}
 
 @media(max-width:768px){
   .mobile-cta-hero{
@@ -953,6 +953,19 @@ body::before{
     box-shadow:0 4px 20px rgba(124,92,252,.4);
     margin:0 auto 8px;
   }
+  .mobile-analyse-btn{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    width:100%;
+    background:linear-gradient(135deg,#7c5cfc,#a855f7);
+    color:#fff;border:none;border-radius:10px;
+    padding:15px 24px;font-family:'Exo 2',sans-serif;
+    font-size:1rem;font-weight:800;font-style:italic;
+    letter-spacing:.04em;cursor:pointer;
+    box-shadow:0 4px 20px rgba(124,92,252,.4);
+    margin-top:12px;
+  }
+  /* Cacher le bouton Analyser intégré dans la barre sur mobile */
+  #btnGo{display:none !important;}
 }
 
 @media(max-width:768px){
@@ -1060,6 +1073,11 @@ body::before{
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       </div>
+      <!-- Bouton Analyser mobile — visible uniquement sur mobile -->
+      <button class="mobile-analyse-btn" onclick="startAnalysis()">
+        <span data-i="analyze_btn">Analyser</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
       <div class="err" id="errBar"></div>
     </div>
   </section>
