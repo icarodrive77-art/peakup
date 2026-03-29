@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/.netlify/functions/analyze", "destination": "/api/analyze" },
+    { "source": "/.netlify/functions/checkout", "destination": "/api/checkout" }
+  ]
+}
