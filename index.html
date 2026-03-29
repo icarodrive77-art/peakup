@@ -939,27 +939,42 @@ body::before{
 /* ══════════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════════ */
+.mobile-cta-hero{display:none;}
+
 @media(max-width:768px){
-  .header{padding:12px 16px;gap:8px;}
+  .mobile-cta-hero{
+    display:flex;align-items:center;justify-content:center;
+    width:100%;max-width:340px;
+    background:linear-gradient(135deg,#7c5cfc,#a855f7);
+    color:#fff;border:none;border-radius:10px;
+    padding:14px 24px;font-family:'Exo 2',sans-serif;
+    font-size:.95rem;font-weight:800;font-style:italic;
+    letter-spacing:.04em;cursor:pointer;
+    box-shadow:0 4px 20px rgba(124,92,252,.4);
+    margin:0 auto 8px;
+  }
+}
+
+@media(max-width:768px){
+  .header{padding:12px 16px;gap:8px;overflow:hidden;}
   .header-mid{display:none;}
-  .header-right{gap:6px;}
+  .header-right{gap:6px;flex-shrink:0;}
   .lang-sw{display:none;}
 
-  /* Bouton S'abonner — version courte sur mobile */
-  .btn-cta{padding:8px 12px;font-size:.72rem;white-space:nowrap;}
-  .btn-cta [data-i="subscribe_header"],.btn-cta::after{content:'';}
-  .login-btn{padding:8px 12px;font-size:.72rem;}
+  /* Cacher complètement le bouton S'abonner sur mobile — trop long */
+  #ctaBtn{display:none !important;}
+  .login-btn{padding:8px 14px;font-size:.78rem;white-space:nowrap;}
 
   .hero{padding:48px 16px 40px;}
   .hero h1{font-size:clamp(2rem,10vw,3.5rem);}
   .hero-sub{font-size:.9rem;padding:0 8px;}
 
-  /* Barre d'analyse — colonne sur mobile, bouton en bas pleine largeur */
+  /* Barre d'analyse — bouton Analyser en bas pleine largeur */
   .search-bar{flex-direction:column;gap:0;padding:0;border-radius:12px;overflow:hidden;}
   .plat-sw{width:100%;justify-content:center;border-right:none;border-bottom:1px solid var(--b2);padding:12px 16px;}
   .handle-wrap{width:100%;border-bottom:1px solid var(--b2);}
-  .handle-wrap input{width:100%;padding:14px 16px;}
-  .analyse-btn{width:100%;justify-content:center;border-radius:0 0 12px 12px;padding:14px;font-size:.95rem;}
+  .handle-wrap input{width:100%;padding:14px 16px;box-sizing:border-box;}
+  .analyse-btn{width:100%;justify-content:center;border-radius:0 0 12px 12px !important;padding:14px;font-size:.95rem;}
 
   .features,.pricing,.social{padding:40px 16px;}
   .feat-grid{grid-template-columns:1fr;}
@@ -989,10 +1004,6 @@ body::before{
   .score-card{padding:16px;}
   .reco-card{padding:14px 16px;}
   .p-av{width:44px;height:44px;font-size:1.1rem;}
-
-  /* Header encore plus compact sur très petit écran */
-  .btn-cta{font-size:.68rem;padding:7px 10px;}
-  .login-btn{font-size:.68rem;padding:7px 10px;}
 }
 </style>
 </head>
@@ -1030,6 +1041,8 @@ body::before{
   <!-- HERO -->
   <section class="hero">
     <div class="hero-badge"><div class="live-dot"></div><span data-i="hero_badge">IA Creator Analytics · Beta</span></div>
+    <!-- CTA mobile uniquement — visible sous le titre -->
+    <button class="mobile-cta-hero" id="mobileCta" onclick="scrollToPricing()" data-i="subscribe_header">S'abonner — 9,99€/mois</button>
     <h1 id="heroH1"><em>Analyse</em> ton profil.<br>Domine <span class="gold">l'algo.</span></h1>
     <p class="hero-sub" data-i="hero_sub">Entre ton pseudo TikTok ou YouTube. Notre IA analyse tes hooks, ton engagement et ton style pour révéler exactement ce qui te retient d'exploser.</p>
 
