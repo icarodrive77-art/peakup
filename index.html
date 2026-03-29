@@ -1749,7 +1749,15 @@ async function simulateSubscribe(){
 function scrollToPricing(){
   if(currentPage!=='landing') goTo('landing');
   setTimeout(()=>{
-    document.getElementById('pricing')?.scrollIntoView({behavior:'smooth'});
+    // Scroller sur la carte Pro (featured) directement
+    const proCard = document.querySelector('.price-card.featured') || document.getElementById('pricing');
+    if(proCard){
+      proCard.scrollIntoView({behavior:'smooth', block:'center'});
+      // Highlight bref de la carte Pro
+      proCard.style.transition='box-shadow .3s';
+      proCard.style.boxShadow='0 0 0 3px var(--accent), 0 12px 40px rgba(124,92,252,.5)';
+      setTimeout(()=>{ proCard.style.boxShadow=''; },1500);
+    }
   },100);
 }
 function scrollToSection(sel){
