@@ -3,7 +3,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PEAKUP — Creator Analytics</title>
+<title>PEAKUP — Analyse IA TikTok & YouTube | Booste ton Score Viral</title>
+
+<!-- SEO -->
+<meta name="description" content="PEAKUP analyse ton profil TikTok ou YouTube avec l'IA et te donne des recommandations personnalisées pour exploser ton score viral. Essai gratuit, résultats en 30 secondes.">
+<meta name="keywords" content="analyse tiktok, analyse youtube, score viral, creator analytics, recommandations IA, croissance tiktok, algorithme youtube">
+<meta name="author" content="PEAKUP">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://scoreviral.eu">
+
+<!-- Open Graph (Facebook, LinkedIn) -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://scoreviral.eu">
+<meta property="og:title" content="PEAKUP — Analyse IA TikTok & YouTube">
+<meta property="og:description" content="Découvre exactement ce qui retient ton profil d'exploser. Analyse IA en 30 secondes, recommandations personnalisées.">
+<meta property="og:image" content="https://scoreviral.eu/og-image.jpg">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="PEAKUP">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://scoreviral.eu">
+<meta name="twitter:title" content="PEAKUP — Analyse IA TikTok & YouTube">
+<meta name="twitter:description" content="Découvre exactement ce qui retient ton profil d'exploser. Analyse IA en 30 secondes.">
+<meta name="twitter:image" content="https://scoreviral.eu/og-image.jpg">
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237c5cfc'/><text x='50%' y='50%' font-size='18' text-anchor='middle' dominant-baseline='central' fill='white' font-weight='bold'>P</text></svg>">
+
+<!-- Schema.org -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "PEAKUP",
+  "url": "https://scoreviral.eu",
+  "description": "Outil d'analyse IA pour créateurs TikTok et YouTube. Score viral, recommandations personnalisées.",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "9.99",
+    "priceCurrency": "EUR",
+    "priceValidUntil": "2027-01-01"
+  }
+}
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,400;0,500;0,600;1,700;1,800;1,900&family=Space+Grotesk:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════
@@ -1136,7 +1181,18 @@ body::before{
   <button class="btn-new" onclick="goTo('landing')" data-i="new_analysis">← Nouvelle analyse</button>
 </div>
 
-<!-- ═══════ DASHBOARD ═══════ -->
+<!-- ═══════ PAGE LÉGALE ═══════ -->
+<div id="pageLegal" class="z1 hidden">
+  <div style="max-width:720px;margin:0 auto;padding:60px 32px;font-family:'Space Grotesk',sans-serif;color:var(--t2);line-height:1.7;">
+    <button class="btn-back" onclick="goTo('landing')" style="margin-bottom:32px">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      ← Retour
+    </button>
+    <div id="legalContent"></div>
+  </div>
+</div>
+
+<!-- ═══════ FOOTER ═══════ -->
 <div id="pageDashboard" class="z1 hidden">
   <div class="dash-header">
     <div>
@@ -1560,7 +1616,7 @@ function setPlatform(p){
    NAVIGATION
 ════════════════════════════════ */
 function goTo(page){
-  ['pageLanding','pageLoading','pageResults','pageDashboard','pageAuth'].forEach(id=>{
+  ['pageLanding','pageLoading','pageResults','pageDashboard','pageAuth','pageLegal'].forEach(id=>{
     document.getElementById(id).classList.toggle('hidden',id!=='page'+cap(page));
   });
   currentPage=page;
@@ -2224,11 +2280,81 @@ function checkStripeReturn(){
 }
 
 /* ════════════════════════════════
+   LEGAL PAGES
+════════════════════════════════ */
+const legalContent = {
+  cgu: {
+    fr: `<h1 style="font-family:'Exo 2',sans-serif;font-style:italic;font-size:1.8rem;color:var(--text);margin-bottom:8px">Conditions Générales d'Utilisation</h1>
+<p style="font-size:.75rem;color:var(--t3);margin-bottom:32px">Dernière mise à jour : mars 2026</p>
+
+<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">1. Objet</h2>
+<p>PEAKUP est un service d'analyse de profils de créateurs de contenu TikTok et YouTube utilisant l'intelligence artificielle. Le service est accessible sur scoreviral.eu.</p>
+
+<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">2. Accès au service</h2>
+<p>L'accès à une recommandation est gratuit. L'accès à l'analyse complète (5 recommandations) nécessite un abonnement mensuel de 9,99€/mois, résiliable à tout moment.</p>
+
+<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">3. Nature des données</h2>
+<p>Les statistiques affichées (abonnés, vues, engagement) sont des estimations générées par intelligence artificielle et ne constituent pas des données officielles. Les recommandations sont générées par IA et fournies à titre indicatif.</p>
+
+<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">4. Abonnement et paiement</h2>
+<p>Les paiements sont traités par Stripe. L'abonnement est renouvelé automatiquement chaque mois. Vous pouvez résilier à tout moment depuis votre espace client.</p>
+
+<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">5. Propriété intellectuelle</h2>
+<p>L'ensemble du contenu de PEAKUP (marque, design, code) est protégé. Toute reproduction sans autorisation est interdite.</p>
+
+<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">6. Responsabilité</h2>
+<p>PEAKUP ne peut être tenu responsable des décisions prises sur la base des recommandations IA. Les résultats peuvent varier selon les créateurs.</p>
+
+<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">7. Contact</h2>
+<p>Pour toute question : <a href="mailto:support@scoreviral.eu" style="color:var(--accent)">support@scoreviral.eu</a></p>`,
+  },
+  privacy: {
+    fr: `<h1 style="font-family:'Exo 2',sans-serif;font-style:italic;font-size:1.8rem;color:var(--text);margin-bottom:8px">Politique de Confidentialité</h1>
+<p style="font-size:.75rem;color:var(--t3);margin-bottom:32px">Dernière mise à jour : mars 2026</p>
+
+<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">1. Données collectées</h2>
+<p>PEAKUP collecte uniquement les données nécessaires au fonctionnement du service : pseudo TikTok/YouTube saisi, adresse email (si fournie lors du paiement), données de paiement traitées par Stripe.</p>
+
+<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">2. Utilisation des données</h2>
+<p>Vos données sont utilisées uniquement pour fournir le service d'analyse. Nous ne vendons ni ne partageons vos données avec des tiers à des fins commerciales.</p>
+
+<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">3. Cookies</h2>
+<p>PEAKUP utilise uniquement des données de session localStorage pour mémoriser vos préférences et l'état de l'offre spéciale. Aucun cookie de tracking publicitaire n'est utilisé.</p>
+
+<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">4. Vos droits (RGPD)</h2>
+<p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Contactez-nous à <a href="mailto:support@scoreviral.eu" style="color:var(--accent)">support@scoreviral.eu</a>.</p>
+
+<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">5. Sécurité</h2>
+<p>Les paiements sont sécurisés par Stripe (certifié PCI-DSS). Nous ne stockons aucune donnée bancaire.</p>
+
+<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">6. Contact</h2>
+<p>DPO : <a href="mailto:support@scoreviral.eu" style="color:var(--accent)">support@scoreviral.eu</a></p>`,
+  }
+};
+
+function showLegal(type){
+  const content = legalContent[type]?.[lang] || legalContent[type]?.fr || '';
+  document.getElementById('legalContent').innerHTML = content;
+  goTo('legal');
+}
+
+/* ════════════════════════════════
    INIT
 ════════════════════════════════ */
 renderStatic();
 renderDashboard();
 checkStripeReturn();
 </script>
+
+<!-- FOOTER -->
+<footer style="text-align:center;padding:32px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--t3);letter-spacing:.1em;border-top:1px solid var(--b1);margin-top:40px;">
+  <span>© 2026 PEAKUP · scoreviral.eu</span>
+  <span style="margin:0 12px">·</span>
+  <a href="#" onclick="showLegal('cgu')" style="color:var(--t2);text-decoration:none">CGU</a>
+  <span style="margin:0 12px">·</span>
+  <a href="#" onclick="showLegal('privacy')" style="color:var(--t2);text-decoration:none">Confidentialité</a>
+  <span style="margin:0 12px">·</span>
+  <a href="mailto:support@scoreviral.eu" style="color:var(--t2);text-decoration:none">Contact</a>
+</footer>
 </body>
 </html>
