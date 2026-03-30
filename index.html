@@ -830,19 +830,27 @@ body::before{
 
 /* Badge Verified PRO — shimmer 2 traits toutes les 4 secondes */
 @keyframes badgeShimmer{
-  0%{left:-30%;opacity:0;}
-  5%{opacity:1;}
-  20%{left:120%;opacity:0;}
-  25%{left:-30%;opacity:0;}
-  30%{opacity:1;}
-  45%{left:120%;opacity:0;}
-  100%{left:120%;opacity:0;}
+  0%{left:-60%;opacity:0;}
+  8%{opacity:1;}
+  30%{left:130%;opacity:0;}
+  35%{left:-60%;opacity:0;}
+  43%{opacity:1;}
+  65%{left:130%;opacity:0;}
+  100%{left:130%;opacity:0;}
 }
-.badge-shimmer-wrap{position:relative;overflow:hidden;display:inline-block;border-radius:50%;}
+.badge-shimmer-wrap{
+  position:relative;overflow:hidden;
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:50%;
+  width:48px;height:48px;flex-shrink:0;
+}
+.badge-shimmer-wrap img{
+  width:48px;height:48px;object-fit:contain;
+}
 .badge-shimmer-wrap::after{
-  content:'';position:absolute;top:-20%;left:-30%;
-  width:20%;height:140%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
+  content:'';position:absolute;top:0;left:-60%;
+  width:30%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);
   transform:skewX(-15deg);
   animation:badgeShimmer 4s ease-in-out infinite;
   pointer-events:none;
@@ -1120,6 +1128,23 @@ body::before{
   .p-av{width:44px;height:44px;font-size:1.1rem;}
 }
 </style>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC5bdhouvJpeNG54Fs70WPVsgLc9Sogo8A",
+      authDomain: "peakup-2070a.firebaseapp.com",
+      projectId: "peakup-2070a",
+      storageBucket: "peakup-2070a.firebasestorage.app",
+      messagingSenderId: "35542364122",
+      appId: "1:35542364122:web:c11e889f2ac687a82d5ae3",
+      measurementId: "G-XEB0PSPMSX"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const fbAuth = firebase.auth();
+    const googleProvider = new firebase.auth.GoogleAuthProvider();
+  </script>
 </head>
 <body>
 
@@ -1432,7 +1457,10 @@ body::before{
       <div class="dash-welcome" id="dashWelcome">Bonjour, <em style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Creator</em> 👋</div>
       <div class="dash-sub" data-i="dash_sub">Voici ton tableau de bord PEAKUP</div>
     </div>
-    <div class="dash-pro-badge">PRO · Actif</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="dash-pro-badge" id="dashProBadge" style="display:none">PRO · Actif</div>
+      <button onclick="doLogout()" style="background:none;border:1px solid var(--b2);color:var(--t3);padding:6px 12px;border-radius:6px;font-size:.7rem;font-family:'JetBrains Mono',monospace;cursor:pointer;letter-spacing:.08em;">DÉCONNEXION</button>
+    </div>
   </div>
 
   <div class="dash-tabs">
@@ -1938,42 +1966,116 @@ function showAuthError(msg){
   el.textContent = msg; el.classList.add('show');
 }
 
-function authWithGoogle(){
-  // En prod : Firebase Auth / Supabase Google OAuth
-  // Simulation MVP :
-  const name = 'Creator';
-  completeAuth(name, '', 'tiktok');
+/* ════════════════════════════════
+   FIREBASE AUTH
+════════════════════════════════ */
+// Emails Pro — accès illimité + badge Verified
+const PRO_EMAILS = [
+  'icarodrive.77@gmail.com',
+  'lalindacastings@gmail.com',
+  'allan.taxi77@gmail.com'
+];
+
+function isProEmail(email){
+  return PRO_EMAILS.includes(email?.toLowerCase().trim());
 }
 
-function doSignup(){
+// Écouter les changements d'état de connexion
+fbAuth.onAuthStateChanged(user => {
+  if(user){
+    const isPro = isProEmail(user.email);
+    localStorage.setItem('peakup_is_pro', isPro ? 'true' : 'false');
+    if(isPro) localStorage.setItem('peakup_verified', 'true');
+    const name = user.displayName || user.email.split('@')[0];
+    completeAuth(name, '', 'tiktok', isPro);
+  }
+});
+
+async function authWithGoogle(){
+  try{
+    showAuthLoading(true);
+    await fbAuth.signInWithPopup(googleProvider);
+    // onAuthStateChanged prend le relais
+  }catch(e){
+    showAuthLoading(false);
+    showAuthError('// Erreur Google : ' + e.message);
+  }
+}
+
+async function doSignup(){
   const name  = document.getElementById('signupName').value.trim();
   const email = document.getElementById('signupEmail').value.trim();
   const pwd   = document.getElementById('signupPwd').value;
-  const handle= document.getElementById('signupHandle').value.trim();
+  const handle= document.getElementById('signupHandle').value.trim().toLowerCase().replace('@','');
 
   if(!name)   { showAuthError('// Entre ton prénom'); return; }
   if(!email || !email.includes('@')) { showAuthError('// Email invalide'); return; }
   if(pwd.length < 8) { showAuthError('// Mot de passe trop court (8 car. min)'); return; }
   if(!handle) { showAuthError('// Entre ton pseudo TikTok ou YouTube'); return; }
 
-  completeAuth(name, handle, authPlatform);
+  try{
+    showAuthLoading(true);
+    const cred = await fbAuth.createUserWithEmailAndPassword(email, pwd);
+    await cred.user.updateProfile({ displayName: name });
+    const isPro = isProEmail(email);
+    localStorage.setItem('peakup_is_pro', isPro ? 'true' : 'false');
+    if(isPro) localStorage.setItem('peakup_verified', 'true');
+    completeAuth(name, handle, authPlatform, isPro);
+  }catch(e){
+    showAuthLoading(false);
+    const msg = e.code === 'auth/email-already-in-use' ?
+      '// Email déjà utilisé — connecte-toi' :
+      e.code === 'auth/weak-password' ? '// Mot de passe trop faible' :
+      '// Erreur : ' + e.message;
+    showAuthError(msg);
+  }
 }
 
-function doLogin(){
+async function doLogin(){
   const email = document.getElementById('loginEmail').value.trim();
   const pwd   = document.getElementById('loginPwd').value;
 
   if(!email || !email.includes('@')) { showAuthError('// Email invalide'); return; }
   if(!pwd) { showAuthError('// Entre ton mot de passe'); return; }
 
-  // En prod : vérification Firebase/Supabase
-  // Simulation MVP : connexion directe
-  completeAuth('Creator', '', 'tiktok');
+  try{
+    showAuthLoading(true);
+    await fbAuth.signInWithEmailAndPassword(email, pwd);
+    // onAuthStateChanged prend le relais
+  }catch(e){
+    showAuthLoading(false);
+    const msg = e.code === 'auth/user-not-found' || e.code === 'auth/wrong-password' ?
+      '// Email ou mot de passe incorrect' :
+      '// Erreur : ' + e.message;
+    showAuthError(msg);
+  }
 }
 
-function completeAuth(name, handle, plat){
+function showAuthLoading(show){
+  const btns = document.querySelectorAll('.btn-auth, .btn-google');
+  btns.forEach(b => { b.disabled = show; b.style.opacity = show ? '.5' : ''; });
+}
+
+async function doLogout(){
+  try{
+    await fbAuth.signOut();
+    loggedIn = false;
+    userHandle = '';
+    localStorage.removeItem('peakup_is_pro');
+    // Remettre le header
+    document.getElementById('loginBtn').textContent = t('login');
+    document.getElementById('ctaBtn').style.display = '';
+    document.getElementById('dashLink').style.display = 'none';
+    const badge = document.getElementById('headerProBadge');
+    if(badge) badge.remove();
+    goTo('landing');
+    showToast(lang==='fr'?'Déconnecté.':lang==='es'?'Sesión cerrada.':'Logged out.','warn');
+  }catch(e){ console.warn('Logout error:', e); }
+}
+
+function completeAuth(name, handle, plat, isPro=false){
   loggedIn = true;
-  userHandle = handle;
+  userHandle = handle || userHandle;
   userPlatform = plat || 'tiktok';
 
   // Mettre à jour le header
@@ -1981,7 +2083,21 @@ function completeAuth(name, handle, plat){
   document.getElementById('ctaBtn').style.display = 'none';
   document.getElementById('dashLink').style.display = 'block';
 
-  // Si pseudo renseigné → lancer l'analyse auto
+  // Badge PRO dans le header si Pro
+  if(isPro){
+    const existing = document.getElementById('headerProBadge');
+    if(!existing){
+      const badge = document.createElement('span');
+      badge.id = 'headerProBadge';
+      badge.style.cssText = 'font-size:.55rem;background:var(--accent);color:#fff;padding:2px 6px;border-radius:4px;font-family:JetBrains Mono,monospace;letter-spacing:.1em;margin-left:4px;';
+      badge.textContent = 'PRO';
+      document.getElementById('loginBtn').after(badge);
+    }
+  }
+
+  // Badge PRO dans le dashboard
+  const dashProBadge = document.getElementById('dashProBadge');
+  if(dashProBadge) dashProBadge.style.display = isPro ? '' : 'none';
   if(handle){
     document.getElementById('pageAuth').classList.add('hidden');
     document.getElementById('handle').value = handle;
