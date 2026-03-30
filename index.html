@@ -449,6 +449,39 @@ body::before{
   animation:livePulse 2s infinite;flex-shrink:0;
 }
 
+/* ── FOOTER ── */
+.site-footer{border-top:1px solid var(--b1);margin-top:60px;padding:48px 32px 32px;}
+.footer-cta{text-align:center;margin-bottom:40px;}
+.footer-cta-title{font-family:'Exo 2',sans-serif;font-size:1.6rem;font-weight:900;font-style:italic;margin-bottom:8px;}
+.footer-cta-sub{font-size:.85rem;color:var(--t2);margin-bottom:20px;}
+.footer-cta-btn{
+  background:linear-gradient(135deg,#7c5cfc,#a855f7);
+  color:#fff;border:none;border-radius:10px;
+  padding:14px 32px;font-family:'Exo 2',sans-serif;
+  font-size:1rem;font-weight:800;font-style:italic;
+  cursor:pointer;letter-spacing:.04em;
+  box-shadow:0 4px 20px rgba(124,92,252,.35);
+  transition:transform .15s,box-shadow .15s;
+}
+.footer-cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(124,92,252,.45);}
+.footer-slogan{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--t3);letter-spacing:.15em;margin-top:14px;}
+.footer-slogan em{color:var(--accent);font-style:italic;}
+.footer-logout{text-align:center;margin-bottom:24px;}
+.footer-logout-btn{
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--b2);
+  color:var(--t2);
+  padding:12px 32px;border-radius:8px;
+  font-family:'JetBrains Mono',monospace;font-size:.7rem;
+  letter-spacing:.12em;cursor:pointer;
+  transition:background .15s,border-color .15s;
+}
+.footer-logout-btn:hover{background:rgba(255,255,255,.07);border-color:var(--b1);}
+.footer-links{text-align:center;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--t3);letter-spacing:.1em;}
+.footer-links a{color:var(--t2);text-decoration:none;}
+.footer-links a:hover{color:var(--text);}
+.footer-sep{margin:0 10px;}
+
 /* ── BUTTON EFFECTS ── */
 .btn-go,.btn-cta,.pw-btn,.btn-ch,.btn-pro{position:relative;overflow:hidden;}
 
@@ -866,10 +899,10 @@ body::before{
   position:relative;overflow:hidden;
   display:inline-flex;align-items:center;justify-content:center;
   border-radius:50%;
-  width:48px;height:48px;flex-shrink:0;
+  width:64px;height:64px;flex-shrink:0;
 }
 .badge-shimmer-wrap img{
-  width:48px;height:48px;object-fit:contain;
+  width:64px;height:64px;object-fit:contain;
 }
 .badge-shimmer-wrap::after{
   content:'';position:absolute;top:0;left:-60%;
@@ -898,7 +931,7 @@ body::before{
   border:1px solid rgba(124,92,252,.4);
   border-radius:12px;padding:14px 20px;margin-top:12px;
 }
-.vb-badge{width:48px;height:48px;object-fit:contain;flex-shrink:0;}
+.vb-badge{width:64px;height:64px;object-fit:contain;flex-shrink:0;}
 .vb-title{font-family:'Exo 2',sans-serif;font-weight:800;font-style:italic;font-size:.92rem;color:var(--text);}
 .vb-sub{font-size:.72rem;color:var(--t2);font-family:'Space Grotesk',sans-serif;margin-top:2px;}
 
@@ -1134,13 +1167,19 @@ body::before{
   .hero h1{font-size:clamp(2rem,10vw,3.5rem);}
   .hero-sub{font-size:.9rem;padding:0 8px;}
 
-  /* Barre d'analyse — bouton Analyser en bas pleine largeur */
-  .search-bar{flex-direction:column;gap:0;padding:0;border-radius:12px;overflow:hidden;}
-  .plat-sw{width:100%;justify-content:center;border-right:none;border-bottom:1px solid var(--b2);padding:12px 16px;}
-  .handle-wrap{width:100%;border-bottom:1px solid var(--b2);}
-  .handle-wrap input{width:100%;padding:14px 16px;box-sizing:border-box;}
-  .analyse-btn{width:100%;justify-content:center;border-radius:0 0 12px 12px !important;padding:14px;font-size:.95rem;}
-
+  /* Barre d'analyse mobile — fix barre blanche + overflow */
+  .search-wrap{overflow:hidden;width:100%;}
+  .search-box{
+    overflow:hidden;width:100%;box-sizing:border-box;
+    flex-wrap:wrap;gap:0;padding:0;border-radius:12px;
+    background:var(--s1);
+  }
+  .plat-tog{width:100%;border-radius:0;background:var(--s2);padding:10px 16px;border-bottom:1px solid var(--b2);}
+  .sdiv{display:none;}
+  .sat{padding-left:16px;padding-top:12px;}
+  #handle{padding:10px 8px 12px 4px;min-width:0;}
+  #btnGo{display:none !important;}
+  .search-box:focus-within{box-shadow:none;border-color:var(--accent);}
   .features,.pricing,.social{padding:40px 16px;}
   .feat-grid{grid-template-columns:1fr;}
   .price-cards{grid-template-columns:1fr;}
@@ -1200,10 +1239,13 @@ body::before{
 <header class="header z1">
   <!-- Logo avec menu déroulant -->
   <div class="logo-wrap" id="logoWrap">
-    <div class="logo" onclick="handleLogoClick()" id="logoBtn">
+    <div class="logo" onclick="handleLogoClick(event)" id="logoBtn">
       <img src="https://raw.githubusercontent.com/icarodrive77-art/peakup/main/logo.png" alt="PEAKUP" style="height:36px;width:36px;object-fit:contain;border-radius:8px;" id="logoImg">
       <div class="user-avatar" id="userAvatar" style="display:none">?</div>
-      <span class="logo-text" id="logoText">PEAKUP</span>
+      <div>
+        <span class="logo-text" id="logoText">PEAKUP</span>
+        <div style="font-size:.48rem;font-family:'JetBrains Mono',monospace;color:var(--accent);letter-spacing:.12em;margin-top:-2px;opacity:.7;">REACH THE TOP</div>
+      </div>
     </div>
     <!-- Menu déroulant -->
     <div class="logo-menu" id="logoMenu" style="display:none">
@@ -2151,11 +2193,13 @@ function showAuthLoading(show){
   btns.forEach(b => { b.disabled = show; b.style.opacity = show ? '.5' : ''; });
 }
 
-function handleLogoClick(){
+function handleLogoClick(e){
+  if(e) e.stopPropagation();
   if(!loggedIn){ goTo('landing'); return; }
   const menu = document.getElementById('logoMenu');
   if(!menu) return;
-  menu.style.display = menu.style.display==='none' ? 'block' : 'none';
+  const isOpen = menu.style.display==='block';
+  menu.style.display = isOpen ? 'none' : 'block';
 }
 function closeLogoMenu(){
   const menu = document.getElementById('logoMenu');
@@ -2204,14 +2248,7 @@ function completeAuth(name, handle, plat, isPro=false){
   document.getElementById('ctaBtn').style.display = 'none';
   document.getElementById('dashLink').style.display = 'block';
 
-  // Avatar initiale
-  const logoImg = document.getElementById('logoImg');
-  const userAvatar = document.getElementById('userAvatar');
-  if(logoImg && userAvatar){
-    logoImg.style.display = 'none';
-    userAvatar.style.display = 'flex';
-    userAvatar.textContent = firstName.charAt(0).toUpperCase();
-  }
+  // Logo toujours visible — pas d'avatar initiale
 
   // Prénom dans le dashboard welcome
   const welcomeEl = document.getElementById('dashWelcome');
@@ -2232,6 +2269,10 @@ function completeAuth(name, handle, plat, isPro=false){
   // Badge PRO dans le dashboard
   const dashProBadge = document.getElementById('dashProBadge');
   if(dashProBadge) dashProBadge.style.display = isPro ? '' : 'none';
+
+  // Bouton déconnexion footer
+  const footerLogout = document.getElementById('footerLogout');
+  if(footerLogout) footerLogout.style.display = 'block';
   if(handle){
     document.getElementById('pageAuth').classList.add('hidden');
     document.getElementById('handle').value = handle;
@@ -2722,6 +2763,37 @@ function playAlertSound(){
   }catch(e){}
 }
 
+function playTrendingSound(){
+  // Son T4 — Alert rise — pour "Son trending détecté"
+  try{
+    const c=getAudioCtx(),t=c.currentTime;
+    const sw=(f1,f2,v,dur)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.setValueAtTime(f1,t);o.frequency.exponentialRampToValueAtTime(f2,t+dur);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+dur+.01);};
+    const b=(freq,v,d,dec)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=freq;g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(v,t+d+.008);g.gain.exponentialRampToValueAtTime(.001,t+d+dec);o.connect(g);g.connect(c.destination);o.start(t+d);o.stop(t+d+dec+.01);};
+    sw(150,600,.1,.25);b(740,.28,.22,.5);
+    const o=c.createOscillator(),wv=c.createWaveShaper(),g=c.createGain();
+    const cv=new Float32Array(256);for(let i=0;i<256;i++){const x=i*2/256-1;cv[i]=Math.tanh(x*1.5)*.7;}
+    wv.curve=cv;o.type='triangle';o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(56,t+.12);
+    g.gain.setValueAtTime(.08,t);g.gain.exponentialRampToValueAtTime(.001,t+.13);
+    o.connect(wv);wv.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.14);
+  }catch(e){}
+}
+
+function playDefiSound(){
+  // Son D14 — Boost — pour "Défi hebdomadaire"
+  try{
+    const c=getAudioCtx(),t=c.currentTime;
+    const kick=()=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.setValueAtTime(160,t);o.frequency.exponentialRampToValueAtTime(50,t+.1);g.gain.setValueAtTime(.3,t);g.gain.exponentialRampToValueAtTime(.001,t+.12);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.13);};
+    const sw=(f1,f2,v,dur)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.setValueAtTime(f1,t);o.frequency.exponentialRampToValueAtTime(f2,t+dur);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+dur+.01);};
+    const b=(freq,v,d,dec)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=freq;g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(v,t+d+.008);g.gain.exponentialRampToValueAtTime(.001,t+d+dec);o.connect(g);g.connect(c.destination);o.start(t+d);o.stop(t+d+dec+.01);};
+    kick();sw(100,400,.12,.16);b(660,.2,.14,.38);b(990,.1,.22,.28);
+    const o=c.createOscillator(),wv=c.createWaveShaper(),g=c.createGain();
+    const cv=new Float32Array(256);for(let i=0;i<256;i++){const x=i*2/256-1;cv[i]=Math.tanh(x*1.5)*.7;}
+    wv.curve=cv;o.type='triangle';o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(56,t+.12);
+    g.gain.setValueAtTime(.09,t);g.gain.exponentialRampToValueAtTime(.001,t+.13);
+    o.connect(wv);wv.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.14);
+  }catch(e){}
+}
+
 function playZeldaSound(){
   try{
     const c=getAudioCtx(),t=c.currentTime;
@@ -2796,7 +2868,7 @@ function renderDashboard(){
 
   // Alerts avec son
   document.getElementById('alertList').innerHTML=t('alerts').map((a,i)=>`
-    <div class="alert-item ${a.type}" onclick="handleAlertClick(this)" style="cursor:pointer">
+    <div class="alert-item ${a.type}" onclick="handleAlertClick(this,'${a.type}')" style="cursor:pointer">
       <span class="al-icon">${a.icon}</span>
       <div class="al-body">
         <div class="al-title">${a.title}</div>
@@ -2884,8 +2956,10 @@ function setChartPeriod(period, btn){
   if(lbl) lbl.textContent=(lang==='fr'?'Score actuel : ':lang==='es'?'Puntuación: ':'Current score: ')+last;
 }
 
-function handleAlertClick(el){
-  playAlertSound();
+function handleAlertClick(el, type){
+  if(type==='al-good') playTrendingSound();
+  else if(type==='al-info') playDefiSound();
+  else playAlertSound();
   el.style.opacity='.6';
   setTimeout(()=>el.style.opacity='',800);
 }
@@ -3293,14 +3367,32 @@ if(localStorage.getItem('peakup_verified') === 'true'){
 </script>
 
 <!-- FOOTER -->
-<footer style="text-align:center;padding:32px;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--t3);letter-spacing:.1em;border-top:1px solid var(--b1);margin-top:40px;">
-  <span>© 2026 PEAKUP · scoreviral.eu</span>
-  <span style="margin:0 12px">·</span>
-  <a href="#" onclick="showLegal('cgu')" style="color:var(--t2);text-decoration:none">CGU</a>
-  <span style="margin:0 12px">·</span>
-  <a href="#" onclick="showLegal('privacy')" style="color:var(--t2);text-decoration:none">Confidentialité</a>
-  <span style="margin:0 12px">·</span>
-  <a href="mailto:support@scoreviral.eu" style="color:var(--t2);text-decoration:none">Contact</a>
+<footer class="site-footer">
+  <!-- CTA Analyser en bas de page -->
+  <div class="footer-cta">
+    <div class="footer-cta-title">Prêt à dominer l'algo ?</div>
+    <div class="footer-cta-sub">Analyse ton profil TikTok ou YouTube gratuitement en 30 secondes.</div>
+    <button class="footer-cta-btn" onclick="window.scrollTo({top:0,behavior:'smooth'});document.getElementById('handle').focus();">
+      Analyser maintenant →
+    </button>
+    <div class="footer-slogan">PEAKUP · <em>Reach the top!</em></div>
+  </div>
+
+  <!-- Bouton déconnexion premium si connecté -->
+  <div class="footer-logout" id="footerLogout" style="display:none">
+    <button onclick="doLogout()" class="footer-logout-btn">Déconnexion</button>
+  </div>
+
+  <!-- Liens légaux -->
+  <div class="footer-links">
+    <span>© 2026 PEAKUP · scoreviral.eu</span>
+    <span class="footer-sep">·</span>
+    <a href="#" onclick="showLegal('cgu')">CGU</a>
+    <span class="footer-sep">·</span>
+    <a href="#" onclick="showLegal('privacy')">Confidentialité</a>
+    <span class="footer-sep">·</span>
+    <a href="mailto:contact@scoreviral.eu">Contact</a>
+  </div>
 </footer>
 </body>
 </html>
