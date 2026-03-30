@@ -162,6 +162,16 @@ body::before{
 .lm-item:hover{background:var(--s2);}
 .lm-icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0;}
 .lm-sep{height:1px;background:var(--b1);margin:4px 0;}
+.lm-langs{display:flex;gap:4px;padding:6px 10px;}
+.lm-lang{
+  flex:1;padding:6px;border-radius:5px;
+  font-size:.72rem;font-family:'JetBrains Mono',monospace;
+  font-weight:700;letter-spacing:.08em;
+  background:none;border:1px solid var(--b2);color:var(--t3);cursor:pointer;
+  transition:all .12s;
+}
+.lm-lang.on{background:var(--accent);border-color:var(--accent);color:#fff;}
+.lm-lang:hover:not(.on){background:var(--s2);color:var(--text);}
 .lm-logout{color:var(--danger);}
 .logo-mark{
   width:28px;height:28px;border-radius:8px;
@@ -899,18 +909,19 @@ body::before{
   position:relative;overflow:hidden;
   display:inline-flex;align-items:center;justify-content:center;
   border-radius:50%;
-  width:64px;height:64px;flex-shrink:0;
+  width:80px;height:80px;flex-shrink:0;
 }
 .badge-shimmer-wrap img{
-  width:64px;height:64px;object-fit:contain;
+  width:80px;height:80px;object-fit:contain;display:block;
 }
 .badge-shimmer-wrap::after{
   content:'';position:absolute;top:0;left:-60%;
-  width:30%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);
+  width:25%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
   transform:skewX(-15deg);
   animation:badgeShimmer 4s ease-in-out infinite;
   pointer-events:none;
+  border-radius:0;
 }
 
 /* Dashboard badge Verified */
@@ -931,7 +942,7 @@ body::before{
   border:1px solid rgba(124,92,252,.4);
   border-radius:12px;padding:14px 20px;margin-top:12px;
 }
-.vb-badge{width:64px;height:64px;object-fit:contain;flex-shrink:0;}
+.vb-badge{width:80px;height:80px;object-fit:contain;flex-shrink:0;display:block;}
 .vb-title{font-family:'Exo 2',sans-serif;font-weight:800;font-style:italic;font-size:.92rem;color:var(--text);}
 .vb-sub{font-size:.72rem;color:var(--t2);font-family:'Space Grotesk',sans-serif;margin-top:2px;}
 
@@ -1258,6 +1269,13 @@ body::before{
         <span>Abonnement & Factures</span>
       </div>
       <div class="lm-sep"></div>
+      <!-- Sélecteur de langue -->
+      <div class="lm-langs">
+        <button class="lm-lang on" id="lmFR" onclick="setLang('fr');updateLangMenu();closeLogoMenu()">FR</button>
+        <button class="lm-lang" id="lmEN" onclick="setLang('en');updateLangMenu();closeLogoMenu()">EN</button>
+        <button class="lm-lang" id="lmES" onclick="setLang('es');updateLangMenu();closeLogoMenu()">ES</button>
+      </div>
+      <div class="lm-sep"></div>
       <div class="lm-item" onclick="closeLogoMenu()">
         <span class="lm-icon">❓</span>
         <span>FAQ</span>
@@ -1284,11 +1302,6 @@ body::before{
     <span class="nav-link" id="dashLink" onclick="goTo('dashboard')" style="display:none" data-i="nav_dashboard">Dashboard</span>
   </nav>
   <div class="header-right">
-    <div class="lang-sel">
-      <button class="lb on" onclick="setLang('fr')">FR</button>
-      <button class="lb" onclick="setLang('en')">EN</button>
-      <button class="lb" onclick="setLang('es')">ES</button>
-    </div>
     <button class="btn-login" id="loginBtn" onclick="goToAuth()" data-i="login">Connexion</button>
     <button class="btn-cta" id="ctaBtn" onclick="scrollToPricing()" data-i="subscribe_header">S'abonner</button>
   </div>
@@ -1580,7 +1593,6 @@ body::before{
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
       <div class="dash-pro-badge" id="dashProBadge" style="display:none">PRO · Actif</div>
-      <button onclick="doLogout()" style="background:none;border:1px solid var(--b2);color:var(--t3);padding:6px 12px;border-radius:6px;font-size:.7rem;font-family:JetBrains Mono,monospace;cursor:pointer;letter-spacing:.08em;">DÉCONNEXION</button>
     </div>
   </div>
 
@@ -2241,6 +2253,9 @@ function completeAuth(name, handle, plat, isPro=false){
   loggedIn = true;
   userHandle = handle || userHandle;
   userPlatform = plat || 'tiktok';
+
+  // Son de connexion — Welcome PEAKUP
+  setTimeout(()=>playLoginSound(), 300);
 
   // Mettre à jour le header — avatar + prénom
   const firstName = name.split(' ')[0];
@@ -2920,7 +2935,45 @@ const CHART_DATA = {
   '1y': [30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,61,63,64,65,67,68,70,71,72,73,71,74,75,74,76,77,75,77,78,76,78,79,77,79,80,78,79,80,79,78,79,79,80,81,79,81,82,80,82,79,80,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79],
 };
 
+function updateLangMenu(){
+  ['fr','en','es'].forEach(l=>{
+    const btn = document.getElementById('lm'+l.toUpperCase());
+    if(btn) btn.classList.toggle('on', lang===l);
+  });
+}
+
+function playPeriodSound(){
+  try{
+    const c=getAudioCtx(),t=c.currentTime;
+    const buf=c.createBuffer(1,c.sampleRate*.032,c.sampleRate),d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,12);
+    const s=c.createBufferSource(),f1=c.createBiquadFilter(),f2=c.createBiquadFilter(),g=c.createGain();
+    f1.type='highpass';f1.frequency.value=1000;f2.type='lowpass';f2.frequency.value=4000;
+    s.buffer=buf;s.connect(f1);f1.connect(f2);f2.connect(g);g.gain.value=2;g.connect(c.destination);s.start(t);
+    const o=c.createOscillator(),g2=c.createGain();
+    o.type='sine';o.frequency.value=1200;
+    g2.gain.setValueAtTime(.06,t);g2.gain.exponentialRampToValueAtTime(.001,t+.08);
+    o.connect(g2);g2.connect(c.destination);o.start(t);o.stop(t+.09);
+  }catch(e){}
+}
+
+function playLoginSound(){
+  try{
+    const c=getAudioCtx(),t=c.currentTime;
+    const tn=(f,v,d,dec)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(v,t+d+.02);g.gain.exponentialRampToValueAtTime(.001,t+d+dec);o.connect(g);g.connect(c.destination);o.start(t+d);o.stop(t+d+dec+.02);};
+    const sp=(f1,f2,v,dur)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.setValueAtTime(f1,t);o.frequency.exponentialRampToValueAtTime(f2,t+dur);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+dur+.02);};
+    sp(60,240,.2,.35);
+    [440,660,880,1100].forEach((f,i)=>tn(f,.18-i*.03,i*.07,.45-i*.04));
+    const o=c.createOscillator(),wv=c.createWaveShaper(),g=c.createGain();
+    const cv=new Float32Array(256);for(let i=0;i<256;i++){const x=i*2/256-1;cv[i]=Math.tanh(x*1.5)*.7;}
+    wv.curve=cv;o.type='triangle';o.frequency.setValueAtTime(60,t);o.frequency.exponentialRampToValueAtTime(18,t+.45);
+    g.gain.setValueAtTime(.15,t);g.gain.exponentialRampToValueAtTime(.001,t+.46);
+    o.connect(wv);wv.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.47);
+  }catch(e){}
+}
+
 function setChartPeriod(period, btn){
+  playPeriodSound();
   if(btn){
     document.querySelectorAll('.cp-btn').forEach(b=>b.classList.remove('on'));
     btn.classList.add('on');
