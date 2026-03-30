@@ -133,12 +133,36 @@ body::before{
   border-bottom:1px solid var(--b1);
 }
 
+.logo-wrap{position:relative;}
 .logo{
   font-family:'Exo 2',sans-serif;font-size:1.4rem;font-weight:900;
   letter-spacing:-.03em;
   display:flex;align-items:center;gap:8px;
-  cursor:pointer;
+  cursor:pointer;user-select:none;
 }
+.user-avatar{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--grad);display:flex;align-items:center;justify-content:center;
+  font-family:'Exo 2',sans-serif;font-weight:900;font-size:1rem;color:#fff;flex-shrink:0;
+  box-shadow:0 4px 16px rgba(124,92,252,.35);
+}
+.logo-menu{
+  position:absolute;top:calc(100% + 10px);left:0;
+  background:var(--s1);border:1px solid var(--b2);border-radius:10px;
+  padding:6px;min-width:220px;z-index:1000;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+  animation:fadeIn .15s ease;
+}
+.lm-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:6px;cursor:pointer;
+  font-size:.84rem;font-family:'Space Grotesk',sans-serif;
+  transition:background .12s;
+}
+.lm-item:hover{background:var(--s2);}
+.lm-icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0;}
+.lm-sep{height:1px;background:var(--b1);margin:4px 0;}
+.lm-logout{color:var(--danger);}
 .logo-mark{
   width:28px;height:28px;border-radius:8px;
   background:var(--grad);
@@ -912,7 +936,26 @@ body::before{
 ══════════════════════════════════════════ */
 #pageDashboard{padding:40px 48px;max-width:1100px;margin:0 auto;}
 
-.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px;}
+.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+
+/* Stats rapides en haut du dashboard */
+.dash-quick-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.dqs-card{background:linear-gradient(135deg,var(--s1),var(--s2));border:1px solid var(--b2);border-radius:10px;padding:16px 18px;text-align:center;}
+.dqs-val{font-family:'Exo 2',sans-serif;font-size:1.5rem;font-weight:900;font-style:italic;color:var(--accent);margin-bottom:4px;}
+.dqs-lbl{font-size:.62rem;font-family:'JetBrains Mono',monospace;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;}
+
+/* Progress vers palier */
+.dash-progress-card{background:linear-gradient(135deg,rgba(124,92,252,.08),rgba(168,85,247,.05));border:1px solid rgba(124,92,252,.2);border-radius:10px;padding:14px 20px;margin-bottom:24px;}
+.dpc-label{font-family:'Exo 2',sans-serif;font-weight:700;font-style:italic;font-size:.88rem;margin-bottom:8px;}
+.dpc-bar-track{height:4px;background:var(--b1);border-radius:2px;overflow:hidden;margin-bottom:6px;}
+.dpc-bar-fill{height:100%;background:var(--grad);border-radius:2px;width:0;transition:width 1.2s cubic-bezier(.4,0,.2,1);}
+.dpc-sub{font-size:.7rem;color:var(--t3);font-family:'JetBrains Mono',monospace;}
+
+/* Chart periods */
+.chart-periods{display:flex;gap:4px;}
+.cp-btn{font-size:.62rem;font-family:'JetBrains Mono',monospace;padding:3px 8px;border-radius:4px;border:1px solid var(--b2);background:none;color:var(--t3);cursor:pointer;transition:all .15s;}
+.cp-btn.on{background:var(--accent);border-color:var(--accent);color:#fff;}
+.cp-btn:hover:not(.on){background:var(--s2);color:var(--text);}
 .dash-welcome{font-family:'Exo 2',sans-serif;font-size:1.6rem;font-weight:900;letter-spacing:-.02em;}
 .dash-sub{font-size:.82rem;color:var(--t2);margin-top:4px;}
 .dash-pro-badge{
@@ -1152,12 +1195,47 @@ body::before{
 <div class="blob b2"></div>
 <div class="blob b3"></div>
 
+
 <!-- ═══════ HEADER ═══════ -->
 <header class="header z1">
-  <div class="logo" onclick="goTo('landing')">
-    <img src="https://raw.githubusercontent.com/icarodrive77-art/peakup/main/logo.png" alt="PEAKUP" style="height:36px;width:36px;object-fit:contain;border-radius:8px;">
-    <span class="logo-text">PEAKUP</span>
+  <!-- Logo avec menu déroulant -->
+  <div class="logo-wrap" id="logoWrap">
+    <div class="logo" onclick="handleLogoClick()" id="logoBtn">
+      <img src="https://raw.githubusercontent.com/icarodrive77-art/peakup/main/logo.png" alt="PEAKUP" style="height:36px;width:36px;object-fit:contain;border-radius:8px;" id="logoImg">
+      <div class="user-avatar" id="userAvatar" style="display:none">?</div>
+      <span class="logo-text" id="logoText">PEAKUP</span>
+    </div>
+    <!-- Menu déroulant -->
+    <div class="logo-menu" id="logoMenu" style="display:none">
+      <div class="lm-item" onclick="goTo('dashboard');closeLogoMenu()">
+        <span class="lm-icon">📊</span>
+        <span data-i="nav_dashboard">Dashboard</span>
+      </div>
+      <div class="lm-item" onclick="scrollToBilling();closeLogoMenu()">
+        <span class="lm-icon">💳</span>
+        <span>Abonnement & Factures</span>
+      </div>
+      <div class="lm-sep"></div>
+      <div class="lm-item" onclick="closeLogoMenu()">
+        <span class="lm-icon">❓</span>
+        <span>FAQ</span>
+      </div>
+      <div class="lm-item" onclick="window.location.href='mailto:contact@scoreviral.eu';closeLogoMenu()">
+        <span class="lm-icon">✉️</span>
+        <span>Nous contacter</span>
+      </div>
+      <div class="lm-item" onclick="goTo('legal');closeLogoMenu()">
+        <span class="lm-icon">📄</span>
+        <span>CGU & Confidentialité</span>
+      </div>
+      <div class="lm-sep"></div>
+      <div class="lm-item lm-logout" onclick="doLogout();closeLogoMenu()">
+        <span class="lm-icon">🚪</span>
+        <span>Déconnexion</span>
+      </div>
+    </div>
   </div>
+
   <nav class="header-mid">
     <span class="nav-link" onclick="scrollToSection('#features')" data-i="nav_features">Fonctionnalités</span>
     <span class="nav-link" onclick="scrollToSection('#pricing')" data-i="nav_pricing">Tarifs</span>
@@ -1452,45 +1530,62 @@ body::before{
 
 <!-- ═══════ FOOTER ═══════ -->
 <div id="pageDashboard" class="z1 hidden">
+  <!-- HEADER DASHBOARD -->
   <div class="dash-header">
     <div>
       <div class="dash-welcome" id="dashWelcome">Bonjour, <em style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Creator</em> 👋</div>
-      <div class="dash-sub" data-i="dash_sub">Voici ton tableau de bord PEAKUP</div>
+      <div class="dash-sub" id="dashMotivMsg">Voici ton tableau de bord PEAKUP</div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
       <div class="dash-pro-badge" id="dashProBadge" style="display:none">PRO · Actif</div>
-      <button onclick="doLogout()" style="background:none;border:1px solid var(--b2);color:var(--t3);padding:6px 12px;border-radius:6px;font-size:.7rem;font-family:'JetBrains Mono',monospace;cursor:pointer;letter-spacing:.08em;">DÉCONNEXION</button>
+      <button onclick="doLogout()" style="background:none;border:1px solid var(--b2);color:var(--t3);padding:6px 12px;border-radius:6px;font-size:.7rem;font-family:JetBrains Mono,monospace;cursor:pointer;letter-spacing:.08em;">DÉCONNEXION</button>
     </div>
   </div>
 
-  <div class="dash-tabs">
-    <button class="dtab on" onclick="switchTab('overview')" data-i="tab_overview">Vue d'ensemble</button>
-    <button class="dtab" onclick="switchTab('billing')" data-i="tab_billing">Abonnement & Factures</button>
+  <!-- STATS RAPIDES EN HAUT -->
+  <div class="dash-quick-stats" id="dashQuickStats">
+    <div class="dqs-card">
+      <div class="dqs-val" id="dqsScore">—</div>
+      <div class="dqs-lbl">Score viral</div>
+    </div>
+    <div class="dqs-card">
+      <div class="dqs-val" id="dqsAnalyses">7</div>
+      <div class="dqs-lbl">Analyses ce mois</div>
+    </div>
+    <div class="dqs-card">
+      <div class="dqs-val" id="dqsDefis">3/4</div>
+      <div class="dqs-lbl">Défis complétés</div>
+    </div>
+    <div class="dqs-card">
+      <div class="dqs-val" id="dqsStreak">🔥 5</div>
+      <div class="dqs-lbl">Jours de suite</div>
+    </div>
   </div>
 
-  <!-- OVERVIEW TAB -->
+  <!-- PROGRESS VERS PALIER SUIVANT -->
+  <div class="dash-progress-card" id="dashProgressCard">
+    <div class="dpc-label" id="dpcLabel">Plus que 8 pts pour rejoindre le Top 10% 🚀</div>
+    <div class="dpc-bar-track"><div class="dpc-bar-fill" id="dpcFill"></div></div>
+    <div class="dpc-sub" id="dpcSub">Score actuel : — / 87 pts pour le prochain palier</div>
+  </div>
+
+  <!-- OVERVIEW -->
   <div id="tabOverview">
     <div class="dash-grid">
 
-      <!-- Sub status -->
-      <div class="dash-wide">
-        <div class="sub-card">
-          <div class="sub-icon">⚡</div>
-          <div class="sub-info">
-            <div class="sub-plan">PEAKUP PRO</div>
-            <div class="sub-detail" data-i="sub_renew">Renouvellement le 27 avril 2026 · Visa •••• 4242</div>
-          </div>
-          <div style="text-align:right">
-            <div class="sub-amt">9,99€</div>
-            <div class="sub-period" data-i="per_month_label">/mois</div>
-          </div>
-          <button class="btn-manage" data-i="manage_sub">Gérer</button>
-        </div>
-      </div>
-
-      <!-- Score history -->
+      <!-- Score history avec périodes -->
       <div class="dash-2col d-card">
-        <div class="d-card-title"><span data-i="score_history">Historique de score viral</span><span id="currentScoreLabel">Score actuel : —</span></div>
+        <div class="d-card-title">
+          <span data-i="score_history">Historique de score viral</span>
+          <div class="chart-periods" id="chartPeriods">
+            <button class="cp-btn on" onclick="setChartPeriod('1w',this)">1S</button>
+            <button class="cp-btn" onclick="setChartPeriod('1m',this)">1M</button>
+            <button class="cp-btn" onclick="setChartPeriod('3m',this)">3M</button>
+            <button class="cp-btn" onclick="setChartPeriod('6m',this)">6M</button>
+            <button class="cp-btn" onclick="setChartPeriod('1y',this)">1A</button>
+          </div>
+        </div>
+        <div style="font-size:.7rem;font-family:JetBrains Mono,monospace;color:var(--t3);margin-bottom:8px;" id="currentScoreLabel">Score actuel : —</div>
         <div class="chart-area">
           <svg class="chart-svg" id="chartSvg" viewBox="0 0 600 120" preserveAspectRatio="none"></svg>
         </div>
@@ -1502,7 +1597,7 @@ body::before{
         <div class="ch-title" id="chTitle">Chargement...</div>
         <div class="ch-tag" id="chTag">+XP</div>
         <div class="ch-desc" id="chDesc">L'IA génère ton défi personnalisé...</div>
-        <button class="btn-ch" data-i="take_challenge">Relever le défi →</button>
+        <button class="btn-ch" id="btnChallenge" onclick="handleChallenge(this)" data-i="take_challenge">Relever le défi →</button>
       </div>
 
       <!-- Alerts -->
@@ -1511,36 +1606,36 @@ body::before{
         <div class="alert-list" id="alertList"></div>
       </div>
 
-      <!-- Quick stats -->
-      <div class="d-card">
-        <div class="d-card-title"><span data-i="quick_stats">Stats rapides</span></div>
-        <div style="display:flex;flex-direction:column;gap:16px;" id="quickStats"></div>
+      <!-- Reward analyse comparative -->
+      <div class="dash-2col d-card" id="comparativeReward" style="display:none">
+        <div class="d-card-title"><span>🔓 Analyse comparative débloquée !</span></div>
+        <div style="font-size:.82rem;color:var(--t2);line-height:1.6;margin-bottom:12px;">Tu es abonné depuis plus d'un mois — compare ton profil à d'autres créateurs de ta niche.</div>
+        <button class="btn-ch" onclick="handleComparative()">Lancer une comparaison →</button>
       </div>
 
     </div>
   </div>
 
-  <!-- BILLING TAB -->
-  <div id="tabBilling" class="hidden">
+  <!-- BILLING — caché par défaut, visible via menu logo uniquement -->
+  <div id="tabBilling" style="display:none;margin-top:40px;padding-top:32px;border-top:1px solid var(--b1);">
+    <div class="d-card-title" style="margin-bottom:20px;font-size:.6rem;letter-spacing:.2em;color:var(--t3);font-family:JetBrains Mono,monospace;">ABONNEMENT & FACTURATION</div>
     <div class="dash-grid">
-
       <div class="dash-wide sub-card" style="margin-bottom:24px">
         <div class="sub-icon">💳</div>
         <div class="sub-info">
           <div class="sub-plan">PEAKUP PRO · Actif</div>
           <div class="sub-detail">Prochain prélèvement : <strong style="color:var(--text)">9,99€</strong> le 27 avril 2026</div>
         </div>
-        <button class="btn-manage" data-i="cancel_sub">Annuler l'abonnement</button>
-        <button class="btn-manage" style="background:rgba(124,92,252,.1)" data-i="update_payment">Modifier le paiement</button>
+        <button class="btn-manage" data-i="cancel_sub">Annuler</button>
+        <button class="btn-manage" style="background:rgba(124,92,252,.1)" data-i="update_payment">Modifier</button>
       </div>
-
       <div class="dash-wide d-card">
         <div class="d-card-title"><span data-i="invoices">Historique des factures</span></div>
         <table class="bill-table" id="invoiceTable"></table>
       </div>
-
     </div>
   </div>
+
 </div>
 
 <script>
@@ -2056,6 +2151,31 @@ function showAuthLoading(show){
   btns.forEach(b => { b.disabled = show; b.style.opacity = show ? '.5' : ''; });
 }
 
+function handleLogoClick(){
+  if(!loggedIn){ goTo('landing'); return; }
+  const menu = document.getElementById('logoMenu');
+  if(!menu) return;
+  menu.style.display = menu.style.display==='none' ? 'block' : 'none';
+}
+function closeLogoMenu(){
+  const menu = document.getElementById('logoMenu');
+  if(menu) menu.style.display='none';
+}
+document.addEventListener('click', e=>{
+  if(!document.getElementById('logoWrap')?.contains(e.target)) closeLogoMenu();
+});
+function scrollToBilling(){
+  goTo('dashboard');
+  setTimeout(()=>{
+    const billing = document.getElementById('tabBilling');
+    if(billing){
+      billing.style.display = 'block';
+      billing.scrollIntoView({behavior:'smooth',block:'start'});
+      renderDashboard(); // Re-render pour les factures
+    }
+  },300);
+}
+
 async function doLogout(){
   try{
     await fbAuth.signOut();
@@ -2078,10 +2198,24 @@ function completeAuth(name, handle, plat, isPro=false){
   userHandle = handle || userHandle;
   userPlatform = plat || 'tiktok';
 
-  // Mettre à jour le header
-  document.getElementById('loginBtn').textContent = name;
+  // Mettre à jour le header — avatar + prénom
+  const firstName = name.split(' ')[0];
+  document.getElementById('loginBtn').textContent = firstName;
   document.getElementById('ctaBtn').style.display = 'none';
   document.getElementById('dashLink').style.display = 'block';
+
+  // Avatar initiale
+  const logoImg = document.getElementById('logoImg');
+  const userAvatar = document.getElementById('userAvatar');
+  if(logoImg && userAvatar){
+    logoImg.style.display = 'none';
+    userAvatar.style.display = 'flex';
+    userAvatar.textContent = firstName.charAt(0).toUpperCase();
+  }
+
+  // Prénom dans le dashboard welcome
+  const welcomeEl = document.getElementById('dashWelcome');
+  if(welcomeEl) welcomeEl.innerHTML = `${lang==='fr'?'Bonjour':lang==='es'?'Hola':'Hey'}, <em style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${firstName}</em> 👋`;
 
   // Badge PRO dans le header si Pro
   if(isPro){
@@ -2551,41 +2685,144 @@ function renderResults(handle,platName,text){
 /* ════════════════════════════════
    DASHBOARD
 ════════════════════════════════ */
+/* ════════════════════════════════
+   SONS PEAKUP
+════════════════════════════════ */
+function playButtonSound(){
+  try{
+    const c=getAudioCtx(),t=c.currentTime;
+    const buf=c.createBuffer(1,c.sampleRate*.032,c.sampleRate),d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,12);
+    const s=c.createBufferSource(),f1=c.createBiquadFilter(),f2=c.createBiquadFilter(),g=c.createGain();
+    f1.type='highpass';f1.frequency.value=1000;f2.type='lowpass';f2.frequency.value=4000;
+    s.buffer=buf;s.connect(f1);f1.connect(f2);f2.connect(g);g.gain.value=2;g.connect(c.destination);s.start(t);
+    const o=c.createOscillator(),wv=c.createWaveShaper(),g2=c.createGain();
+    const cv=new Float32Array(256);for(let i=0;i<256;i++){const x=i*2/256-1;cv[i]=Math.tanh(x*1.5)*.7;}
+    wv.curve=cv;o.type='triangle';o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(90,t+.1);
+    g2.gain.setValueAtTime(.1,t);g2.gain.exponentialRampToValueAtTime(.001,t+.11);
+    o.connect(wv);wv.connect(g2);g2.connect(c.destination);o.start(t);o.stop(t+.12);
+  }catch(e){}
+}
+
+function playAlertSound(){
+  try{
+    const c=getAudioCtx(),t=c.currentTime;
+    const bell=(freq,vol,delay,decay)=>{
+      const o=c.createOscillator(),g=c.createGain();
+      o.type='sine';o.frequency.value=freq;
+      g.gain.setValueAtTime(0,t+delay);g.gain.linearRampToValueAtTime(vol,t+delay+.008);g.gain.exponentialRampToValueAtTime(.001,t+delay+decay);
+      o.connect(g);g.connect(c.destination);o.start(t+delay);o.stop(t+delay+decay+.01);
+    };
+    bell(740,.25,0,.55);bell(980,.18,.09,.45);
+    const o=c.createOscillator(),wv=c.createWaveShaper(),g=c.createGain();
+    const cv=new Float32Array(256);for(let i=0;i<256;i++){const x=i*2/256-1;cv[i]=Math.tanh(x*1.5)*.7;}
+    wv.curve=cv;o.type='triangle';o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(56,t+.11);
+    g.gain.setValueAtTime(.08,t);g.gain.exponentialRampToValueAtTime(.001,t+.12);
+    o.connect(wv);wv.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.13);
+  }catch(e){}
+}
+
+function playZeldaSound(){
+  try{
+    const c=getAudioCtx(),t=c.currentTime;
+    [660,784,988,1320].forEach((f,i)=>{
+      const o=c.createOscillator(),g=c.createGain();
+      o.type='sine';o.frequency.value=f;
+      g.gain.setValueAtTime(0,t+i*.07);g.gain.linearRampToValueAtTime(.2-i*.03,t+i*.07+.008);g.gain.exponentialRampToValueAtTime(.001,t+i*.07+.35-i*.04);
+      o.connect(g);g.connect(c.destination);o.start(t+i*.07);o.stop(t+i*.07+.36);
+    });
+    const o=c.createOscillator(),wv=c.createWaveShaper(),g=c.createGain();
+    const cv=new Float32Array(256);for(let i=0;i<256;i++){const x=i*2/256-1;cv[i]=Math.tanh(x*1.5)*.7;}
+    wv.curve=cv;o.type='triangle';o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(56,t+.12);
+    g.gain.setValueAtTime(.07,t);g.gain.exponentialRampToValueAtTime(.001,t+.13);
+    o.connect(wv);wv.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.14);
+  }catch(e){}
+}
+
+/* ════════════════════════════════
+   DASHBOARD
+════════════════════════════════ */
+const MOTIV_MSGS = [
+  fr=>['Tu es dans le top 12% des créateurs PEAKUP 🔥','You\'re in the top 12% of PEAKUP creators 🔥','Estás en el top 12% de creadores PEAKUP 🔥'],
+  fr=>['Ton engagement est 2x la moyenne de ta niche 💜','Your engagement is 2x your niche average 💜','Tu engagement es 2x el promedio de tu nicho 💜'],
+  fr=>['3 créateurs ont analysé ton profil cette semaine 👀','3 creators checked your profile this week 👀','3 creadores vieron tu perfil esta semana 👀'],
+  fr=>['Continue comme ça — tu construis quelque chose de grand 🚀','Keep going — you\'re building something great 🚀','Sigue así — estás construyendo algo grande 🚀'],
+  fr=>['Ton score a progressé de 8 pts ce mois 📈','Your score improved by 8 pts this month 📈','Tu puntuación mejoró 8 pts este mes 📈'],
+];
+
 function renderDashboard(){
+  // Message motivant rotatif
+  const msgIdx = Math.floor(Date.now()/86400000) % MOTIV_MSGS.length;
+  const msgArr = MOTIV_MSGS[msgIdx]();
+  const msgEl = document.getElementById('dashMotivMsg');
+  if(msgEl) msgEl.textContent = msgArr[lang==='fr'?0:lang==='en'?1:2];
+
+  // Stats rapides
+  const lastScore = 79;
+  if(document.getElementById('dqsScore')) document.getElementById('dqsScore').textContent = lastScore;
+
+  // Streak
+  const streakKey = 'peakup_streak';
+  const streakData = JSON.parse(localStorage.getItem(streakKey)||'{"count":1,"last":0}');
+  const today = Math.floor(Date.now()/86400000);
+  let streak = streakData.count;
+  if(streakData.last === today-1){ streak++; }
+  else if(streakData.last !== today){ streak = 1; }
+  localStorage.setItem(streakKey, JSON.stringify({count:streak, last:today}));
+  if(document.getElementById('dqsStreak')) document.getElementById('dqsStreak').textContent = '🔥 '+streak;
+
+  // Progress vers palier suivant
+  setTimeout(()=>{
+    const score = lastScore;
+    let nextPalier, label;
+    if(score < 50){ nextPalier=50; label=lang==='fr'?`Plus que ${50-score} pts pour rejoindre le Top 25% 💪`:`${50-score} pts to reach Top 25% 💪`; }
+    else if(score < 70){ nextPalier=70; label=lang==='fr'?`Plus que ${70-score} pts pour rejoindre le Top 15% 🚀`:`${70-score} pts to reach Top 15% 🚀`; }
+    else if(score < 87){ nextPalier=87; label=lang==='fr'?`Plus que ${87-score} pts pour rejoindre le Top 10% 🔥`:`${87-score} pts to reach Top 10% 🔥`; }
+    else{ nextPalier=100; label=lang==='fr'?'Tu es dans l\'élite PEAKUP 👑':'You\'re in the PEAKUP elite 👑'; }
+    const pct = Math.min(100,Math.round(score/nextPalier*100));
+    const lbl = document.getElementById('dpcLabel');
+    const fill = document.getElementById('dpcFill');
+    const sub = document.getElementById('dpcSub');
+    if(lbl) lbl.textContent = label;
+    if(fill) fill.style.width = pct+'%';
+    if(sub) sub.textContent = (lang==='fr'?'Score actuel : ':'Current score: ')+score+' / '+nextPalier+' pts';
+  },400);
+
   // Challenge
   const ch=t('challenge');
   document.getElementById('chTitle').textContent=ch.title;
   document.getElementById('chTag').textContent=ch.tag;
   document.getElementById('chDesc').textContent=ch.desc;
 
-  // Alerts
-  document.getElementById('alertList').innerHTML=t('alerts').map(a=>`
-    <div class="alert-item ${a.type}">
+  // Alerts avec son
+  document.getElementById('alertList').innerHTML=t('alerts').map((a,i)=>`
+    <div class="alert-item ${a.type}" onclick="handleAlertClick(this)" style="cursor:pointer">
       <span class="al-icon">${a.icon}</span>
       <div class="al-body">
         <div class="al-title">${a.title}</div>
         <div class="al-sub">${a.sub}</div>
       </div>
     </div>`).join('');
+  setTimeout(()=>{ playAlertSound(); }, 600);
 
-  // Quick stats
-  document.getElementById('quickStats').innerHTML=t('quickStats').map(s=>`
-    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--b1);padding-bottom:12px;">
-      <span style="font-size:.82rem;color:var(--t2);">${s.label}</span>
-      <span style="font-family:'Exo 2',sans-serif;font-weight:800;font-size:1.1rem;">${s.val}</span>
-    </div>`).join('');
+  // Analyse comparative reward (après 1 mois)
+  const subStart = localStorage.getItem('peakup_sub_start');
+  if(!subStart) localStorage.setItem('peakup_sub_start', Date.now());
+  const daysSince = (Date.now() - parseInt(localStorage.getItem('peakup_sub_start')||Date.now())) / 86400000;
+  const compEl = document.getElementById('comparativeReward');
+  if(compEl && daysSince >= 30) compEl.style.display = '';
 
   // Score chart
-  drawChart();
+  setChartPeriod('1w', document.querySelector('.cp-btn'));
 
   // Invoices
   const invs=t('invoices');
   document.getElementById('invoiceTable').innerHTML=`
     <tr>
-      <th style="width:120px">${lang==='fr'?'Date':lang==='es'?'Fecha':'Date'}</th>
+      <th style="width:120px">${lang==='fr'?'Date':'Date'}</th>
       <th>${lang==='fr'?'Description':'Description'}</th>
-      <th>${lang==='fr'?'Montant':lang==='es'?'Importe':'Amount'}</th>
-      <th>${lang==='fr'?'Statut':lang==='es'?'Estado':'Status'}</th>
+      <th>${lang==='fr'?'Montant':'Amount'}</th>
+      <th>${lang==='fr'?'Statut':'Status'}</th>
       <th></th>
     </tr>
     ${invs.map(inv=>`<tr>
@@ -2593,19 +2830,32 @@ function renderDashboard(){
       <td style="font-size:.82rem;">${inv.desc}</td>
       <td style="font-family:'Exo 2',sans-serif;font-weight:700;">${inv.amt}</td>
       <td><span class="inv-status inv-paid">✓ ${inv.status}</span></td>
-      <td><button class="btn-dl" onclick="alert('Facture PDF — intégration Stripe à connecter')">${lang==='fr'?'PDF':lang==='es'?'PDF':'PDF'}</button></td>
+      <td><button class="btn-dl" onclick="alert('PDF — Stripe à connecter')">${lang==='fr'?'PDF':'PDF'}</button></td>
     </tr>`).join('')}`;
 
-  // data-i in dashboard
   document.querySelectorAll('[data-i]').forEach(el=>{
     const k=el.getAttribute('data-i');
-    if(COPY[lang][k]) el.textContent=COPY[lang][k];
+    if(COPY[lang]&&COPY[lang][k]) el.textContent=COPY[lang][k];
   });
 }
 
-function drawChart(){
-  const scores=[52,58,61,59,65,70,71,68,74,77,75,79];
+// Données par période
+const CHART_DATA = {
+  '1w': [72,74,71,75,76,78,79],
+  '1m': [65,67,68,70,69,71,72,73,71,74,75,74,76,77,75,77,78,76,78,79,77,79,80,78,79,80,79,78,79,79],
+  '3m': [55,58,60,62,61,64,65,67,68,67,70,71,72,73,71,74,75,74,76,77,75,77,78,76,78,79,77,79,80,78,79,80,79,78,79,79,80,81,79,81,82,80,82,79,80,79,80,79,80,79,79,80,81,82,81,82,81,82,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,80,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79],
+  '6m': [45,47,48,50,51,53,55,57,58,60,61,63,64,65,67,68,70,71,72,73,71,74,75,74,76,77,75,77,78,76,78,79,77,79,80,78,79,80,79,78,79,79,80,81,79,81,82,80,82,79,80,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80],
+  '1y': [30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,61,63,64,65,67,68,70,71,72,73,71,74,75,74,76,77,75,77,78,76,78,79,77,79,80,78,79,80,79,78,79,79,80,81,79,81,82,80,82,79,80,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79,79,80,79,80,79],
+};
+
+function setChartPeriod(period, btn){
+  if(btn){
+    document.querySelectorAll('.cp-btn').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+  }
+  const scores = CHART_DATA[period] || CHART_DATA['1w'];
   const svg=document.getElementById('chartSvg');
+  if(!svg) return;
   const W=600,H=120,pad=20;
   const mn=Math.min(...scores)-5,mx=Math.max(...scores)+5;
   const pts=scores.map((s,i)=>{
@@ -2613,10 +2863,8 @@ function drawChart(){
     const y=H-pad-(s-mn)/(mx-mn)*(H-pad*2);
     return `${x},${y}`;
   });
-
   const pathD='M '+pts.join(' L ');
   const areaD=`M ${pad},${H-pad} L ${pts.join(' L ')} L ${W-pad},${H-pad} Z`;
-
   svg.innerHTML=`
     <defs>
       <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
@@ -2629,18 +2877,36 @@ function drawChart(){
     ${pts.map((p,i)=>{
       const [x,y]=p.split(',');
       return i===pts.length-1?`<circle cx="${x}" cy="${y}" r="4" fill="var(--accent2)" stroke="var(--bg)" stroke-width="2"/>`:
-        `<circle cx="${x}" cy="${y}" r="2.5" fill="var(--accent)" opacity=".5"/>`;
+        (i%Math.max(1,Math.floor(scores.length/12))===0?`<circle cx="${x}" cy="${y}" r="2" fill="var(--accent)" opacity=".4"/>`:'');
     }).join('')}`;
-
   const last=scores[scores.length-1];
-  document.getElementById('currentScoreLabel').textContent=(lang==='fr'?'Score actuel : ':lang==='es'?'Puntuación actual: ':'Current score: ')+last;
+  const lbl=document.getElementById('currentScoreLabel');
+  if(lbl) lbl.textContent=(lang==='fr'?'Score actuel : ':lang==='es'?'Puntuación: ':'Current score: ')+last;
 }
 
-function switchTab(tab){
-  document.querySelectorAll('.dtab').forEach((b,i)=>b.classList.toggle('on',b===event.target));
-  document.getElementById('tabOverview').classList.toggle('hidden',tab!=='overview');
-  document.getElementById('tabBilling').classList.toggle('hidden',tab!=='billing');
+function handleAlertClick(el){
+  playAlertSound();
+  el.style.opacity='.6';
+  setTimeout(()=>el.style.opacity='',800);
 }
+
+function handleChallenge(btn){
+  playButtonSound();
+  if(btn.dataset.done) return;
+  btn.dataset.done='1';
+  btn.textContent='✓ '+(lang==='fr'?'Défi en cours !':lang==='es'?'¡Reto en curso!':'Challenge accepted!');
+  btn.style.background='var(--success)';
+  btn.style.color='#fff';
+  setTimeout(()=>playZeldaSound(), 300);
+  showToast('🏆 '+(lang==='fr'?'Défi relevé ! Bonne chance 💪':lang==='es'?'¡Reto aceptado!':'Challenge accepted! Good luck 💪'),'success');
+}
+
+function handleComparative(){
+  playButtonSound();
+  showToast('🔍 '+(lang==='fr'?'Analyse comparative — disponible dans la prochaine mise à jour !':'Comparative analysis — coming soon!'),'warn');
+}
+
+function switchTab(tab){}
 
 /* ════════════════════════════════
    UTILS
