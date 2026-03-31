@@ -1182,7 +1182,7 @@ body::before{
 }
 
 @media(max-width:768px){
-  .header{padding:12px 16px;gap:8px;}
+  .header{padding:12px 16px;gap:8px;overflow:visible;}
   .header-mid{display:none;}
   .header-right{gap:6px;flex-shrink:0;}
   .lang-sw{display:none;}
@@ -1319,6 +1319,12 @@ body::before{
     <span class="nav-link" id="dashLink" onclick="goTo('dashboard')" style="display:none" data-i="nav_dashboard">Dashboard</span>
   </nav>
   <div class="header-right">
+    <button class="hero-shop-btn" id="headerShopBtn" onclick="playShopSound();showToast('🛍️ Boutique PEAKUP — bientôt disponible !','success')" title="Boutique">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M1 1h2l1.5 6h7l1-4H4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="6" cy="12" r="1" fill="currentColor"/><circle cx="11" cy="12" r="1" fill="currentColor"/>
+      </svg>
+    </button>
     <button class="btn-login" id="loginBtn" onclick="goToAuth()" data-i="login">Connexion</button>
     <button class="btn-cta" id="ctaBtn" onclick="scrollToPricing()" data-i="subscribe_header">S'abonner</button>
   </div>
@@ -1706,9 +1712,12 @@ body::before{
     </div>
   </div>
 
-  <!-- BILLING — caché par défaut, visible via menu logo uniquement -->
-  <div id="tabBilling" style="display:none;margin-top:40px;padding-top:32px;border-top:1px solid var(--b1);">
-    <div class="d-card-title" style="margin-bottom:20px;font-size:.6rem;letter-spacing:.2em;color:var(--t3);font-family:JetBrains Mono,monospace;">ABONNEMENT & FACTURATION</div>
+  <!-- BILLING — page dédiée, cachée par défaut -->
+  <div id="tabBilling" style="display:none;padding:24px 0;">
+    <button onclick="goTo('dashboard')" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--t2);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.08em;padding:0;margin-bottom:24px;">
+      ← Retour au dashboard
+    </button>
+    <div style="font-size:.6rem;letter-spacing:.2em;color:var(--t3);font-family:'JetBrains Mono',monospace;margin-bottom:20px;">ABONNEMENT & FACTURATION</div>
     <div class="dash-grid">
       <div class="dash-wide sub-card" style="margin-bottom:24px">
         <div class="sub-icon">💳</div>
@@ -2062,6 +2071,7 @@ function renderStatic(){
 ════════════════════════════════ */
 function setLang(l){
   lang=l;
+  if(typeof window._updateDashWelcome === 'function') window._updateDashWelcome();
   document.querySelectorAll('.lb').forEach(b=>b.classList.toggle('on',b.textContent===l.toUpperCase()));
   renderStatic();
   if(currentPage==='dashboard') renderDashboard();
@@ -2079,6 +2089,9 @@ function goTo(page){
   ['pageLanding','pageLoading','pageResults','pageDashboard','pageAuth','pageLegal'].forEach(id=>{
     document.getElementById(id).classList.toggle('hidden',id!=='page'+cap(page));
   });
+  // Cacher billing si on va ailleurs
+  const billing = document.getElementById('tabBilling');
+  if(billing) billing.style.display = 'none';
   currentPage=page;
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -2170,7 +2183,8 @@ fbAuth.onAuthStateChanged(user => {
     localStorage.setItem('peakup_is_pro', isPro ? 'true' : 'false');
     if(isPro) localStorage.setItem('peakup_verified', 'true');
     const name = user.displayName || user.email.split('@')[0];
-    completeAuth(name, '', 'tiktok', isPro);
+    // Seulement si pas encore connecté dans cette session
+    if(!loggedIn) completeAuth(name, '', 'tiktok', isPro);
   }
 });
 
@@ -2256,15 +2270,18 @@ document.addEventListener('click', e=>{
   if(!document.getElementById('logoWrap')?.contains(e.target)) closeLogoMenu();
 });
 function scrollToBilling(){
-  goTo('dashboard');
-  setTimeout(()=>{
-    const billing = document.getElementById('tabBilling');
-    if(billing){
-      billing.style.display = 'block';
-      billing.scrollIntoView({behavior:'smooth',block:'start'});
-      renderDashboard(); // Re-render pour les factures
-    }
-  },300);
+  // Afficher page billing dédiée
+  ['pageLanding','pageResults','pageDashboard','pageAuth','pageLegal','pageLoading'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.classList.add('hidden');
+  });
+  const billing = document.getElementById('tabBilling');
+  if(billing){
+    billing.style.display = 'block';
+    billing.classList.remove('hidden');
+    currentPage = 'billing';
+    renderDashboard();
+    window.scrollTo(0,0);
+  }
 }
 
 async function doLogout(){
@@ -2301,8 +2318,14 @@ function completeAuth(name, handle, plat, isPro=false){
   // Logo toujours visible — pas d'avatar initiale
 
   // Prénom dans le dashboard welcome
-  const welcomeEl = document.getElementById('dashWelcome');
-  if(welcomeEl) welcomeEl.innerHTML = `${lang==='fr'?'Bonjour':lang==='es'?'Hola':'Hey'}, <em style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${firstName}</em> 👋`;
+  // Mettre à jour le welcome dans toutes les langues
+  const updateWelcome = () => {
+    const welcomeEl = document.getElementById('dashWelcome');
+    const n = firstName || 'Creator';
+    if(welcomeEl) welcomeEl.innerHTML = `${lang==='fr'?'Bonjour':lang==='es'?'Hola':'Hey'}, <em style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${n}</em> 👋`;
+  };
+  updateWelcome();
+  window._updateDashWelcome = updateWelcome;
 
   // Badge PRO dans le header si Pro
   if(isPro){
@@ -2329,19 +2352,13 @@ function completeAuth(name, handle, plat, isPro=false){
     platform = userPlatform;
     startAnalysis();
   } else {
-    // Vérifier première connexion
-    const isFirstLogin = !localStorage.getItem('peakup_visited');
-    localStorage.setItem('peakup_visited', 'true');
-    if(isFirstLogin){
-      goTo('landing');
+    goTo('dashboard');
+    // Message bienvenue première connexion
+    if(!localStorage.getItem('peakup_visited')){
+      localStorage.setItem('peakup_visited', 'true');
       setTimeout(()=>{
-        showToast('👋 Bienvenue sur PEAKUP ! Analyse ton profil TikTok ou YouTube pour commencer.', 'success');
-        const bar = document.querySelector('.search-box');
-        if(bar){ bar.style.boxShadow='0 0 0 3px rgba(124,92,252,.4)'; setTimeout(()=>bar.style.boxShadow='',2500); }
-        document.getElementById('handle').focus();
-      }, 600);
-    } else {
-      goTo('dashboard');
+        showToast('👋 Bienvenue sur PEAKUP ! Lance une analyse depuis le menu principal.', 'success');
+      }, 800);
     }
   }
 }
