@@ -1280,11 +1280,11 @@ body::before{
     <div class="logo-menu" id="logoMenu" style="display:none">
       <div class="lm-item" onclick="goTo('dashboard');closeLogoMenu()">
         <span class="lm-icon">📊</span>
-        <span data-i="nav_dashboard">Dashboard</span>
+        <span id="lmDashboard">Dashboard</span>
       </div>
       <div class="lm-item" onclick="scrollToBilling();closeLogoMenu()">
         <span class="lm-icon">💳</span>
-        <span>Abonnement & Factures</span>
+        <span id="lmBilling">Abonnement & Factures</span>
       </div>
       <div class="lm-sep"></div>
       <!-- Sélecteur de langue -->
@@ -1294,22 +1294,22 @@ body::before{
         <button class="lm-lang" id="lmES" onclick="setLang('es');updateLangMenu();closeLogoMenu()">ES</button>
       </div>
       <div class="lm-sep"></div>
-      <div class="lm-item" onclick="closeLogoMenu()">
+      <div class="lm-item" onclick="showFAQ();closeLogoMenu()">
         <span class="lm-icon">❓</span>
-        <span>FAQ</span>
+        <span id="lmFaq">FAQ</span>
       </div>
       <div class="lm-item" onclick="window.location.href='mailto:contact@scoreviral.eu';closeLogoMenu()">
         <span class="lm-icon">✉️</span>
-        <span>Nous contacter</span>
+        <span id="lmContact">Nous contacter</span>
       </div>
-      <div class="lm-item" onclick="goTo('legal');closeLogoMenu()">
+      <div class="lm-item" onclick="showLegal('cgu');closeLogoMenu()">
         <span class="lm-icon">📄</span>
-        <span>CGU & Confidentialité</span>
+        <span id="lmCgu">CGU & Confidentialité</span>
       </div>
       <div class="lm-sep"></div>
       <div class="lm-item lm-logout" onclick="doLogout();closeLogoMenu()">
         <span class="lm-icon">🚪</span>
-        <span>Déconnexion</span>
+        <span id="lmLogout">Déconnexion</span>
       </div>
     </div>
   </div>
@@ -1688,7 +1688,7 @@ body::before{
         <div class="ch-title" id="chTitle">Chargement...</div>
         <div class="ch-tag" id="chTag">Défi actif</div>
         <div class="ch-desc" id="chDesc">L'IA génère ton défi personnalisé...</div>
-        <button class="btn-ch" id="btnChallenge" onclick="showDefiPanel()" data-i="take_challenge">Relever le défi →</button>
+        <button class="btn-ch" id="btnChallenge" onclick="handleChallenge(this)" data-i="take_challenge">Relever le défi →</button>
       </div>
 
       <!-- Alerts -->
@@ -1707,8 +1707,8 @@ body::before{
     </div>
   </div>
 
-  <!-- BILLING — page dédiée, cachée par défaut -->
-  <div id="tabBilling" style="display:none;padding:24px 0;">
+  <!-- BILLING — page dédiée -->
+  <div id="pageBilling" class="z1 hidden" style="padding:24px 0;">
     <button onclick="goTo('dashboard')" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--t2);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.08em;padding:0;margin-bottom:24px;">
       ← Retour au dashboard
     </button>
@@ -2081,12 +2081,10 @@ function setPlatform(p){
    NAVIGATION
 ════════════════════════════════ */
 function goTo(page){
-  ['pageLanding','pageLoading','pageResults','pageDashboard','pageAuth','pageLegal'].forEach(id=>{
-    document.getElementById(id).classList.toggle('hidden',id!=='page'+cap(page));
+  ['pageLanding','pageLoading','pageResults','pageDashboard','pageAuth','pageLegal','pageBilling'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.classList.toggle('hidden', id!=='page'+cap(page));
   });
-  // Cacher billing SAUF si on va au dashboard
-  const billing = document.getElementById('tabBilling');
-  if(billing && page !== 'dashboard') billing.style.display = 'none';
   currentPage=page;
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -2265,15 +2263,7 @@ document.addEventListener('click', e=>{
   if(!document.getElementById('logoWrap')?.contains(e.target)) closeLogoMenu();
 });
 function scrollToBilling(){
-  // Aller au dashboard puis afficher billing dans le dashboard
-  goTo('dashboard');
-  setTimeout(()=>{
-    const billing = document.getElementById('tabBilling');
-    if(billing){
-      billing.style.display = 'block';
-      window.scrollTo({top:0,behavior:'smooth'});
-    }
-  },200);
+  goTo('billing');
 }
 
 async function doLogout(){
@@ -3047,6 +3037,19 @@ function updateLangMenu(){
     const btn = document.getElementById('lm'+l.toUpperCase());
     if(btn) btn.classList.toggle('on', lang===l);
   });
+  // Traduire les éléments du menu déroulant
+  const tr = {
+    lmDashboard:{fr:'Dashboard',en:'Dashboard',es:'Dashboard'},
+    lmBilling:{fr:'Abonnement & Factures',en:'Subscription & Billing',es:'Suscripción & Facturas'},
+    lmFaq:{fr:'FAQ',en:'FAQ',es:'FAQ'},
+    lmContact:{fr:'Nous contacter',en:'Contact us',es:'Contáctanos'},
+    lmCgu:{fr:'CGU & Confidentialité',en:'Terms & Privacy',es:'CGU & Privacidad'},
+    lmLogout:{fr:'Déconnexion',en:'Log out',es:'Cerrar sesión'},
+  };
+  Object.entries(tr).forEach(([id,vals])=>{
+    const el = document.getElementById(id);
+    if(el) el.textContent = vals[lang]||vals.fr;
+  });
 }
 
 function playPeriodSound(){
@@ -3130,6 +3133,40 @@ function handleAlertClick(el, type, link){
   } else if(link){
     setTimeout(()=>window.open(link,'_blank'), 300);
   }
+}
+
+function showFAQ(){
+  const existing = document.getElementById('faqPanel');
+  if(existing){ existing.remove(); return; }
+  const faqs = [
+    {q:"À quoi sert PEAKUP ?", a:"PEAKUP est une plateforme d'analyse IA pour créateurs TikTok et YouTube. Elle analyse ton profil et génère un score de viralité personnalisé avec des recommandations concrètes pour booster ta croissance."},
+    {q:"Comment fonctionne le score viral ?", a:"Le score viral est calculé de 0 à 100 par notre IA en analysant ton taux d'engagement, ta fréquence de publication, la durée moyenne de tes vidéos et d'autres métriques clés."},
+    {q:"À quoi sert le dashboard ?", a:"Le dashboard est ton espace personnel. Tu y retrouves l'historique de ton score, les défis hebdomadaires personnalisés, les alertes de tendances et le suivi de ta progression."},
+    {q:"La boutique est-elle disponible ?", a:"La boutique PEAKUP est en cours de développement. Elle proposera bientôt des produits dérivés — hoodies, mugs, etc. — sans stock, fabriqués à l'unité avec le logo PEAKUP."},
+    {q:"Mes analyses sont-elles vraiment personnalisées ?", a:"Oui — l'IA analyse les informations spécifiques de ton profil pour générer des recommandations adaptées à ta niche, ton style et tes objectifs. En phase beta, l'intégration de l'API TikTok officielle est en cours pour des données encore plus précises."},
+    {q:"Qu'est-ce que le badge PEAKUP Verified Creator ?", a:"Le badge Verified Creator est accordé aux abonnés Pro qui partagent leur score sur TikTok. Il est visible dans ton dashboard et sur les résultats d'analyse de ton compte par d'autres utilisateurs."},
+    {q:"Comment annuler mon abonnement ?", a:"Tu peux annuler ton abonnement à tout moment depuis la section Abonnement & Factures accessible via le menu en haut à gauche. L'accès Pro reste actif jusqu'à la fin de la période en cours."},
+    {q:"Qu'est-ce que l'offre FOMO ?", a:"L'offre FOMO est une promotion de bienvenue à 4,99€ le premier mois (au lieu de 9,99€), disponible uniquement pendant 10 minutes après ta première analyse. Elle passe automatiquement à 9,99€/mois le mois suivant."},
+    {q:"PEAKUP fonctionne-t-il sur YouTube aussi ?", a:"Oui — PEAKUP analyse aussi bien les profils TikTok que YouTube. Sélectionne la plateforme dans la barre d'analyse avant de saisir ton pseudo."},
+    {q:"Comment contacter le support ?", a:"Tu peux nous contacter directement à contact@scoreviral.eu. Nous répondons généralement sous 24-48h."},
+  ];
+  const panel = document.createElement('div');
+  panel.id = 'faqPanel';
+  panel.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);overflow-y:auto;padding:20px;';
+  panel.innerHTML = `
+    <div style="background:var(--s1);border:1px solid var(--b2);border-radius:16px;padding:32px;max-width:560px;width:100%;position:relative;max-height:90vh;overflow-y:auto;">
+      <button onclick="document.getElementById('faqPanel').remove()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--t2);cursor:pointer;font-size:1.1rem;">✕</button>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;color:var(--accent);margin-bottom:6px;">FAQ</div>
+      <div style="font-family:'Exo 2',sans-serif;font-size:1.3rem;font-weight:900;font-style:italic;margin-bottom:24px;">Questions fréquentes</div>
+      ${faqs.map((f,i)=>`
+        <div style="border-bottom:1px solid var(--b1);padding:14px 0;cursor:pointer;" onclick="this.querySelector('.faq-a').style.display=this.querySelector('.faq-a').style.display==='none'?'block':'none'">
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.88rem;display:flex;justify-content:space-between;align-items:center;gap:12px;">
+            <span>${f.q}</span><span style="color:var(--accent);flex-shrink:0;">+</span>
+          </div>
+          <div class="faq-a" style="display:none;font-size:.82rem;color:var(--t2);line-height:1.65;margin-top:8px;">${f.a}</div>
+        </div>`).join('')}
+    </div>`;
+  document.body.appendChild(panel);
 }
 
 function showDefiPanel(){
