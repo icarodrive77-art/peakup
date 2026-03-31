@@ -1708,7 +1708,7 @@ body::before{
   </div>
 
   <!-- BILLING — page dédiée -->
-  <div id="pageBilling" class="z1 hidden" style="padding:24px 0;">
+  <div id="pageBilling" class="z1 hidden" style="padding:24px 48px;max-width:900px;margin:0 auto;">
     <button onclick="goTo('dashboard')" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--t2);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.08em;padding:0;margin-bottom:24px;">
       ← Retour au dashboard
     </button>
@@ -2265,6 +2265,34 @@ document.addEventListener('click', e=>{
 });
 function scrollToBilling(){
   goTo('billing');
+  // Rendre le tableau des factures
+  setTimeout(renderBilling, 100);
+}
+
+function renderBilling(){
+  const invs = t('invoices');
+  const tbl = document.getElementById('invoiceTable');
+  if(!tbl) return;
+  tbl.innerHTML = `
+    <tr>
+      <th style="width:110px">${lang==='fr'?'Date':lang==='es'?'Fecha':'Date'}</th>
+      <th>${lang==='fr'?'Description':'Description'}</th>
+      <th>${lang==='fr'?'Montant':lang==='es'?'Importe':'Amount'}</th>
+      <th>${lang==='fr'?'Statut':lang==='es'?'Estado':'Status'}</th>
+      <th></th>
+    </tr>
+    ${invs.map(inv=>`<tr>
+      <td style="color:var(--t2);font-family:'JetBrains Mono',monospace;font-size:.72rem;">${inv.date}</td>
+      <td style="font-size:.82rem;">${inv.desc}</td>
+      <td style="font-family:'Exo 2',sans-serif;font-weight:700;">${inv.amt}</td>
+      <td><span class="inv-status inv-paid">✓ ${inv.status}</span></td>
+      <td><button class="btn-dl" onclick="alert('PDF — Stripe à connecter')">PDF</button></td>
+    </tr>`).join('')}`;
+  // Traduire les data-i dans pageBilling
+  document.querySelectorAll('#pageBilling [data-i]').forEach(el=>{
+    const k=el.getAttribute('data-i');
+    if(COPY[lang]&&COPY[lang][k]) el.textContent=COPY[lang][k];
+  });
 }
 
 async function doLogout(){
@@ -2851,9 +2879,11 @@ function startAmbient(){
       o.start();lfo.start();ambientNodes.push(o,g,rv,lfo,lg);
     }
 
-    // Chant des abysses — gamme gladiator grave + drones
-    const notes=[220,246.9,261.6,293.7,329.6,293.7,261.6,246.9];
-    addVoice(notes,18,.09,-.3);
+    // Chant des abysses — Am pentatonique grave + 2e voix + pad
+    const notes=[220,261.6,294,349.2,392,349.2,294,261.6];
+    const notes2=notes.map(f=>f*1.5);
+    addVoice(notes,12,.09,-.3);
+    addVoice(notes2,15,.05,.4);
     addDrone(55,.04);addDrone(110,.03);
 
     // Fade in progressif à 10%
