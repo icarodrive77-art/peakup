@@ -446,6 +446,13 @@ body::before{
   color:var(--danger);font-size:.92rem;margin-bottom:5px;}
 .ua-sub{font-size:.8rem;color:var(--t2);line-height:1.6;font-family:'Space Grotesk',sans-serif;}
 
+/* Mention beta */
+.beta-notice{
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  color:var(--t3);letter-spacing:.08em;margin-top:8px;
+  text-align:center;
+}
+
 /* Compteur hero */
 .hero-counter{
   display:flex;align-items:center;gap:8px;
@@ -453,6 +460,15 @@ body::before{
   font-family:'JetBrains Mono',monospace;font-size:.68rem;
   letter-spacing:.1em;color:var(--t2);
 }
+.hero-shop-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:26px;height:26px;border-radius:7px;
+  background:rgba(124,92,252,.12);border:1px solid rgba(124,92,252,.25);
+  color:var(--accent);cursor:pointer;
+  transition:background .15s,border-color .15s;
+  flex-shrink:0;margin-left:4px;
+}
+.hero-shop-btn:hover{background:rgba(124,92,252,.22);border-color:rgba(124,92,252,.4);}
 .hc-dot{
   width:6px;height:6px;border-radius:50%;
   background:var(--success);
@@ -909,19 +925,20 @@ body::before{
   position:relative;overflow:hidden;
   display:inline-flex;align-items:center;justify-content:center;
   border-radius:50%;
-  width:80px;height:80px;flex-shrink:0;
+  width:72px;height:72px;flex-shrink:0;
+  background:transparent;
 }
 .badge-shimmer-wrap img{
-  width:80px;height:80px;object-fit:contain;display:block;
+  width:72px;height:72px;object-fit:contain;display:block;
+  border-radius:50%;
 }
 .badge-shimmer-wrap::after{
-  content:'';position:absolute;top:0;left:-60%;
-  width:25%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
+  content:'';position:absolute;top:-10%;left:-80%;
+  width:28%;height:120%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);
   transform:skewX(-15deg);
   animation:badgeShimmer 4s ease-in-out infinite;
   pointer-events:none;
-  border-radius:0;
 }
 
 /* Dashboard badge Verified */
@@ -942,7 +959,7 @@ body::before{
   border:1px solid rgba(124,92,252,.4);
   border-radius:12px;padding:14px 20px;margin-top:12px;
 }
-.vb-badge{width:80px;height:80px;object-fit:contain;flex-shrink:0;display:block;}
+.vb-badge{width:72px;height:72px;object-fit:contain;flex-shrink:0;display:block;}
 .vb-title{font-family:'Exo 2',sans-serif;font-weight:800;font-style:italic;font-size:.92rem;color:var(--text);}
 .vb-sub{font-size:.72rem;color:var(--t2);font-family:'Space Grotesk',sans-serif;margin-top:2px;}
 
@@ -1313,6 +1330,7 @@ body::before{
   <!-- HERO -->
   <section class="hero">
     <div class="hero-badge"><div class="live-dot"></div><span data-i="hero_badge">IA Creator Analytics · Beta</span></div>
+    <div class="beta-notice">⚡ Beta — Analyse IA · Intégration API TikTok en cours · <a onclick="showLegal('cgu')" style="color:var(--accent);cursor:pointer">En savoir plus</a></div>
     <!-- CTA mobile uniquement — visible sous le titre -->
     <button class="mobile-cta-hero" id="mobileCta" onclick="scrollToPricing()" data-i="subscribe_header">S'abonner — 9,99€/mois</button>
     <h1 id="heroH1"><em>Analyse</em> ton profil.<br>Domine <span class="gold">l'algo.</span></h1>
@@ -1327,13 +1345,13 @@ body::before{
         <div class="sdiv"></div>
         <span class="sat">@</span>
         <input type="text" id="handle" placeholder="tonpseudo" onkeydown="if(event.key==='Enter')startAnalysis()"/>
-        <button class="btn-go" id="btnGo" onclick="startAnalysis()">
+        <button class="btn-go" id="btnGo" onclick="playAnalyseSound();startAnalysis()">
           <span id="btnGoTxt" data-i="analyze_btn">Analyser</span>
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       </div>
       <!-- Bouton Analyser mobile — visible uniquement sur mobile -->
-      <button class="mobile-analyse-btn" onclick="startAnalysis()">
+      <button class="mobile-analyse-btn" onclick="playAnalyseSound();startAnalysis()">
         <span data-i="analyze_btn">Analyser</span>
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
@@ -1342,6 +1360,14 @@ body::before{
       <div class="hero-counter" id="heroCounter">
         <div class="hc-dot"></div>
         <span id="heroCounterTxt">847 créateurs analysés cette semaine</span>
+        <!-- Bouton boutique -->
+        <button class="hero-shop-btn" onclick="playShopSound();showToast('🛍️ Boutique PEAKUP bientôt disponible — hoodies, mugs et plus !','success')" title="Boutique PEAKUP">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M1 1h2l1.5 6h7l1-4H4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="6" cy="12" r="1" fill="currentColor"/>
+            <circle cx="11" cy="12" r="1" fill="currentColor"/>
+          </svg>
+        </button>
       </div>
     </div>
   </section>
@@ -1649,7 +1675,7 @@ body::before{
       <div class="challenge-card" id="challengeCard">
         <div class="ch-week" data-i="week_challenge">DÉFI SEMAINE #12</div>
         <div class="ch-title" id="chTitle">Chargement...</div>
-        <div class="ch-tag" id="chTag">+XP</div>
+        <div class="ch-tag" id="chTag">Défi actif</div>
         <div class="ch-desc" id="chDesc">L'IA génère ton défi personnalisé...</div>
         <button class="btn-ch" id="btnChallenge" onclick="handleChallenge(this)" data-i="take_challenge">Relever le défi →</button>
       </div>
@@ -1770,10 +1796,10 @@ const COPY = {
     ],
     alerts:[
       {type:"al-warn",icon:"⚠️",title:"Engagement en baisse",sub:"Ton taux d'engagement a baissé de 1.2% cette semaine. Vérifie tes horaires de post."},
-      {type:"al-good",icon:"🚀",title:"Son trending détecté",sub:"Un audio trending correspond parfaitement à ton style. Utilise-le cette semaine."},
+      {type:"al-good",icon:"🚀",title:"Son trending détecté",sub:"Un audio trending correspond à ton style. Découvre les sons du moment sur TikTok Creative Center.",link:"https://ads.tiktok.com/business/creativecenter/inspiration/popular/music/pc/fr"},
       {type:"al-info",icon:"💡",title:"Défi hebdomadaire disponible",sub:"Ton défi de la semaine est prêt. Complète-le pour booster ton score."},
     ],
-    challenge:{title:"Teste un hook-question sur ta prochaine vidéo",tag:"FORMAT HOOK · +15 pts",desc:"Les hooks sous forme de question génèrent en moyenne 34% de rétention supplémentaire. Commence ta prochaine vidéo par une question polarisante et mesure la différence."},
+    challenge:{title:"Teste un hook-question sur ta prochaine vidéo",tag:"FORMAT HOOK",desc:"Les hooks sous forme de question génèrent en moyenne 34% de rétention supplémentaire. Commence ta prochaine vidéo par une question polarisante et mesure la différence."},
     quickStats:[
       {label:"Analyses ce mois",val:"7"},
       {label:"Défis complétés",val:"3 / 4"},
@@ -1861,7 +1887,7 @@ const COPY = {
       {type:"al-good",icon:"🚀",title:"Trending sound detected",sub:"A trending audio matches your style perfectly. Use it this week."},
       {type:"al-info",icon:"💡",title:"Weekly challenge ready",sub:"Your weekly challenge is ready. Complete it to boost your score."},
     ],
-    challenge:{title:"Test a question-hook on your next video",tag:"HOOK FORMAT · +15 pts",desc:"Question hooks generate an average of 34% more watch time. Start your next video with a polarizing question and measure the difference."},
+    challenge:{title:"Test a question-hook on your next video",tag:"DÉFI SEMAINE",desc:"Question hooks generate an average of 34% more watch time. Start your next video with a polarizing question and measure the difference."},
     quickStats:[{label:"Analyses this month",val:"7"},{label:"Challenges completed",val:"3 / 4"},{label:"Average score",val:"71"}],
     invoices:[
       {date:"Mar 27, 2026",desc:"PEAKUP Pro · Monthly",amt:"€9.99",status:"Paid"},
@@ -1945,7 +1971,7 @@ const COPY = {
       {type:"al-good",icon:"🚀",title:"Sonido trending detectado",sub:"Un audio trending encaja perfectamente con tu estilo. Úsalo esta semana."},
       {type:"al-info",icon:"💡",title:"Reto semanal disponible",sub:"Tu reto semanal está listo. Complétalo para subir tu puntuación."},
     ],
-    challenge:{title:"Prueba un hook-pregunta en tu próximo vídeo",tag:"FORMATO HOOK · +15 pts",desc:"Los hooks de pregunta generan de media un 34% más de retención. Empieza tu próximo vídeo con una pregunta polarizante y mide la diferencia."},
+    challenge:{title:"Prueba un hook-pregunta en tu próximo vídeo",tag:"DÉFI SEMAINE",desc:"Los hooks de pregunta generan de media un 34% más de retención. Empieza tu próximo vídeo con una pregunta polarizante y mide la diferencia."},
     quickStats:[{label:"Análisis este mes",val:"7"},{label:"Retos completados",val:"3 / 4"},{label:"Puntuación media",val:"71"}],
     invoices:[
       {date:"27 mar. 2026",desc:"PEAKUP Pro · Mensual",amt:"9,99€",status:"Pagada"},
@@ -2004,7 +2030,7 @@ function renderStatic(){
           ${f.t}
         </div>`).join('')}
       </div>
-      <button class="btn-plan ${p.btnCls}" onclick="${p.featured?'simulateSubscribe()':'goTo(\'landing\')'}">${p.btnTxt}</button>
+      <button class="btn-plan ${p.btnCls}" onclick="${p.featured?'playProSound();simulateSubscribe()':'goTo(\'landing\')'}">${p.btnTxt}</button>
     </div>`).join('');
 
   // Titres HTML — via innerHTML sur IDs directs
@@ -2076,16 +2102,14 @@ async function simulateSubscribe(fomoOverride){
 function scrollToPricing(){
   if(currentPage!=='landing') goTo('landing');
   setTimeout(()=>{
-    // Scroller sur la carte Pro (featured) directement
     const proCard = document.querySelector('.price-card.featured') || document.getElementById('pricing');
     if(proCard){
       proCard.scrollIntoView({behavior:'smooth', block:'center'});
-      // Highlight bref de la carte Pro
       proCard.style.transition='box-shadow .3s';
       proCard.style.boxShadow='0 0 0 3px var(--accent), 0 12px 40px rgba(124,92,252,.5)';
       setTimeout(()=>{ proCard.style.boxShadow=''; },1500);
     }
-  },100);
+  },350);
 }
 function scrollToSection(sel){
   document.querySelector(sel)?.scrollIntoView({behavior:'smooth'});
@@ -2207,7 +2231,8 @@ function showAuthLoading(show){
 
 function handleLogoClick(e){
   if(e) e.stopPropagation();
-  if(!loggedIn){ goTo('landing'); return; }
+  // Si pas connecté et pas sur la landing → retour landing
+  // Mais si on clique sur logo depuis landing → ouvre menu si items disponibles
   const menu = document.getElementById('logoMenu');
   if(!menu) return;
   const isOpen = menu.style.display==='block';
@@ -2744,6 +2769,56 @@ function renderResults(handle,platName,text){
 /* ════════════════════════════════
    SONS PEAKUP
 ════════════════════════════════ */
+function playProSound(){
+  try{
+    const c=getAudioCtx(),t=c.currentTime;
+    const tn=(f,v,d,dec)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(v,t+d+.015);g.gain.exponentialRampToValueAtTime(.001,t+d+dec);o.connect(g);g.connect(c.destination);o.start(t+d);o.stop(t+d+dec+.02);};
+    const sw=(f1,f2,v,dur)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.setValueAtTime(f1,t);o.frequency.exponentialRampToValueAtTime(f2,t+dur);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.015);g.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+dur+.02);};
+    sw(100,400,.12,.25);tn(880,.22,.22,.5);tn(1320,.08,.32,.3);
+    const o=c.createOscillator(),wv=c.createWaveShaper(),g=c.createGain();
+    const cv=new Float32Array(256);for(let i=0;i<256;i++){const x=i*2/256-1;cv[i]=Math.tanh(x*1.5)*.7;}
+    wv.curve=cv;o.type='triangle';o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(56,t+.12);
+    g.gain.setValueAtTime(.09,t);g.gain.exponentialRampToValueAtTime(.001,t+.13);
+    o.connect(wv);wv.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.14);
+  }catch(e){}
+}
+
+function playShopSound(){
+  try{
+    const c=getAudioCtx(),t=c.currentTime;
+    const tn=(f,v,d,dec)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(v,t+d+.015);g.gain.exponentialRampToValueAtTime(.001,t+d+dec);o.connect(g);g.connect(c.destination);o.start(t+d);o.stop(t+d+dec+.02);};
+    const buf=c.createBuffer(1,c.sampleRate*.032,c.sampleRate),d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,12);
+    const s=c.createBufferSource(),f1=c.createBiquadFilter(),f2=c.createBiquadFilter(),gn=c.createGain();
+    f1.type='highpass';f1.frequency.value=1000;f2.type='lowpass';f2.frequency.value=4000;
+    s.buffer=buf;s.connect(f1);f1.connect(f2);f2.connect(gn);gn.gain.value=2;gn.connect(c.destination);s.start(t);
+    [880,1100,1320].forEach((f,i)=>tn(f,.18-i*.04,i*.06,.3));
+    const o=c.createOscillator(),wv=c.createWaveShaper(),g=c.createGain();
+    const cv=new Float32Array(256);for(let i=0;i<256;i++){const x=i*2/256-1;cv[i]=Math.tanh(x*1.5)*.7;}
+    wv.curve=cv;o.type='triangle';o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(56,t+.1);
+    g.gain.setValueAtTime(.07,t);g.gain.exponentialRampToValueAtTime(.001,t+.11);
+    o.connect(wv);wv.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.12);
+  }catch(e){}
+}
+
+function playAnalyseSound(){
+  try{
+    const c=getAudioCtx(),t=c.currentTime;
+    const tn=(f,v,d,dec)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(v,t+d+.015);g.gain.exponentialRampToValueAtTime(.001,t+d+dec);o.connect(g);g.connect(c.destination);o.start(t+d);o.stop(t+d+dec+.02);};
+    const buf=c.createBuffer(1,c.sampleRate*.032,c.sampleRate),d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,12);
+    const s=c.createBufferSource(),f1=c.createBiquadFilter(),f2=c.createBiquadFilter(),gn=c.createGain();
+    f1.type='highpass';f1.frequency.value=1000;f2.type='lowpass';f2.frequency.value=4000;
+    s.buffer=buf;s.connect(f1);f1.connect(f2);f2.connect(gn);gn.gain.value=2.2;gn.connect(c.destination);s.start(t);
+    [660,880,1100].forEach((f,i)=>tn(f,.16-i*.04,i*.06,.3));
+    const o=c.createOscillator(),wv=c.createWaveShaper(),g=c.createGain();
+    const cv=new Float32Array(256);for(let i=0;i<256;i++){const x=i*2/256-1;cv[i]=Math.tanh(x*1.5)*.7;}
+    wv.curve=cv;o.type='triangle';o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(56,t+.12);
+    g.gain.setValueAtTime(.08,t);g.gain.exponentialRampToValueAtTime(.001,t+.13);
+    o.connect(wv);wv.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.14);
+  }catch(e){}
+}
+
 function playButtonSound(){
   try{
     const c=getAudioCtx(),t=c.currentTime;
@@ -2883,11 +2958,11 @@ function renderDashboard(){
 
   // Alerts avec son
   document.getElementById('alertList').innerHTML=t('alerts').map((a,i)=>`
-    <div class="alert-item ${a.type}" onclick="handleAlertClick(this,'${a.type}')" style="cursor:pointer">
+    <div class="alert-item ${a.type}" onclick="handleAlertClick(this,'${a.type}'${a.link?`,'${a.link}'`:''})" style="cursor:pointer">
       <span class="al-icon">${a.icon}</span>
       <div class="al-body">
         <div class="al-title">${a.title}</div>
-        <div class="al-sub">${a.sub}</div>
+        <div class="al-sub">${a.sub}${a.link?` <span style="color:var(--accent);font-size:.75rem">→ Voir</span>`:''}</div>
       </div>
     </div>`).join('');
   setTimeout(()=>{ playAlertSound(); }, 600);
@@ -3009,12 +3084,13 @@ function setChartPeriod(period, btn){
   if(lbl) lbl.textContent=(lang==='fr'?'Score actuel : ':lang==='es'?'Puntuación: ':'Current score: ')+last;
 }
 
-function handleAlertClick(el, type){
+function handleAlertClick(el, type, link){
   if(type==='al-good') playTrendingSound();
   else if(type==='al-info') playDefiSound();
   else playAlertSound();
   el.style.opacity='.6';
   setTimeout(()=>el.style.opacity='',800);
+  if(link) setTimeout(()=>window.open(link,'_blank'), 300);
 }
 
 function handleChallenge(btn){
@@ -3425,7 +3501,7 @@ if(localStorage.getItem('peakup_verified') === 'true'){
   <div class="footer-cta">
     <div class="footer-cta-title">Prêt à dominer l'algo ?</div>
     <div class="footer-cta-sub">Analyse ton profil TikTok ou YouTube gratuitement en 30 secondes.</div>
-    <button class="footer-cta-btn" onclick="window.scrollTo({top:0,behavior:'smooth'});document.getElementById('handle').focus();">
+    <button class="footer-cta-btn" onclick="playButtonSound();window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>document.getElementById('handle').focus(),600);">
       Analyser maintenant →
     </button>
     <div class="footer-slogan">PEAKUP · <em>Reach the top!</em></div>
