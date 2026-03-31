@@ -133,7 +133,7 @@ body::before{
   border-bottom:1px solid var(--b1);
 }
 
-.logo-wrap{position:relative;}
+.logo-wrap{position:relative;z-index:9999;}
 .logo{
   font-family:'Exo 2',sans-serif;font-size:1.4rem;font-weight:900;
   letter-spacing:-.03em;
@@ -1182,7 +1182,7 @@ body::before{
 }
 
 @media(max-width:768px){
-  .header{padding:12px 16px;gap:8px;overflow:hidden;}
+  .header{padding:12px 16px;gap:8px;}
   .header-mid{display:none;}
   .header-right{gap:6px;flex-shrink:0;}
   .lang-sw{display:none;}
@@ -1361,7 +1361,7 @@ body::before{
         <div class="hc-dot"></div>
         <span id="heroCounterTxt">847 créateurs analysés cette semaine</span>
         <!-- Bouton boutique -->
-        <button class="hero-shop-btn" onclick="playShopSound();showToast('🛍️ Boutique PEAKUP bientôt disponible — hoodies, mugs et plus !','success')" title="Boutique PEAKUP">
+        <button class="hero-shop-btn" onclick="playShopSound();showToast('🛍️ Boutique PEAKUP — bientôt disponible !','success')" title="Boutique PEAKUP">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path d="M1 1h2l1.5 6h7l1-4H4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
             <circle cx="6" cy="12" r="1" fill="currentColor"/>
@@ -1398,6 +1398,9 @@ body::before{
 <!-- ═══════ AUTH (LOGIN / SIGNUP) ═══════ -->
 <div id="pageAuth" class="z1 hidden">
   <div class="auth-card">
+    <button onclick="goTo('landing')" style="position:absolute;top:16px;left:16px;background:none;border:none;color:var(--t2);cursor:pointer;font-size:1.2rem;padding:4px;display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:.08em;" title="Retour">
+      ← Retour
+    </button>
     <div class="auth-logo">
       <img src="https://raw.githubusercontent.com/icarodrive77-art/peakup/main/logo.png" alt="PEAKUP" style="height:64px;width:64px;object-fit:contain;border-radius:16px;margin-bottom:8px;">
       PEAKUP
@@ -1451,7 +1454,7 @@ body::before{
         </div>
       </div>
       <button class="btn-auth" onclick="doSignup()">Créer mon compte →</button>
-      <div class="auth-footer">En créant un compte tu acceptes nos <a>CGU</a> et notre <a>Politique de confidentialité</a>.</div>
+      <div class="auth-footer">En créant un compte tu acceptes nos <a onclick="showLegal('cgu')" style="color:var(--accent);cursor:pointer">CGU</a> et notre <a onclick="showLegal('privacy')" style="color:var(--accent);cursor:pointer">Politique de confidentialité</a>.</div>
     </div>
 
     <!-- LOGIN FORM -->
@@ -1619,6 +1622,13 @@ body::before{
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
       <div class="dash-pro-badge" id="dashProBadge" style="display:none">PRO · Actif</div>
+      <button class="hero-shop-btn" onclick="playShopSound();showToast('🛍️ Boutique PEAKUP — bientôt disponible !','success')" title="Boutique PEAKUP" style="width:34px;height:34px;border-radius:9px;">
+        <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
+          <path d="M1 1h2l1.5 6h7l1-4H4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="6" cy="12" r="1" fill="currentColor"/>
+          <circle cx="11" cy="12" r="1" fill="currentColor"/>
+        </svg>
+      </button>
     </div>
   </div>
 
@@ -1795,9 +1805,9 @@ const COPY = {
       ],btnCls:"btn-pro",btnTxt:"Commencer — 9,99€/mois",featured:true},
     ],
     alerts:[
-      {type:"al-warn",icon:"⚠️",title:"Engagement en baisse",sub:"Ton taux d'engagement a baissé de 1.2% cette semaine. Vérifie tes horaires de post."},
+      {type:"al-warn",icon:"⚠️",title:"Engagement en baisse",sub:"Ton engagement a baissé de 1.2% cette semaine. → Voir ton historique de score ci-dessous pour analyser la tendance."},
       {type:"al-good",icon:"🚀",title:"Son trending détecté",sub:"Un audio trending correspond à ton style. Découvre les sons du moment sur TikTok Creative Center.",link:"https://ads.tiktok.com/business/creativecenter/inspiration/popular/music/pc/fr"},
-      {type:"al-info",icon:"💡",title:"Défi hebdomadaire disponible",sub:"Ton défi de la semaine est prêt. Complète-le pour booster ton score."},
+      {type:"al-info",icon:"💡",title:"Défi hebdomadaire disponible",sub:"Ton défi de la semaine est prêt. Complète-le pour progresser ! Historique : ✓ Semaine 11 · ✓ Semaine 10 · ✓ Semaine 9"},
     ],
     challenge:{title:"Teste un hook-question sur ta prochaine vidéo",tag:"FORMAT HOOK",desc:"Les hooks sous forme de question génèrent en moyenne 34% de rétention supplémentaire. Commence ta prochaine vidéo par une question polarisante et mesure la différence."},
     quickStats:[
@@ -1885,7 +1895,7 @@ const COPY = {
     alerts:[
       {type:"al-warn",icon:"⚠️",title:"Engagement dropping",sub:"Your engagement rate dropped 1.2% this week. Check your posting times."},
       {type:"al-good",icon:"🚀",title:"Trending sound detected",sub:"A trending audio matches your style perfectly. Use it this week."},
-      {type:"al-info",icon:"💡",title:"Weekly challenge ready",sub:"Your weekly challenge is ready. Complete it to boost your score."},
+      {type:"al-info",icon:"💡",title:"Weekly challenge ready",sub:"Your weekly challenge is ready. Complete it to level up! History: ✓ Week 11 · ✓ Week 10 · ✓ Week 9"},
     ],
     challenge:{title:"Test a question-hook on your next video",tag:"DÉFI SEMAINE",desc:"Question hooks generate an average of 34% more watch time. Start your next video with a polarizing question and measure the difference."},
     quickStats:[{label:"Analyses this month",val:"7"},{label:"Challenges completed",val:"3 / 4"},{label:"Average score",val:"71"}],
@@ -2319,7 +2329,20 @@ function completeAuth(name, handle, plat, isPro=false){
     platform = userPlatform;
     startAnalysis();
   } else {
-    goTo('dashboard');
+    // Vérifier première connexion
+    const isFirstLogin = !localStorage.getItem('peakup_visited');
+    localStorage.setItem('peakup_visited', 'true');
+    if(isFirstLogin){
+      goTo('landing');
+      setTimeout(()=>{
+        showToast('👋 Bienvenue sur PEAKUP ! Analyse ton profil TikTok ou YouTube pour commencer.', 'success');
+        const bar = document.querySelector('.search-box');
+        if(bar){ bar.style.boxShadow='0 0 0 3px rgba(124,92,252,.4)'; setTimeout(()=>bar.style.boxShadow='',2500); }
+        document.getElementById('handle').focus();
+      }, 600);
+    } else {
+      goTo('dashboard');
+    }
   }
 }
 
