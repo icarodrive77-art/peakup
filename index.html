@@ -2841,59 +2841,59 @@ function startAmbient(){
       const rv=c.createConvolver();rv.buffer=b;return rv;
     }
 
-    function addVoice(notes,bpm,vol,pan){
-      const rv=mkRev(7),vg=c.createGain(),p=c.createStereoPanner();
-      vg.gain.value=vol;p.pan.value=pan;
-      rv.connect(vg);vg.connect(p);p.connect(ambientGain);
-      const o1=c.createOscillator(),o2=c.createOscillator(),g1=c.createGain(),g2=c.createGain();
-      o1.type='sine';g1.gain.value=.7;o2.type='sine';g2.gain.value=.25;
-      o1.connect(g1);g1.connect(rv);o2.connect(g2);g2.connect(rv);
-      o1.start();o2.start();
-      ambientNodes.push(o1,o2,g1,g2,rv,vg,p);
-      const beat=60/bpm;let idx=0,t=c.currentTime;
-      function sing(){
-        const now=c.currentTime,freq=notes[idx%notes.length],nf=notes[(idx+1)%notes.length],bd=beat*.8,nd=beat*2;
-        o1.frequency.cancelScheduledValues(now);
-        o1.frequency.setValueAtTime(freq,now+bd);
-        o1.frequency.exponentialRampToValueAtTime(nf,now+bd+nd*.9);
-        o2.frequency.cancelScheduledValues(now);
-        o2.frequency.setValueAtTime(freq*2,now+bd);
-        o2.frequency.exponentialRampToValueAtTime(nf*2,now+bd+nd*.9);
-        vg.gain.cancelScheduledValues(now);
-        vg.gain.setValueAtTime(0,now);vg.gain.setValueAtTime(0,now+bd);
-        vg.gain.linearRampToValueAtTime(vol,now+bd+.3);
-        vg.gain.setValueAtTime(vol*.88,now+bd+nd*.6);
-        vg.gain.linearRampToValueAtTime(0,now+bd+nd);
-        t=now+bd+nd;idx++;
+    function wavyVoice(baseFreq,melody,tempo,vol,pan){
+      const rv=mkRev(6),g=c.createGain(),p=c.createStereoPanner();
+      g.gain.value=vol;p.pan.value=pan;
+      rv.connect(g);g.connect(p);p.connect(ambientGain);
+      const osc=c.createOscillator(),og=c.createGain();
+      osc.type='sine';og.gain.value=.8;
+      osc.connect(og);og.connect(rv);
+      osc.start();ambientNodes.push(osc,og,g,p,rv);
+      const stepDur=60/tempo;
+      let idx=0;
+      function scheduleNote(){
+        const now=c.currentTime;
+        const freq=baseFreq*melody[idx%melody.length];
+        const nextFreq=baseFreq*melody[(idx+1)%melody.length];
+        osc.frequency.setTargetAtTime(freq,now,.05);
+        osc.frequency.setTargetAtTime(nextFreq,now+stepDur*.7,.08);
+        og.gain.setValueAtTime(.01,now);
+        og.gain.linearRampToValueAtTime(.9,now+stepDur*.2);
+        og.gain.setValueAtTime(.85,now+stepDur*.6);
+        og.gain.linearRampToValueAtTime(.1,now+stepDur*.95);
+        idx++;
       }
-      sing();
-      const iv=setInterval(()=>{if(c.currentTime>t-1.5)sing();},200);
+      scheduleNote();
+      const iv=setInterval(scheduleNote,stepDur*1000);
       ambientNodes.push({stop:()=>clearInterval(iv)});
     }
 
-    function addDrone(freq,vol){
-      const o=c.createOscillator(),g=c.createGain(),rv=mkRev(8),lfo=c.createOscillator(),lg=c.createGain();
-      o.type='sine';o.frequency.value=freq;lfo.type='sine';lfo.frequency.value=.02;lg.gain.value=freq*.01;
-      lfo.connect(lg);lg.connect(o.frequency);g.gain.value=vol;
-      o.connect(rv);rv.connect(g);g.connect(ambientGain);
-      o.start();lfo.start();ambientNodes.push(o,g,rv,lfo,lg);
+    function atmPad(freq,vol){
+      const o=c.createOscillator(),g=c.createGain(),rv=mkRev(6),p=c.createStereoPanner();
+      const lfo=c.createOscillator(),lg=c.createGain();
+      o.type='triangle';o.frequency.value=freq;
+      lfo.type='sine';lfo.frequency.value=.03;lg.gain.value=freq*.02;
+      lfo.connect(lg);lg.connect(o.frequency);
+      g.gain.value=vol;p.pan.value=.1;
+      o.connect(rv);rv.connect(g);g.connect(p);p.connect(ambientGain);
+      o.start();lfo.start();ambientNodes.push(o,g,rv,p,lfo,lg);
     }
 
-    // Chant des abysses — Am pentatonique grave + 2e voix + pad
-    const notes=[220,261.6,294,349.2,392,349.2,294,261.6];
-    const notes2=notes.map(f=>f*1.5);
-    addVoice(notes,12,.09,-.3);
-    addVoice(notes2,15,.05,.4);
-    addDrone(55,.04);addDrone(110,.03);
+    // Chant des abysses — Am pentatonique wavy
+    const amPenta=[1,1.125,1.25,1.5,1.667,1.5,1.25,1.125];
+    const minor=[1,1.125,1.2,1.333,1.5,1.333,1.2,1.125];
+    wavyVoice(220,amPenta,20,.08,-.4);
+    wavyVoice(165,minor,15,.06,.4);
+    atmPad(55,.04);
+    atmPad(110,.03);
 
-    // Fade in progressif à 10%
+    // Fade in à 10%
     setTimeout(()=>{
       ambientGain.gain.setTargetAtTime(.1,c.currentTime,3);
     },1000);
 
   }catch(e){console.log('Ambient error:',e);}
 }
-
 function stopAmbient(){
   if(ambientGain) ambientGain.gain.setTargetAtTime(0,getAudioCtx().currentTime,1);
   setTimeout(()=>{
