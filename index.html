@@ -8,7 +8,7 @@
 <!-- v20260402072641 -->
 <meta name="description" content="PEAKUP analyse ton profil TikTok ou YouTube avec l'IA et te donne des recommandations personnalisées pour exploser ton score viral. Essai gratuit, résultats en 30 secondes.">
 <meta name="keywords" content="analyse tiktok, analyse youtube, score viral, creator analytics, recommandations IA, croissance tiktok, algorithme youtube">
-<meta name="author" content="PEAKUP"><!-- 20260402131544 --><!-- build:20260402074112 -->
+<meta name="author" content="PEAKUP"><!-- 20260402133403 --><!-- 20260402131544 --><!-- build:20260402074112 -->
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://scoreviral.eu">
 
@@ -102,6 +102,17 @@ body::before{
   background-size:52px 52px;z-index:0;pointer-events:none;
 }
 
+/* Flèche retour PEAKUP — dark purple */
+.back-btn{
+  display:flex;align-items:center;gap:6px;
+  background:none;border:none;
+  color:var(--accent);
+  cursor:pointer;font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;letter-spacing:.08em;
+  padding:0;margin-bottom:24px;
+  transition:opacity .15s;
+}
+.back-btn:hover{opacity:.75;}
 .z1{position:relative;z-index:1;}
 
 /* ── UTILS ── */
@@ -1320,7 +1331,7 @@ body::before{
     <span class="nav-link" id="dashLink" onclick="goTo('dashboard')" style="display:none" data-i="nav_dashboard">Dashboard</span>
   </nav>
   <div class="header-right">
-    <button class="hero-shop-btn" id="headerShopBtn" onclick="playShopSound();showToast('🛍️ Boutique PEAKUP — bientôt disponible !','success')" title="Boutique">
+    <button class="hero-shop-btn" id="headerShopBtn" onclick="playShopSound();showToast(lang==='fr'?'🛍️ Boutique PEAKUP — bientôt disponible !':lang==='es'?'🛍️ Tienda PEAKUP — ¡próximamente!':'🛍️ PEAKUP Store — coming soon!','success')" title="Boutique">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
         <path d="M1 1h2l1.5 6h7l1-4H4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
         <circle cx="6" cy="12" r="1" fill="currentColor"/><circle cx="11" cy="12" r="1" fill="currentColor"/>
@@ -1368,7 +1379,7 @@ body::before{
         <div class="hc-dot"></div>
         <span id="heroCounterTxt">847 créateurs analysés cette semaine</span>
         <!-- Bouton boutique -->
-        <button class="hero-shop-btn" onclick="playShopSound();showToast('🛍️ Boutique PEAKUP — bientôt disponible !','success')" title="Boutique PEAKUP">
+        <button class="hero-shop-btn" onclick="playShopSound();showToast(lang==='fr'?'🛍️ Boutique PEAKUP — bientôt disponible !':lang==='es'?'🛍️ Tienda PEAKUP — ¡próximamente!':'🛍️ PEAKUP Store — coming soon!','success')" title="Boutique PEAKUP">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path d="M1 1h2l1.5 6h7l1-4H4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
             <circle cx="6" cy="12" r="1" fill="currentColor"/>
@@ -1405,8 +1416,8 @@ body::before{
 <!-- ═══════ AUTH (LOGIN / SIGNUP) ═══════ -->
 <div id="pageAuth" class="z1 hidden">
   <div class="auth-card">
-    <button onclick="goTo('landing')" style="position:absolute;top:16px;left:16px;background:none;border:none;color:var(--t2);cursor:pointer;font-size:1.2rem;padding:4px;display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:.08em;" title="Retour">
-      ← Retour
+    <button onclick="goTo('landing')" class="back-btn">
+      ← <span>Retour</span>
     </button>
     <div class="auth-logo">
       <img src="https://raw.githubusercontent.com/icarodrive77-art/peakup/main/logo.png" alt="PEAKUP" style="height:64px;width:64px;object-fit:contain;border-radius:16px;margin-bottom:8px;">
@@ -2044,6 +2055,8 @@ function renderStatic(){
 function setLang(l){
   lang=l;
   if(typeof window._updateDashWelcome === 'function') window._updateDashWelcome();
+  // Re-render billing si visible
+  if(currentPage==='billing' && typeof renderBilling==='function') renderBilling();
   document.querySelectorAll('.lb').forEach(b=>b.classList.toggle('on',b.textContent===l.toUpperCase()));
   renderStatic();
   if(currentPage==='dashboard') renderDashboard();
@@ -2249,6 +2262,23 @@ function scrollToBilling(){
 function renderBilling(){
   const invs = t('invoices');
   const tbl = document.getElementById('invoiceTable');
+  
+  // Traduire le titre
+  const titleEl = document.getElementById('billingTitle');
+  if(titleEl) titleEl.textContent = lang==='fr'?'ABONNEMENT & FACTURATION':lang==='es'?'SUSCRIPCIÓN & FACTURACIÓN':'SUBSCRIPTION & BILLING';
+  
+  // Traduire la flèche retour
+  const backLabel = document.getElementById('billingBackLabel');
+  if(backLabel) backLabel.textContent = lang==='fr'?'Retour au dashboard':lang==='es'?'Volver al dashboard':'Back to dashboard';
+
+  // Traduire le plan
+  const planEl = document.getElementById('billingPlan');
+  if(planEl) planEl.textContent = 'PEAKUP PRO · '+(lang==='fr'?'Actif':lang==='es'?'Activo':'Active');
+
+  // Traduire le prochain prélèvement
+  const nextEl = document.getElementById('billingNext');
+  if(nextEl) nextEl.innerHTML = (lang==='fr'?'Prochain prélèvement':lang==='es'?'Próximo cobro':'Next payment')+' : <strong style="color:var(--text)">9,99€</strong> '+(lang==='fr'?'le':'el')+' 27 '+(lang==='fr'?'avril':lang==='es'?'abril':'April')+' 2026';
+
   if(!tbl) return;
   tbl.innerHTML = `
     <tr>
@@ -2263,9 +2293,8 @@ function renderBilling(){
       <td style="font-size:.82rem;">${inv.desc}</td>
       <td style="font-family:'Exo 2',sans-serif;font-weight:700;">${inv.amt}</td>
       <td><span class="inv-status inv-paid">✓ ${inv.status}</span></td>
-      <td><button class="btn-dl" onclick="alert('PDF — Stripe à connecter')">PDF</button></td>
+      <td><button class="btn-dl" onclick="alert('PDF — Stripe '+(lang==='fr'?'à connecter':lang==='es'?'por conectar':'to connect'))">PDF</button></td>
     </tr>`).join('')}`;
-  // Traduire les data-i dans pageBilling
   document.querySelectorAll('#pageBilling [data-i]').forEach(el=>{
     const k=el.getAttribute('data-i');
     if(COPY[lang]&&COPY[lang][k]) el.textContent=COPY[lang][k];
@@ -2331,6 +2360,9 @@ function completeAuth(name, handle, plat, isPro=false){
   const dashProBadge = document.getElementById('dashProBadge');
   if(dashProBadge) dashProBadge.style.display = isPro ? '' : 'none';
 
+  // Badge Verified
+  if(typeof showVerifiedBadgeInDash === 'function') showVerifiedBadgeInDash();
+
   // Bouton déconnexion footer
   const footerLogout = document.getElementById('footerLogout');
   if(footerLogout) footerLogout.style.display = 'block';
@@ -2345,7 +2377,7 @@ function completeAuth(name, handle, plat, isPro=false){
     if(!localStorage.getItem('peakup_visited')){
       localStorage.setItem('peakup_visited', 'true');
       setTimeout(()=>{
-        showToast('👋 Bienvenue sur PEAKUP ! Lance une analyse depuis le menu principal.', 'success');
+        showToast(lang==='fr'?'👋 Bienvenue sur PEAKUP ! Lance une analyse depuis le menu principal.':lang==='es'?'👋 ¡Bienvenido a PEAKUP! Lanza un análisis desde el menú principal.':'👋 Welcome to PEAKUP! Start an analysis from the main menu.','success');
       }, 800);
     }
   }
@@ -3770,17 +3802,17 @@ if(localStorage.getItem('peakup_verified') === 'true'){
 
 
 <!-- BILLING — page dédiée -->
-  <div id="pageBilling" class="z1 hidden" style="padding:24px 48px;max-width:900px;margin:0 auto;">
-    <button onclick="goTo('dashboard')" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--t2);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.08em;padding:0;margin-bottom:24px;">
-      ← Retour au dashboard
+  <div id="pageBilling" class="z1 hidden" style="padding:24px 48px;max-width:900px;margin:0 auto;min-height:100vh;background:var(--bg);">
+    <button onclick="goTo('dashboard')" class="back-btn" id="billingBackBtn">
+      ← <span id="billingBackLabel">Retour au dashboard</span>
     </button>
-    <div style="font-size:.6rem;letter-spacing:.2em;color:var(--t3);font-family:'JetBrains Mono',monospace;margin-bottom:20px;">ABONNEMENT & FACTURATION</div>
+    <div id="billingTitle" style="font-size:.6rem;letter-spacing:.2em;color:var(--t3);font-family:'JetBrains Mono',monospace;margin-bottom:20px;">ABONNEMENT & FACTURATION</div>
     <div class="dash-grid">
       <div class="dash-wide sub-card" style="margin-bottom:24px">
         <div class="sub-icon">💳</div>
         <div class="sub-info">
-          <div class="sub-plan">PEAKUP PRO · Actif</div>
-          <div class="sub-detail">Prochain prélèvement : <strong style="color:var(--text)">9,99€</strong> le 27 avril 2026</div>
+          <div class="sub-plan" id="billingPlan">PEAKUP PRO · Actif</div>
+          <div class="sub-detail" id="billingNext">Prochain prélèvement : <strong style="color:var(--text)">9,99€</strong> le 27 avril 2026</div>
         </div>
         <button class="btn-manage" data-i="cancel_sub">Annuler</button>
         <button class="btn-manage" style="background:rgba(124,92,252,.1)" data-i="update_payment">Modifier</button>
