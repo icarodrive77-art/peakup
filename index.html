@@ -8,7 +8,7 @@
 <!-- v20260402072641 -->
 <meta name="description" content="PEAKUP analyse ton profil TikTok ou YouTube avec l'IA et te donne des recommandations personnalisées pour exploser ton score viral. Essai gratuit, résultats en 30 secondes.">
 <meta name="keywords" content="analyse tiktok, analyse youtube, score viral, creator analytics, recommandations IA, croissance tiktok, algorithme youtube">
-<meta name="author" content="PEAKUP"><!-- 20260402133403 --><!-- 20260402131544 --><!-- build:20260402074112 -->
+<meta name="author" content="PEAKUP"><!-- 20260402141138 --><!-- 20260402133403 --><!-- 20260402131544 --><!-- build:20260402074112 -->
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://scoreviral.eu">
 
@@ -2071,10 +2071,40 @@ function setPlatform(p){
    NAVIGATION
 ════════════════════════════════ */
 function goTo(page){
+  if(page === 'billing'){
+    // Billing : garder pageDashboard visible, cacher son contenu, montrer pageBilling
+    ['pageLanding','pageLoading','pageResults','pageAuth','pageLegal'].forEach(id=>{
+      const el=document.getElementById(id);if(el)el.classList.add('hidden');
+    });
+    // Montrer pageDashboard mais cacher son contenu direct
+    const dash=document.getElementById('pageDashboard');
+    if(dash){
+      dash.classList.remove('hidden');
+      // Cacher tous les enfants directs du dashboard sauf pageBilling
+      Array.from(dash.children).forEach(child=>{
+        if(child.id==='pageBilling') child.classList.remove('hidden');
+        else child.style.display='none';
+      });
+    }
+    const billing=document.getElementById('pageBilling');
+    if(billing){ billing.classList.remove('hidden'); billing.style.display=''; }
+    currentPage='billing';
+    window.scrollTo({top:0,behavior:'smooth'});
+    setTimeout(renderBilling,100);
+    return;
+  }
+  // Navigation normale
   ['pageLanding','pageLoading','pageResults','pageDashboard','pageAuth','pageLegal','pageBilling'].forEach(id=>{
-    const el = document.getElementById(id);
-    if(el) el.classList.toggle('hidden', id!=='page'+cap(page));
+    const el=document.getElementById(id);
+    if(el){ el.classList.toggle('hidden',id!=='page'+cap(page)); el.style.display=''; }
   });
+  // Rétablir le contenu du dashboard si on y revient
+  if(page==='dashboard'){
+    const dash=document.getElementById('pageDashboard');
+    if(dash) Array.from(dash.children).forEach(child=>{ child.style.display=''; });
+    const billing=document.getElementById('pageBilling');
+    if(billing) billing.classList.add('hidden');
+  }
   currentPage=page;
   window.scrollTo({top:0,behavior:'smooth'});
 }
