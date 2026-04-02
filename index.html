@@ -8,7 +8,7 @@
 <!-- v20260402072641 -->
 <meta name="description" content="PEAKUP analyse ton profil TikTok ou YouTube avec l'IA et te donne des recommandations personnalisées pour exploser ton score viral. Essai gratuit, résultats en 30 secondes.">
 <meta name="keywords" content="analyse tiktok, analyse youtube, score viral, creator analytics, recommandations IA, croissance tiktok, algorithme youtube">
-<meta name="author" content="PEAKUP"><!-- build:20260402074112 -->
+<meta name="author" content="PEAKUP"><!-- 20260402131544 --><!-- build:20260402074112 -->
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://scoreviral.eu">
 
@@ -1669,11 +1669,11 @@ body::before{
         <div class="d-card-title">
           <span data-i="score_history">Historique de score viral</span>
           <div class="chart-periods" id="chartPeriods">
-            <button class="cp-btn on" onclick="setChartPeriod('1w',this)">1S</button>
-            <button class="cp-btn" onclick="setChartPeriod('1m',this)">1M</button>
-            <button class="cp-btn" onclick="setChartPeriod('3m',this)">3M</button>
-            <button class="cp-btn" onclick="setChartPeriod('6m',this)">6M</button>
-            <button class="cp-btn" onclick="setChartPeriod('1y',this)">1A</button>
+            <button class="cp-btn on" onclick="setChartPeriod('1w',this)" id="period1w"></button>
+            <button class="cp-btn" onclick="setChartPeriod('1m',this)" id="period1m"></button>
+            <button class="cp-btn" onclick="setChartPeriod('3m',this)" id="period3m"></button>
+            <button class="cp-btn" onclick="setChartPeriod('6m',this)" id="period6m"></button>
+            <button class="cp-btn" onclick="setChartPeriod('1y',this)" id="period1y"></button>
           </div>
         </div>
         <div style="font-size:.7rem;font-family:JetBrains Mono,monospace;color:var(--t3);margin-bottom:8px;" id="currentScoreLabel">Score actuel : —</div>
@@ -3101,8 +3101,9 @@ function renderDashboard(){
   const compEl = document.getElementById('comparativeReward');
   if(compEl && daysSince >= 30) compEl.style.display = '';
 
-  // Score chart
-  setChartPeriod('1w', document.querySelector('.cp-btn'));
+  // Score chart + traduire les périodes
+  updateLangMenu();
+  setChartPeriod('1w', document.getElementById('period1w'));
 
   // Invoices
   const invs=t('invoices');
@@ -3141,6 +3142,18 @@ function updateLangMenu(){
   ['fr','en','es'].forEach(l=>{
     const btn = document.getElementById('lm'+l.toUpperCase());
     if(btn) btn.classList.toggle('on', lang===l);
+  });
+  // Traduire les boutons de période
+  const periods = {
+    '1w': {fr:'1S', en:'1W', es:'1S'},
+    '1m': {fr:'1M', en:'1M', es:'1M'},
+    '3m': {fr:'3M', en:'3M', es:'3M'},
+    '6m': {fr:'6M', en:'6M', es:'6M'},
+    '1y': {fr:'1A', en:'1Y', es:'1A'},
+  };
+  Object.entries(periods).forEach(([key, vals])=>{
+    const el = document.getElementById('period'+key);
+    if(el) el.textContent = vals[lang]||vals.fr;
   });
   // Traduire les éléments du menu déroulant
   const tr = {
@@ -3221,7 +3234,8 @@ function setChartPeriod(period, btn){
     }).join('')}`;
   const last=scores[scores.length-1];
   const lbl=document.getElementById('currentScoreLabel');
-  if(lbl) lbl.textContent=(lang==='fr'?'Score actuel : ':lang==='es'?'Puntuación: ':'Current score: ')+last;
+  const scoreLabel = lang==='fr'?'Score actuel : ':lang==='es'?'Puntuación: ':'Current score: ';
+  if(lbl) lbl.textContent=scoreLabel+last;
 }
 
 function handleAlertClick(el, type, link){
