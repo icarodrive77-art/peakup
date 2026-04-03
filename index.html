@@ -8,7 +8,7 @@
 <!-- v20260402072641 -->
 <meta name="description" content="PEAKUP analyse ton profil TikTok ou YouTube avec l'IA et te donne des recommandations personnalisées pour exploser ton score viral. Essai gratuit, résultats en 30 secondes.">
 <meta name="keywords" content="analyse tiktok, analyse youtube, score viral, creator analytics, recommandations IA, croissance tiktok, algorithme youtube">
-<meta name="author" content="PEAKUP"><!-- 20260402141138 --><!-- 20260402133403 --><!-- 20260402131544 --><!-- build:20260402074112 -->
+<meta name="author" content="PEAKUP"><!-- 20260403105606 --><!-- 20260403105549 --><!-- 20260403105530 --><!-- 20260402144933 --><!-- 20260402144901 --><!-- 20260402141138 --><!-- 20260402133403 --><!-- 20260402131544 --><!-- build:20260402074112 -->
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://scoreviral.eu">
 
@@ -1331,7 +1331,7 @@ body::before{
     <span class="nav-link" id="dashLink" onclick="goTo('dashboard')" style="display:none" data-i="nav_dashboard">Dashboard</span>
   </nav>
   <div class="header-right">
-    <button class="hero-shop-btn" id="headerShopBtn" onclick="playShopSound();showToast(lang==='fr'?'🛍️ Boutique PEAKUP — bientôt disponible !':lang==='es'?'🛍️ Tienda PEAKUP — ¡próximamente!':'🛍️ PEAKUP Store — coming soon!','success')" title="Boutique">
+    <button class="hero-shop-btn" id="headerShopBtn" onclick="showShopToast()" title="Boutique">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
         <path d="M1 1h2l1.5 6h7l1-4H4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
         <circle cx="6" cy="12" r="1" fill="currentColor"/><circle cx="11" cy="12" r="1" fill="currentColor"/>
@@ -1348,7 +1348,7 @@ body::before{
   <!-- HERO -->
   <section class="hero">
     <div class="hero-badge"><div class="live-dot"></div><span data-i="hero_badge">IA Creator Analytics · Beta</span></div>
-    <div class="beta-notice">⚡ Beta — Analyse IA · Intégration API TikTok en cours · <a onclick="showLegal('cgu')" style="color:var(--accent);cursor:pointer">En savoir plus</a></div>
+    <div class="beta-notice">⚡ Beta — Analyse IA · Scores basés sur IA, pas sur données réelles TikTok · <a onclick="showLegal('cgu')" style="color:var(--accent);cursor:pointer">En savoir plus</a></div>
     <!-- CTA mobile uniquement — visible sous le titre -->
     <button class="mobile-cta-hero" id="mobileCta" onclick="scrollToPricing()" data-i="subscribe_header">S'abonner — 9,99€/mois</button>
     <h1 id="heroH1"><em>Analyse</em> ton profil.<br>Domine <span class="gold">l'algo.</span></h1>
@@ -1379,7 +1379,7 @@ body::before{
         <div class="hc-dot"></div>
         <span id="heroCounterTxt">847 créateurs analysés cette semaine</span>
         <!-- Bouton boutique -->
-        <button class="hero-shop-btn" onclick="playShopSound();showToast(lang==='fr'?'🛍️ Boutique PEAKUP — bientôt disponible !':lang==='es'?'🛍️ Tienda PEAKUP — ¡próximamente!':'🛍️ PEAKUP Store — coming soon!','success')" title="Boutique PEAKUP">
+        <button class="hero-shop-btn" onclick="showShopToast()" title="Boutique PEAKUP">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path d="M1 1h2l1.5 6h7l1-4H4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
             <circle cx="6" cy="12" r="1" fill="currentColor"/>
@@ -1726,7 +1726,7 @@ body::before{
 ════════════════════════════════ */
 const COPY = {
   fr:{
-    nav_features:"Fonctionnalités",nav_pricing:"Tarifs",nav_dashboard:"Dashboard",
+    nav_features:"Fonctionnalités",nav_pricing:"Tarifs",nav_dashboard:"Dashboard",footer_cta_btn:"Analyser maintenant →",footer_cta_title:"Prêt à dominer l'algo ?",footer_cta_sub:"Analyse ton profil TikTok ou YouTube gratuitement en 30 secondes.",
     login:"Connexion",subscribe_header:window.innerWidth<600?"Pro 9,99€":"S'abonner — 9,99€/mois",
     hero_badge:"IA Creator Analytics · Beta",
     hero_h1:'<em>Analyse</em> ton profil.<br>Domine <span class="gold">l\'algo.</span>',
@@ -1814,7 +1814,7 @@ const COPY = {
     ],
   },
   en:{
-    nav_features:"Features",nav_pricing:"Pricing",nav_dashboard:"Dashboard",
+    nav_features:"Features",nav_pricing:"Pricing",nav_dashboard:"Dashboard",footer_cta_btn:"Analyze now →",footer_cta_title:"Ready to dominate the algo?",footer_cta_sub:"Analyze your TikTok or YouTube profile for free in 30 seconds.",
     login:"Log in",subscribe_header:window.innerWidth<600?"Pro €9.99":"Subscribe — €9.99/mo",
     hero_badge:"AI Creator Analytics · Beta",
     hero_h1:'<em>Analyze</em> your profile.<br>Dominate <span class="gold">the algo.</span>',
@@ -1898,7 +1898,7 @@ const COPY = {
     ],
   },
   es:{
-    nav_features:"Funciones",nav_pricing:"Precios",nav_dashboard:"Dashboard",
+    nav_features:"Funciones",nav_pricing:"Precios",nav_dashboard:"Dashboard",footer_cta_btn:"Analizar ahora →",footer_cta_title:"¿Listo para dominar el algo?",footer_cta_sub:"Analiza tu perfil de TikTok o YouTube gratis en 30 segundos.",
     login:"Iniciar sesión",subscribe_header:window.innerWidth<600?"Pro 9,99€":"Suscribirse — 9,99€/mes",
     hero_badge:"IA Analytics para Creadores · Beta",
     hero_h1:'<em>Analiza</em> tu perfil.<br>Domina <span class="gold">el algo.</span>',
@@ -2269,12 +2269,16 @@ function showAuthLoading(show){
 
 function handleLogoClick(e){
   if(e) e.stopPropagation();
-  // Si pas connecté et pas sur la landing → retour landing
-  // Mais si on clique sur logo depuis landing → ouvre menu si items disponibles
   const menu = document.getElementById('logoMenu');
   if(!menu) return;
-  const isOpen = menu.style.display==='block';
-  menu.style.display = isOpen ? 'none' : 'block';
+  // Cacher/montrer items membres
+  ['lmItemDashboard','lmItemBilling'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display=loggedIn?'':'none';
+  });
+  const logoutEl=document.querySelector('.lm-logout');
+  if(logoutEl) logoutEl.style.display=loggedIn?'':'none';
+  menu.style.display=menu.style.display==='block'?'none':'block';
 }
 function closeLogoMenu(){
   const menu = document.getElementById('logoMenu');
@@ -2284,12 +2288,25 @@ document.addEventListener('click', e=>{
   if(!document.getElementById('logoWrap')?.contains(e.target)) closeLogoMenu();
 });
 function scrollToBilling(){
+  if(!loggedIn){
+    showToast(lang==='fr'?'🔒 Connecte-toi pour accéder à ton abonnement.':lang==='es'?'🔒 Inicia sesión para acceder a tu suscripción.':'🔒 Sign in to access your subscription.','warn');
+    goToAuth();
+    return;
+  }
   goTo('billing');
-  // Rendre le tableau des factures
   setTimeout(renderBilling, 100);
 }
 
 function renderBilling(){
+  if(!loggedIn){
+    goTo('landing');
+    return;
+  }
+  const isPro = localStorage.getItem('peakup_is_pro') === 'true';
+  const billingPlanEl = document.getElementById('billingPlan');
+  if(billingPlanEl && !isPro){
+    billingPlanEl.textContent = lang==='fr'?'Aucun abonnement actif':lang==='es'?'Sin suscripción activa':'No active subscription';
+  }
   const invs = t('invoices');
   const tbl = document.getElementById('invoiceTable');
   
@@ -3008,6 +3025,14 @@ function playMenuBip(){
   }catch(e){}
 }
 
+function showShopToast(){
+  const msg = lang==='fr' ? '🛍️ Boutique PEAKUP — bientôt disponible !' :
+               lang==='es' ? '🛍️ Tienda PEAKUP — ¡próximamente!' :
+               '🛍️ PEAKUP Store — coming soon!';
+  playShopSound();
+  showToast(msg, 'success');
+}
+
 function playButtonSound(){
   try{
     const c=getAudioCtx(),t=c.currentTime;
@@ -3112,13 +3137,20 @@ function renderDashboard(){
   const lastScore = 79;
   if(document.getElementById('dqsScore')) document.getElementById('dqsScore').textContent = lastScore;
 
-  // Streak
+  // Streak — préserver si même jour, incrémenter si hier, reset si plus
   const streakKey = 'peakup_streak';
   const streakData = JSON.parse(localStorage.getItem(streakKey)||'{"count":1,"last":0}');
   const today = Math.floor(Date.now()/86400000);
   let streak = streakData.count;
-  if(streakData.last === today-1){ streak++; }
-  else if(streakData.last !== today){ streak = 1; }
+  if(streakData.last === today){
+    streak = streakData.count; // Même jour — on garde
+  } else if(streakData.last === today-1){
+    streak = streakData.count + 1; // Hier — on incrémente
+  } else if(streakData.last === 0){
+    streak = 1; // Premier lancement
+  } else {
+    streak = 1; // Trop longtemps — reset
+  }
   localStorage.setItem(streakKey, JSON.stringify({count:streak, last:today}));
   if(document.getElementById('dqsStreak')) document.getElementById('dqsStreak').textContent = '🔥 '+streak;
 
@@ -3845,7 +3877,7 @@ if(localStorage.getItem('peakup_verified') === 'true'){
           <div class="sub-detail" id="billingNext">Prochain prélèvement : <strong style="color:var(--text)">9,99€</strong> le 27 avril 2026</div>
         </div>
         <button class="btn-manage" data-i="cancel_sub">Annuler</button>
-        <button class="btn-manage" style="background:rgba(124,92,252,.1)" data-i="update_payment">Modifier</button>
+        <button class="btn-manage" style="background:rgba(124,92,252,.1)" data-i="update_payment" onclick="window.location.href='mailto:contact@scoreviral.eu?subject=Modification paiement PEAKUP'">Modifier</button>
       </div>
       <div class="dash-wide d-card">
         <div class="d-card-title"><span data-i="invoices">Historique des factures</span></div>
@@ -3858,9 +3890,9 @@ if(localStorage.getItem('peakup_verified') === 'true'){
 <footer class="site-footer">
   <!-- CTA Analyser en bas de page -->
   <div class="footer-cta">
-    <div class="footer-cta-title">Prêt à dominer l'algo ?</div>
-    <div class="footer-cta-sub">Analyse ton profil TikTok ou YouTube gratuitement en 30 secondes.</div>
-    <button class="footer-cta-btn" onclick="playButtonSound();window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>document.getElementById('handle').focus(),600);">
+    <div class="footer-cta-title" data-i="footer_cta_title">Prêt à dominer l'algo ?</div>
+    <div class="footer-cta-sub" data-i="footer_cta_sub">Analyse ton profil TikTok ou YouTube gratuitement en 30 secondes.</div>
+    <button class="footer-cta-btn" onclick="playButtonSound();window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>document.getElementById('handle').focus(),600);" data-i="footer_cta_btn">
       Analyser maintenant →
     </button>
     <div class="footer-slogan">PEAKUP · <em>Reach the top!</em></div>
