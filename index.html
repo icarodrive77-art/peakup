@@ -8,7 +8,7 @@
 <!-- v20260402072641 -->
 <meta name="description" content="PEAKUP analyse ton profil TikTok ou YouTube avec l'IA et te donne des recommandations personnalisées pour exploser ton score viral. Essai gratuit, résultats en 30 secondes.">
 <meta name="keywords" content="analyse tiktok, analyse youtube, score viral, creator analytics, recommandations IA, croissance tiktok, algorithme youtube">
-<meta name="author" content="PEAKUP"><!-- 20260403105606 --><!-- 20260403105549 --><!-- 20260403105530 --><!-- 20260402144933 --><!-- 20260402144901 --><!-- 20260402141138 --><!-- 20260402133403 --><!-- 20260402131544 --><!-- build:20260402074112 -->
+<meta name="author" content="PEAKUP"><!-- 20260405091606 --><!-- 20260405091423 --><!-- 20260403105606 --><!-- 20260403105549 --><!-- 20260403105530 --><!-- 20260402144933 --><!-- 20260402144901 --><!-- 20260402141138 --><!-- 20260402133403 --><!-- 20260402131544 --><!-- build:20260402074112 -->
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://scoreviral.eu">
 
@@ -2298,57 +2298,63 @@ function scrollToBilling(){
 }
 
 function renderBilling(){
-  if(!loggedIn){
-    goTo('landing');
-    return;
-  }
+  if(!loggedIn){ goTo('landing'); return; }
+
   const isPro = localStorage.getItem('peakup_is_pro') === 'true';
-  const billingPlanEl = document.getElementById('billingPlan');
-  if(billingPlanEl && !isPro){
-    billingPlanEl.textContent = lang==='fr'?'Aucun abonnement actif':lang==='es'?'Sin suscripción activa':'No active subscription';
-  }
-  const invs = t('invoices');
-  const tbl = document.getElementById('invoiceTable');
-  
-  // Traduire le titre
+
+  // Traduire labels
   const titleEl = document.getElementById('billingTitle');
   if(titleEl) titleEl.textContent = lang==='fr'?'ABONNEMENT & FACTURATION':lang==='es'?'SUSCRIPCIÓN & FACTURACIÓN':'SUBSCRIPTION & BILLING';
-  
-  // Traduire la flèche retour
   const backLabel = document.getElementById('billingBackLabel');
   if(backLabel) backLabel.textContent = lang==='fr'?'Retour au dashboard':lang==='es'?'Volver al dashboard':'Back to dashboard';
 
-  // Traduire le plan
+  const tbl = document.getElementById('invoiceTable');
+
+  if(!isPro){
+    const planEl = document.getElementById('billingPlan');
+    if(planEl) planEl.textContent = lang==='fr'?'Aucun abonnement actif':lang==='es'?'Sin suscripción activa':'No active subscription';
+    const nextEl = document.getElementById('billingNext');
+    if(nextEl) nextEl.textContent = lang==='fr'?'Passe en Pro pour accéder aux fonctionnalités avancées.':lang==='es'?'Pásate a Pro para acceder a las funciones avanzadas.':'Go Pro to access advanced features.';
+    if(tbl) tbl.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--t2);padding:24px;font-size:.85rem;">'+(lang==='fr'?'Aucune facture \u2014 tu n\'es pas encore abonn\u00e9.':lang==='es'?'Sin facturas \u2014 a\u00fan no est\u00e1s suscrito.':'No invoices \u2014 you\'re not subscribed yet.')+'</td></tr>';
+    document.querySelectorAll('.btn-manage').forEach(b=>b.style.display='none');
+    return;
+  }
+
+  // Compte Pro
   const planEl = document.getElementById('billingPlan');
-  if(planEl) planEl.textContent = 'PEAKUP PRO · '+(lang==='fr'?'Actif':lang==='es'?'Activo':'Active');
-
-  // Traduire le prochain prélèvement
+  if(planEl) planEl.textContent = 'PEAKUP PRO \u00b7 '+(lang==='fr'?'Actif':lang==='es'?'Activo':'Active');
   const nextEl = document.getElementById('billingNext');
-  if(nextEl) nextEl.innerHTML = (lang==='fr'?'Prochain prélèvement':lang==='es'?'Próximo cobro':'Next payment')+' : <strong style="color:var(--text)">9,99€</strong> '+(lang==='fr'?'le':'el')+' 27 '+(lang==='fr'?'avril':lang==='es'?'abril':'April')+' 2026';
+  if(nextEl) nextEl.innerHTML = (lang==='fr'?'Prochain pr\u00e9l\u00e8vement':lang==='es'?'Pr\u00f3ximo cobro':'Next payment')+' : <strong style="color:var(--text)">9,99\u20ac</strong>';
+  document.querySelectorAll('.btn-manage').forEach(b=>b.style.display='');
 
-  if(!tbl) return;
-  tbl.innerHTML = `
-    <tr>
-      <th style="width:110px">${lang==='fr'?'Date':lang==='es'?'Fecha':'Date'}</th>
-      <th>${lang==='fr'?'Description':'Description'}</th>
-      <th>${lang==='fr'?'Montant':lang==='es'?'Importe':'Amount'}</th>
-      <th>${lang==='fr'?'Statut':lang==='es'?'Estado':'Status'}</th>
-      <th></th>
-    </tr>
-    ${invs.map(inv=>`<tr>
-      <td style="color:var(--t2);font-family:'JetBrains Mono',monospace;font-size:.72rem;">${inv.date}</td>
-      <td style="font-size:.82rem;">${inv.desc}</td>
-      <td style="font-family:'Exo 2',sans-serif;font-weight:700;">${inv.amt}</td>
-      <td><span class="inv-status inv-paid">✓ ${inv.status}</span></td>
-      <td><button class="btn-dl" onclick="alert('PDF — Stripe '+(lang==='fr'?'à connecter':lang==='es'?'por conectar':'to connect'))">PDF</button></td>
-    </tr>`).join('')}`;
+  const invs = t('invoices');
+  const thDate = lang==='fr'?'Date':lang==='es'?'Fecha':'Date';
+  const thDesc = 'Description';
+  const thAmt = lang==='fr'?'Montant':lang==='es'?'Importe':'Amount';
+  const thStat = lang==='fr'?'Statut':lang==='es'?'Estado':'Status';
+  const demoNote = lang==='fr'?'\u26a0\ufe0f Donn\u00e9es de d\u00e9monstration \u2014 int\u00e9gration Stripe en cours.':lang==='es'?'\u26a0\ufe0f Datos de demostraci\u00f3n \u2014 integraci\u00f3n Stripe en proceso.':'\u26a0\ufe0f Demo data \u2014 Stripe integration in progress.';
+
+  if(tbl) tbl.innerHTML = '<tr>'
+    +'<th style="width:110px">'+thDate+'</th>'
+    +'<th>'+thDesc+'</th>'
+    +'<th>'+thAmt+'</th>'
+    +'<th>'+thStat+'</th>'
+    +'<th></th>'
+    +'</tr>'
+    +invs.map(inv=>'<tr>'
+      +'<td style="color:var(--t2);font-family:\'JetBrains Mono\',monospace;font-size:.72rem;">'+inv.date+'</td>'
+      +'<td style="font-size:.82rem;">'+inv.desc+'</td>'
+      +'<td style="font-family:\'Exo 2\',sans-serif;font-weight:700;">'+inv.amt+'</td>'
+      +'<td><span class="inv-status inv-paid">\u2713 '+inv.status+'</span></td>'
+      +'<td><button class="btn-dl">PDF</button></td>'
+      +'</tr>').join('')
+    +'<tr><td colspan="5" style="font-size:.7rem;color:var(--t3);padding-top:12px;font-family:\'JetBrains Mono\',monospace;">'+demoNote+'</td></tr>';
+
   document.querySelectorAll('#pageBilling [data-i]').forEach(el=>{
     const k=el.getAttribute('data-i');
     if(COPY[lang]&&COPY[lang][k]) el.textContent=COPY[lang][k];
   });
-}
-
-async function doLogout(){
+}async function doLogout(){
   try{
     await fbAuth.signOut();
     loggedIn = false;
@@ -3876,7 +3882,10 @@ if(localStorage.getItem('peakup_verified') === 'true'){
           <div class="sub-plan" id="billingPlan">PEAKUP PRO · Actif</div>
           <div class="sub-detail" id="billingNext">Prochain prélèvement : <strong style="color:var(--text)">9,99€</strong> le 27 avril 2026</div>
         </div>
-        <button class="btn-manage" data-i="cancel_sub">Annuler</button>
+        <button class="btn-manage" data-i="cancel_sub" onclick="
+  const msg = lang==='fr'?'Confirmer l\'annulation ? Ton accès Pro reste actif jusqu\'à la fin de la période.':lang==='es'?'¿Confirmar cancelación?':'Confirm cancellation? Your Pro access remains active until end of period.';
+  if(confirm(msg)){window.location.href='mailto:contact@scoreviral.eu?subject=Annulation abonnement PEAKUP';}
+">Annuler</button>
         <button class="btn-manage" style="background:rgba(124,92,252,.1)" data-i="update_payment" onclick="window.location.href='mailto:contact@scoreviral.eu?subject=Modification paiement PEAKUP'">Modifier</button>
       </div>
       <div class="dash-wide d-card">
