@@ -2117,7 +2117,7 @@ function goToAuth(){
 
 async function simulateSubscribe(fomoOverride){
   try{
-    const email = loggedIn ? document.getElementById('loginBtn').textContent : '';
+    const email = loggedIn ? (fbAuth.currentUser?.email || '') : '';
     // FOMO actif si override explicite OU timer device encore actif
     const fomoActive = fomoOverride === true || (
       localStorage.getItem(getFomoUsedKey()) !== 'used' &&
