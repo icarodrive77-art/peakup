@@ -1863,6 +1863,7 @@ function setPlatform(p){
    NAVIGATION
 ════════════════════════════════ */
 function goTo(page){
+  if(page === 'dashboard' && !loggedIn){ goTo('auth'); return; }
   ['pageLanding','pageLoading','pageResults','pageDashboard','pageAuth','pageLegal'].forEach(id=>{
     document.getElementById(id).classList.toggle('hidden',id!=='page'+cap(page));
   });

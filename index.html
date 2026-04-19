@@ -2071,6 +2071,7 @@ function setPlatform(p){
    NAVIGATION
 ════════════════════════════════ */
 function goTo(page){
+  if(page === 'dashboard' && !loggedIn){ goTo('auth'); return; }
   if(page === 'billing'){
     // Billing : garder pageDashboard visible, cacher son contenu, montrer pageBilling
     ['pageLanding','pageLoading','pageResults','pageAuth','pageLegal'].forEach(id=>{
