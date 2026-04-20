@@ -1041,10 +1041,11 @@ body::before{
    RESPONSIVE
 ══════════════════════════════════════════ */
 .mobile-analyse-btn{display:none;}
+.mobile-cta-hero{display:none;}
 
 @media(max-width:768px){
   .mobile-cta-hero{
-    display:flex;align-items:center;justify-content:center;
+    display:none;align-items:center;justify-content:center;
     width:100%;max-width:340px;
     background:linear-gradient(135deg,#7c5cfc,#a855f7);
     color:#fff;border:none;border-radius:10px;
@@ -1077,6 +1078,7 @@ body::before{
 
   /* Cacher complètement le bouton S'abonner sur mobile — trop long */
   #ctaBtn{display:none !important;}
+  .mobile-cta-hero{display:flex;}
   .login-btn{padding:8px 14px;font-size:.78rem;white-space:nowrap;}
 
   .hero{padding:48px 16px 40px;}
