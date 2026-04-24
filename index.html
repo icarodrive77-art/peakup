@@ -1459,7 +1459,6 @@ body::before{
       <div class="search-box">
         <div class="plat-tog">
           <button class="pb on" id="pbTT" onclick="setPlatform('tiktok')">TikTok</button>
-          <button class="pb" id="pbYT" onclick="setPlatform('youtube')">YouTube</button>
         </div>
         <div class="sdiv"></div>
         <span class="sat">@</span>
@@ -1533,7 +1532,7 @@ body::before{
     <div class="auth-error" id="authError"></div>
 
     <!-- Google SSO -->
-    <button class="btn-google" onclick="authWithGoogle()">
+    <button class="btn-google" onclick="playMenuBip();authWithGoogle()">
       <svg class="google-icon" viewBox="0 0 18 18" fill="none">
         <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
         <path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
@@ -1572,7 +1571,7 @@ body::before{
           </div>
         </div>
       </div>
-      <button class="btn-auth" onclick="doSignup()" data-i="auth_btn_signup">Créer mon compte →</button>
+      <button class="btn-auth" onclick="playMenuBip();doSignup()" data-i="auth_btn_signup">Créer mon compte →</button>
       <div class="auth-footer" data-i="auth_terms">En créant un compte tu acceptes nos <a onclick="showLegal('cgu')" style="color:var(--accent);cursor:pointer">CGU</a> et notre <a onclick="showLegal('privacy')" style="color:var(--accent);cursor:pointer">Politique de confidentialité</a>.</div>
     </div>
 
@@ -1586,7 +1585,7 @@ body::before{
         <label class="auth-label" data-i="auth_label_pwd">MOT DE PASSE</label>
         <input class="auth-input" id="loginPwd" type="password" placeholder="••••••••"/>
       </div>
-      <button class="btn-auth" onclick="doLogin()" data-i="auth_btn_login">Se connecter →</button>
+      <button class="btn-auth" onclick="playMenuBip();doLogin()" data-i="auth_btn_login">Se connecter →</button>
       <div class="auth-footer"><a onclick="doForgotPassword()" style="cursor:pointer" data-i="auth_forgot">Mot de passe oublié ?</a></div>
     </div>
   </div>
@@ -1604,7 +1603,7 @@ body::before{
     <div class="portal-ring"></div>
     <div class="portal-inner"></div>
     <div class="portal-particles" id="portalParticles"></div>
-    <img src="https://raw.githubusercontent.com/icarodrive77-art/peakup/main/logo.png" alt="P" class="portal-p" style="width:64px;height:64px;object-fit:contain;border-radius:14px;">
+    <img src="https://raw.githubusercontent.com/icarodrive77-art/peakup/main/logo.png" alt="P" class="portal-p" style="width:48px;height:48px;object-fit:contain;border-radius:8px;">
   </div>
   <div class="load-steps" id="stepsEl"></div>
   <div class="load-txt" data-i="analyzing">PEAKUP · ANALYZING...</div>
@@ -1751,55 +1750,6 @@ body::before{
       </div>
     </div>
     <div class="dash-pro-badge" id="dashProBadge" style="display:none">PRO · Actif</div>
-
-  <!-- Modal : Analyser depuis le dashboard -->
-  <div id="dashAnalyzeModal" class="dam-overlay hidden">
-    <div class="dam-card">
-      <button class="dam-close" onclick="closeDashAnalyze()">×</button>
-
-      <!-- État : formulaire -->
-      <div id="damForm">
-        <div class="dam-title" id="damTitle">⚡ Analyser un profil</div>
-        <div class="dam-plat">
-          <button class="dam-pb on" id="damPlatTT" onclick="setDamPlat('tiktok',this)">TikTok</button>
-          <button class="dam-pb" id="damPlatYT" onclick="setDamPlat('youtube',this)">YouTube</button>
-        </div>
-        <div class="dam-input-wrap">
-          <span class="dam-at">@</span>
-          <input id="damHandle" class="dam-input" type="text" placeholder="pseudonyme" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter')startDashAnalysis()">
-        </div>
-        <button class="dam-btn" id="damAnalyzeBtn" onclick="startDashAnalysis()">
-          <span id="damBtnTxt">Analyser →</span>
-        </button>
-        <div class="dam-err" id="damErr"></div>
-      </div>
-
-      <!-- État : chargement -->
-      <div id="damLoading" class="dam-loading" style="display:none">
-        <div class="dam-spinner"></div>
-        <div class="dam-loading-txt" id="damLoadTxt">Analyse en cours…</div>
-      </div>
-
-      <!-- État : résultats -->
-      <div id="damResults" style="display:none">
-        <div class="dam-score-wrap">
-          <div class="dam-score-ring" id="damScoreRing">
-            <div class="dam-score-n" id="damScoreN">0</div>
-          </div>
-          <div>
-            <div class="dam-score-lbl">// SCORE VIRAL</div>
-            <div class="dam-score-ttl" id="damScoreTtl">—</div>
-            <div class="dam-bar-track"><div class="dam-bar-fill" id="damBarFill"></div></div>
-          </div>
-        </div>
-        <div class="dam-handle-info" id="damHandleInfo"></div>
-        <div class="dam-metrics" id="damMetrics"></div>
-        <div class="dam-reco-section-title">RECOMMANDATIONS IA</div>
-        <div class="dam-recos" id="damRecos"></div>
-        <button class="dam-btn dam-btn-secondary" onclick="resetDashAnalyze()">← Nouvelle analyse</button>
-      </div>
-    </div>
-  </div>
   </div>
 
   <!-- STATS RAPIDES EN HAUT -->
@@ -2335,7 +2285,7 @@ function setLang(l){
 function setPlatform(p){
   platform=p;
   document.getElementById('pbTT').classList.toggle('on',p==='tiktok');
-  document.getElementById('pbYT').classList.toggle('on',p==='youtube');
+  const yt=document.getElementById('pbYT'); if(yt) yt.classList.toggle('on',p==='youtube');
 }
 
 /* ════════════════════════════════
@@ -2958,46 +2908,48 @@ async function startAnalysis(){
   const platName = platform==='tiktok' ? 'TikTok' : 'YouTube';
   const langMap = {fr:'français', en:'English', es:'español'};
 
-  const prompt=`You are PEAKUP, an elite AI analytics engine for content creators.
+  const prompt=`You are PEAKUP, an elite AI analytics engine for TikTok content creators.
 
-Your task: generate a realistic, deeply personalized profile analysis for @${handle} on ${platName}. Respond ONLY in ${langMap[lang]}.
+Your task: deliver a complete, hyper-personalized analysis for @${handle} on ${platName}. Respond ONLY in ${langMap[lang]}.
 
-STEP 1 — Infer who @${handle} is before writing anything:
-- Decode the handle: language, keywords, numbers, style (e.g. "fitnessbymaria" → fitness niche, female creator, personal brand; "xXdark_edit99Xx" → edits/AMV, young male, anime/gaming adjacent)
-- Estimate their growth stage: hobbyist / rising / established / viral
-- Infer their likely content format, posting cadence, and audience age group
+━━━ PHASE 1 — NICHE DETECTION (do this silently before writing anything) ━━━
+Decode @${handle} deeply:
+- Extract every signal from the handle: language, words, numbers, abbreviations, cultural references, brand style
+- Map to a primary NICHE (fitness, gaming, cooking, beauty, lifestyle, humor, music, dance, education, fashion, travel, finance, tech, sports, cars, spirituality, parenting, animals, DIY, art, etc.)
+- Infer sub-niche if possible (e.g. fitness → calisthenics for men 18-25 / cooking → quick Asian recipes / gaming → Minecraft speedruns)
+- Estimate growth stage: hobbyist (0-5K) / rising (5K-50K) / established (50K-500K) / viral (500K+)
+- Infer audience age, gender lean, content format and average posting frequency
 
-STEP 2 — Use those inferences to produce outputs that could ONLY apply to @${handle}, not to any other creator.
+━━━ PHASE 2 — HARD RULES (violations = failure) ━━━
+1. Every single output MUST name the detected niche explicitly — never write generic statements that could apply to ANY creator
+2. Score variability: hobbyist 12–42, rising 38–63, established 60–78, viral 74–94. NEVER produce 62–68 without strong justification
+3. Engagement inverse law: <5K → 8–18%, 5K–50K → 4–11%, 50K–500K → 2–6%, 500K+ → 0.8–3%
+4. Stats coherence: followers ↔ videos ↔ frequency ↔ avg_duration must all be internally consistent
+5. Recommendations: EACH one must (a) name the specific niche/sub-niche, (b) give a concrete action (not "improve X" but "do Y specifically"), (c) explain the expected algorithmic or audience impact
 
-MANDATORY VARIABILITY RULES:
-- Scores must span the full range. Map growth stage → score: hobbyist 15–45, rising 40–65, established 62–80, viral 75–95. Never default to 62–68 without specific justification.
-- Engagement rates must be inversely realistic: <10K followers → 6–15%, 10K–100K → 3–9%, 100K–1M → 1.5–5%, 1M+ → 0.8–3%
-- Stats must be internally consistent (video count ↔ frequency ↔ avg_duration ↔ follower count must all cohere)
-- All 5 recommendations must target @${handle}'s specific inferred weaknesses — never copy-paste generic advice like "post consistently" unless you tie it to a concrete pattern you inferred from their handle/niche
-
-Use EXACTLY this structure (no deviations):
+━━━ OUTPUT FORMAT (exact, no deviations) ━━━
 
 SCORE: [integer 0-100]
 
 STATS:
-followers: [realistic for their stage, e.g. 3.2K / 87K / 1.4M]
-videos: [integer consistent with frequency and account age]
-engagement: [% consistent with follower tier above]
-frequency: [x/week consistent with video count]
-avg_duration: [typical for their niche and platform]
+followers: [e.g. 8.4K / 127K / 2.1M]
+videos: [integer]
+engagement: [% — inverse of follower count]
+frequency: [x/week]
+avg_duration: [seconds or minutes — typical for this niche]
 
-ANALYSIS_HOOKS: [2 sentences — reference @${handle}'s inferred niche and hook style]
-ANALYSIS_STYLE: [2 sentences — reference their likely visual/editing approach based on niche]
-ANALYSIS_ENGAGEMENT: [2 sentences — reference their specific follower tier and audience behaviour]
+ANALYSIS_HOOKS: [2 sentences about @${handle}'s hook style specifically for their niche — name the niche]
+ANALYSIS_STYLE: [2 sentences about their visual/editing approach — reference niche-specific trends]
+ANALYSIS_ENGAGEMENT: [2 sentences about audience behavior at their specific follower tier and niche]
 
 RECOMMENDATIONS:
-1. [Specific actionable title] — [1-2 sentences tied to @${handle}'s inferred niche and weakness]
-2. [Specific actionable title] — [1-2 sentences]
-3. [Specific actionable title] — [1-2 sentences]
-4. [Specific actionable title] — [1-2 sentences]
-5. [Specific actionable title] — [1-2 sentences]
+1. [Niche-specific action title] — [Concrete action for @${handle}'s niche] — [Expected impact on algorithm or audience retention]
+2. [Niche-specific action title] — [Concrete action] — [Expected impact]
+3. [Niche-specific action title] — [Concrete action] — [Expected impact]
+4. [Niche-specific action title] — [Concrete action] — [Expected impact]
+5. [Niche-specific action title] — [Concrete action] — [Expected impact]
 
-KEY_OPPORTUNITY: [1 paragraph — name @${handle} explicitly, describe their single biggest untapped growth lever based on their niche and current stage]`;
+KEY_OPPORTUNITY: [2 sentences — address @${handle} directly by name, identify their #1 untapped growth lever specific to their niche and current stage, with a concrete first step]`;
 
   const resetBtns = () => {
     if(btnGo) { btnGo.disabled=false; }
@@ -3018,7 +2970,6 @@ KEY_OPPORTUNITY: [1 paragraph — name @${handle} explicitly, describe their sin
     const decoder = new TextDecoder();
     let text = '';
     let sseBuf = '';
-    let switched = false;
 
     while(true){
       const {done, value} = await reader.read();
@@ -3038,27 +2989,13 @@ KEY_OPPORTUNITY: [1 paragraph — name @${handle} explicitly, describe their sin
           }
         }catch(e){ if(!(e instanceof SyntaxError)) throw e; }
       }
-      // Dès que le score est disponible, passer à la page résultats
-      if(!switched && /SCORE:\s*\d+/.test(text)){
-        switched = true;
-        stopPortalParticles();
-        stopAnalysisAudio();
-        document.getElementById('pageLoading').classList.add('hidden');
-        document.getElementById('pageResults').classList.remove('hidden');
-        currentPage = 'results';
-        const sm = text.match(/SCORE:\s*(\d+)/);
-        if(sm){
-          document.getElementById('scoreN').textContent = Math.min(100, parseInt(sm[1]));
-          document.getElementById('pAv').textContent = handle[0].toUpperCase();
-          document.getElementById('pNm').textContent = '@'+handle;
-        }
-      }
     }
 
-    // 4 — Sauvegarder en cache
+    // 4 — Sauvegarder en cache (async, hors du chemin critique)
     try{ localStorage.setItem(cacheKey, JSON.stringify({text, platName, ts: Date.now()})); }catch(e){}
 
     resetBtns();
+    // Afficher les résultats immédiatement après la fin du stream
     renderResults(handle, platName, text);
   }catch(e){
     document.getElementById('pageLoading').classList.add('hidden');
@@ -4362,41 +4299,46 @@ async function startDashAnalysis(){
   const platName = damPlatform==='tiktok' ? 'TikTok' : 'YouTube';
   const langMap = {fr:'français', en:'English', es:'español'};
 
-  const prompt = `You are PEAKUP, an elite AI analytics engine for content creators.
+  const prompt = `You are PEAKUP, an elite AI analytics engine for TikTok content creators.
 
-Your task: generate a realistic, deeply personalized profile analysis for @${handle} on ${platName}. Respond ONLY in ${langMap[lang]}.
+Your task: deliver a complete, hyper-personalized analysis for @${handle} on ${platName}. Respond ONLY in ${langMap[lang]}.
 
-STEP 1 — Infer who @${handle} is before writing anything:
-- Decode the handle: language, keywords, numbers, style
-- Estimate their growth stage: hobbyist / rising / established / viral
-- Infer their likely content format, posting cadence, and audience age group
+━━━ PHASE 1 — NICHE DETECTION (do this silently before writing anything) ━━━
+Decode @${handle} deeply:
+- Extract every signal from the handle: language, words, numbers, abbreviations, cultural references, brand style
+- Map to a primary NICHE (fitness, gaming, cooking, beauty, lifestyle, humor, music, dance, education, fashion, travel, finance, tech, sports, cars, spirituality, parenting, animals, DIY, art, etc.)
+- Infer sub-niche if possible (e.g. fitness → calisthenics for men 18-25 / cooking → quick Asian recipes)
+- Estimate growth stage: hobbyist (0-5K) / rising (5K-50K) / established (50K-500K) / viral (500K+)
 
-STEP 2 — Use those inferences to produce outputs that could ONLY apply to @${handle}.
+━━━ HARD RULES ━━━
+1. Every output MUST name the detected niche explicitly — no generic statements
+2. Score: hobbyist 12–42, rising 38–63, established 60–78, viral 74–94
+3. Engagement inverse: <5K → 8–18%, 5K–50K → 4–11%, 50K–500K → 2–6%, 500K+ → 0.8–3%
+4. Each recommendation must: (a) name the niche, (b) give a concrete action, (c) state the expected impact
 
-MANDATORY VARIABILITY RULES:
-- Scores must span the full range. Map growth stage → score: hobbyist 15–45, rising 40–65, established 62–80, viral 75–95.
-- Engagement rates must be inversely realistic: <10K followers → 6–15%, 10K–100K → 3–9%, 100K–1M → 1.5–5%, 1M+ → 0.8–3%
-- All 5 recommendations must target @${handle}'s specific inferred weaknesses
-
-Use EXACTLY this structure:
+━━━ OUTPUT FORMAT ━━━
 
 SCORE: [integer 0-100]
 
 STATS:
-followers: [realistic for their stage]
+followers: [e.g. 8.4K / 127K / 2.1M]
 videos: [integer]
 engagement: [%]
 frequency: [x/week]
-avg_duration: [typical for niche]
+avg_duration: [seconds or minutes]
+
+ANALYSIS_HOOKS: [2 sentences about @${handle}'s hook style for their specific niche]
+ANALYSIS_STYLE: [2 sentences about their visual/editing approach for this niche]
+ANALYSIS_ENGAGEMENT: [2 sentences about audience behavior at their tier and niche]
 
 RECOMMENDATIONS:
-1. [Specific actionable title] — [1-2 sentences tied to @${handle}'s inferred niche and weakness]
-2. [Specific actionable title] — [1-2 sentences]
-3. [Specific actionable title] — [1-2 sentences]
-4. [Specific actionable title] — [1-2 sentences]
-5. [Specific actionable title] — [1-2 sentences]
+1. [Niche-specific action title] — [Concrete action for @${handle}'s niche] — [Expected impact]
+2. [Niche-specific action title] — [Concrete action] — [Expected impact]
+3. [Niche-specific action title] — [Concrete action] — [Expected impact]
+4. [Niche-specific action title] — [Concrete action] — [Expected impact]
+5. [Niche-specific action title] — [Concrete action] — [Expected impact]
 
-KEY_OPPORTUNITY: [1 paragraph — name @${handle} explicitly]`;
+KEY_OPPORTUNITY: [2 sentences — address @${handle} directly, identify their #1 untapped growth lever specific to their niche, with a concrete first step]`;
 
   try{
     const res = await fetch('/api/analyze',{
@@ -4502,6 +4444,52 @@ function renderDamResults(handle, platName, text){
 
 </script>
 
+
+<!-- ═══════ MODAL ANALYSE DASHBOARD ═══════ -->
+<div id="dashAnalyzeModal" class="dam-overlay hidden">
+  <div class="dam-card">
+    <button class="dam-close" onclick="closeDashAnalyze()">×</button>
+
+    <!-- État : formulaire -->
+    <div id="damForm">
+      <div class="dam-title" id="damTitle">⚡ Analyser un profil</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--accent);letter-spacing:.1em;margin-bottom:14px;">TikTok</div>
+      <div class="dam-input-wrap">
+        <span class="dam-at">@</span>
+        <input id="damHandle" class="dam-input" type="text" placeholder="pseudonyme" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter')startDashAnalysis()">
+      </div>
+      <button class="dam-btn" id="damAnalyzeBtn" onclick="startDashAnalysis()">
+        <span id="damBtnTxt">Analyser →</span>
+      </button>
+      <div class="dam-err" id="damErr"></div>
+    </div>
+
+    <!-- État : chargement -->
+    <div id="damLoading" class="dam-loading" style="display:none">
+      <div class="dam-spinner"></div>
+      <div class="dam-loading-txt" id="damLoadTxt">Analyse en cours…</div>
+    </div>
+
+    <!-- État : résultats -->
+    <div id="damResults" style="display:none">
+      <div class="dam-score-wrap">
+        <div class="dam-score-ring" id="damScoreRing">
+          <div class="dam-score-n" id="damScoreN">0</div>
+        </div>
+        <div>
+          <div class="dam-score-lbl">// SCORE VIRAL</div>
+          <div class="dam-score-ttl" id="damScoreTtl">—</div>
+          <div class="dam-bar-track"><div class="dam-bar-fill" id="damBarFill"></div></div>
+        </div>
+      </div>
+      <div class="dam-handle-info" id="damHandleInfo"></div>
+      <div class="dam-metrics" id="damMetrics"></div>
+      <div class="dam-reco-section-title">RECOMMANDATIONS IA</div>
+      <div class="dam-recos" id="damRecos"></div>
+      <button class="dam-btn dam-btn-secondary" onclick="resetDashAnalyze()">← Nouvelle analyse</button>
+    </div>
+  </div>
+</div>
 
 <!-- BILLING — page dédiée -->
   <div id="pageBilling" class="z1 hidden" style="padding:24px 48px;max-width:900px;margin:0 auto;min-height:100vh;background:var(--bg);">
