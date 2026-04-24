@@ -2159,7 +2159,7 @@ function completeAuth(name, handle, plat, isPro=false, animate=false){
   // Mettre à jour le header
   document.getElementById('loginBtn').textContent = name;
   document.getElementById('ctaBtn').style.display = 'none';
-  document.getElementById('dashLink').style.display = 'inline-flex';
+  const _dl2=document.getElementById('dashLink'); if(_dl2) _dl2.style.display='inline-flex';
 
   // Si pseudo renseigné → lancer l'analyse auto
   if(handle){

@@ -2571,7 +2571,7 @@ function renderBilling(){
     // Remettre le header
     document.getElementById('loginBtn').textContent = t('login');
     document.getElementById('ctaBtn').style.display = '';
-    document.getElementById('dashLink').style.display = 'none';
+    const _dl=document.getElementById('dashLink'); if(_dl) _dl.style.display='none';
     const badge = document.getElementById('headerProBadge');
     if(badge) badge.remove();
     showPortal('close', () => goTo('landing'));
@@ -2591,7 +2591,7 @@ function completeAuth(name, handle, plat, isPro=false, animate=false){
   const firstName = name.split(' ')[0];
   document.getElementById('loginBtn').textContent = firstName;
   document.getElementById('ctaBtn').style.display = 'none';
-  document.getElementById('dashLink').style.display = 'inline-flex';
+  const _dl2=document.getElementById('dashLink'); if(_dl2) _dl2.style.display='inline-flex';
 
   // Logo toujours visible — pas d'avatar initiale
 
