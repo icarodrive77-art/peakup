@@ -1327,7 +1327,7 @@ body::before{
 .dam-btn-secondary{background:var(--b1);border:1px solid var(--b2);color:var(--t2);margin-top:8px;}
 .dam-btn-secondary:hover{border-color:var(--accent);color:var(--text);}
 .dam-err{color:var(--danger);font-family:'JetBrains Mono',monospace;font-size:.72rem;margin-top:8px;min-height:18px;}
-.dam-loading{text-align:center;padding:28px 0;}
+.dam-loading{display:flex;flex-direction:column;align-items:center;text-align:center;padding:28px 0;}
 .dam-spinner{width:42px;height:42px;border:3px solid var(--b2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
 .dam-loading-txt{color:var(--t2);font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.06em;}
 .dam-score-wrap{display:flex;align-items:center;gap:18px;margin-bottom:18px;}
@@ -4284,9 +4284,9 @@ function resetDashAnalyze(){
 }
 
 async function startDashAnalysis(){
-  const raw = document.getElementById('damHandle').value.trim();
-  if(!raw){ document.getElementById('damErr').textContent = t('err_empty'); return; }
-  const handle = raw.replace(/[^a-zA-Z0-9_.!-]/g,'').toLowerCase();
+  const rawInput = document.getElementById('damHandle').value.trim();
+  if(!rawInput){ document.getElementById('damErr').textContent = t('err_empty'); return; }
+  const handle = rawInput.replace(/[^a-zA-Z0-9_.!-]/g,'').toLowerCase();
   if(handle.length < 2){ document.getElementById('damErr').textContent = t('err_empty'); return; }
 
   const btn = document.getElementById('damAnalyzeBtn');
@@ -4294,7 +4294,9 @@ async function startDashAnalysis(){
   document.getElementById('damBtnTxt').textContent = '...';
   document.getElementById('damErr').textContent = '';
   document.getElementById('damForm').style.display = 'none';
-  document.getElementById('damLoading').style.display = 'block';
+  document.getElementById('damLoading').style.display = 'flex';
+  const liveEl = document.getElementById('damLiveText');
+  if(liveEl) liveEl.textContent = '';
 
   const platName = damPlatform==='tiktok' ? 'TikTok' : 'YouTube';
   const langMap = {fr:'français', en:'English', es:'español'};
@@ -4303,50 +4305,52 @@ async function startDashAnalysis(){
 
 Your task: deliver a complete, hyper-personalized analysis for @${handle} on ${platName}. Respond ONLY in ${langMap[lang]}.
 
-━━━ PHASE 1 — NICHE DETECTION (do this silently before writing anything) ━━━
-Decode @${handle} deeply:
-- Extract every signal from the handle: language, words, numbers, abbreviations, cultural references, brand style
-- Map to a primary NICHE (fitness, gaming, cooking, beauty, lifestyle, humor, music, dance, education, fashion, travel, finance, tech, sports, cars, spirituality, parenting, animals, DIY, art, etc.)
-- Infer sub-niche if possible (e.g. fitness → calisthenics for men 18-25 / cooking → quick Asian recipes)
-- Estimate growth stage: hobbyist (0-5K) / rising (5K-50K) / established (50K-500K) / viral (500K+)
+PHASE 1 - NICHE DETECTION (silent): Decode @${handle} deeply. Extract every signal from the handle: language, words, cultural refs, brand style. Map to a primary NICHE (fitness, gaming, cooking, beauty, lifestyle, humor, music, dance, education, fashion, travel, finance, tech, sports, cars, spirituality, parenting, animals, DIY, art, etc.). Infer sub-niche if possible. Estimate growth stage: hobbyist (0-5K) / rising (5K-50K) / established (50K-500K) / viral (500K+).
 
-━━━ HARD RULES ━━━
-1. Every output MUST name the detected niche explicitly — no generic statements
-2. Score: hobbyist 12–42, rising 38–63, established 60–78, viral 74–94
-3. Engagement inverse: <5K → 8–18%, 5K–50K → 4–11%, 50K–500K → 2–6%, 500K+ → 0.8–3%
-4. Each recommendation must: (a) name the niche, (b) give a concrete action, (c) state the expected impact
+HARD RULES:
+1. Every output MUST name the detected niche explicitly
+2. Score: hobbyist 12-42, rising 38-63, established 60-78, viral 74-94
+3. Engagement inverse: <5K = 8-18%, 5K-50K = 4-11%, 50K-500K = 2-6%, 500K+ = 0.8-3%
+4. Each recommendation must: name the niche, give a concrete action, state the impact
 
-━━━ OUTPUT FORMAT ━━━
+OUTPUT FORMAT (exact):
 
 SCORE: [integer 0-100]
 
 STATS:
-followers: [e.g. 8.4K / 127K / 2.1M]
+followers: [e.g. 8.4K]
 videos: [integer]
 engagement: [%]
 frequency: [x/week]
-avg_duration: [seconds or minutes]
+avg_duration: [seconds]
 
-ANALYSIS_HOOKS: [2 sentences about @${handle}'s hook style for their specific niche]
-ANALYSIS_STYLE: [2 sentences about their visual/editing approach for this niche]
-ANALYSIS_ENGAGEMENT: [2 sentences about audience behavior at their tier and niche]
+ANALYSIS_HOOKS: [2 sentences about hook style for this niche]
+ANALYSIS_STYLE: [2 sentences about visual approach]
+ANALYSIS_ENGAGEMENT: [2 sentences about audience behavior]
 
 RECOMMENDATIONS:
-1. [Niche-specific action title] — [Concrete action for @${handle}'s niche] — [Expected impact]
-2. [Niche-specific action title] — [Concrete action] — [Expected impact]
-3. [Niche-specific action title] — [Concrete action] — [Expected impact]
-4. [Niche-specific action title] — [Concrete action] — [Expected impact]
-5. [Niche-specific action title] — [Concrete action] — [Expected impact]
+1. [Title] - [Concrete action] - [Impact]
+2. [Title] - [Concrete action] - [Impact]
+3. [Title] - [Concrete action] - [Impact]
+4. [Title] - [Concrete action] - [Impact]
+5. [Title] - [Concrete action] - [Impact]
 
-KEY_OPPORTUNITY: [2 sentences — address @${handle} directly, identify their #1 untapped growth lever specific to their niche, with a concrete first step]`;
+KEY_OPPORTUNITY: [2 sentences addressing @${handle} directly with their #1 growth lever]`;
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(()=>ctrl.abort(), 34000);
 
   try{
     const res = await fetch('/api/analyze',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({prompt})
+      body: JSON.stringify({prompt}),
+      signal: ctrl.signal
     });
-    if(!res.ok) throw new Error('API '+res.status);
+    if(!res.ok){
+      const errBody = await res.text().catch(()=>'');
+      throw new Error('API '+res.status+(errBody?' — '+errBody.slice(0,80):''));
+    }
 
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
@@ -4361,25 +4365,38 @@ KEY_OPPORTUNITY: [2 sentences — address @${handle} directly, identify their #1
       sseBuf = lines.pop();
       for(const line of lines){
         if(!line.startsWith('data: ')) continue;
-        const raw = line.slice(6).trim();
-        if(raw==='[DONE]') continue;
+        const chunk = line.slice(6).trim();
+        if(chunk==='[DONE]') continue;
         try{
-          const ev = JSON.parse(raw);
+          const ev = JSON.parse(chunk);
           if(ev.type==='error') throw new Error(ev.error?.message||'API error');
-          if(ev.type==='content_block_delta'&&ev.delta?.type==='text_delta') text += ev.delta.text;
+          if(ev.type==='content_block_delta'&&ev.delta?.type==='text_delta'){
+            text += ev.delta.text;
+            if(liveEl) liveEl.textContent = text.replace(/\n+/g,' ').slice(-160);
+          }
         }catch(e){ if(!(e instanceof SyntaxError)) throw e; }
       }
     }
 
+    clearTimeout(timer);
     document.getElementById('damLoading').style.display = 'none';
     document.getElementById('damResults').style.display = 'block';
-    renderDamResults(handle, platName, text);
+    try{ renderDamResults(handle, platName, text); }
+    catch(re){
+      console.error('renderDamResults error:', re);
+      showToast('// Erreur affichage résultats', 'error');
+    }
   }catch(e){
+    clearTimeout(timer);
     document.getElementById('damLoading').style.display = 'none';
     document.getElementById('damForm').style.display = '';
     btn.disabled = false;
     document.getElementById('damBtnTxt').textContent = lang==='fr'?'Analyser →':lang==='es'?'Analizar →':'Analyze →';
-    document.getElementById('damErr').textContent = '// Erreur : '+e.message;
+    const msg = e.name==='AbortError'
+      ? (lang==='fr'?'Délai dépassé — réessaie':lang==='es'?'Tiempo agotado':'Timeout — please retry')
+      : e.message;
+    document.getElementById('damErr').textContent = '// '+msg;
+    showToast('// Erreur analyse: '+msg, 'error');
   }
 }
 
@@ -4417,7 +4434,7 @@ function renderDamResults(handle, platName, text){
     {lbl:lang==='fr'?'Abonnés':lang==='es'?'Seguidores':'Followers', val:get('followers')},
   ].map(m=>`<div class="dam-metric"><div class="dam-metric-lbl">${m.lbl}</div><div class="dam-metric-val">${m.val}</div></div>`).join('');
 
-  const rre = /(\d+)\.\s*([^\n—–-]+?)(?:\s*[—–-]\s*)([^\n]+)/g;
+  const rre = /(\d+)\.\s*([^\n]+?)(?:\s+[-—–]\s+)([^\n]+)/g;
   const recos=[]; let rm;
   while((rm=rre.exec(text))!==null) recos.push({title:rm[2].trim(), desc:rm[3].trim()});
 
@@ -4468,6 +4485,7 @@ function renderDamResults(handle, platName, text){
     <div id="damLoading" class="dam-loading" style="display:none">
       <div class="dam-spinner"></div>
       <div class="dam-loading-txt" id="damLoadTxt">Analyse en cours…</div>
+      <div id="damLiveText" style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--t3);margin-top:14px;max-height:64px;overflow:hidden;text-align:left;white-space:pre-wrap;line-height:1.5;opacity:.7;"></div>
     </div>
 
     <!-- État : résultats -->
