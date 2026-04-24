@@ -2932,6 +2932,7 @@ function showPortal(type, callback){
 
   playPortalSound();
   const ov=document.getElementById('portalOverlay');
+  if(!ov){ callback(); return; }
   ov.style.display='block';
   ov.className='';
   void ov.offsetWidth;

@@ -3931,13 +3931,13 @@ function playPortalSound(){
 }
 
 function showPortal(type, callback){
-  // Fermer immédiatement la page auth et le menu logo
   const authPage=document.getElementById('pageAuth');
   if(authPage) authPage.classList.add('hidden');
   if(typeof closeLogoMenu==='function') closeLogoMenu();
 
   playPortalSound();
   const ov=document.getElementById('portalOverlay');
+  if(!ov){ callback(); return; }
   ov.style.display='block';
   ov.className='';
   void ov.offsetWidth;
