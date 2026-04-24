@@ -2926,6 +2926,10 @@ function playPortalSound(){
 }
 
 function showPortal(type, callback){
+  const authPage=document.getElementById('pageAuth');
+  if(authPage) authPage.classList.add('hidden');
+  if(typeof closeLogoMenu==='function') closeLogoMenu();
+
   playPortalSound();
   const ov=document.getElementById('portalOverlay');
   ov.style.display='block';
