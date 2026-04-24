@@ -151,12 +151,14 @@ body::before{
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
 
-.header-mid{display:flex;align-items:center;gap:28px;}
+.header-mid{display:flex;align-items:center;gap:10px;}
 .nav-link{
-  font-size:.82rem;font-weight:500;color:var(--t2);
-  cursor:pointer;transition:color .2s;letter-spacing:.01em;
+  font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:700;
+  letter-spacing:.15em;color:#fff;cursor:pointer;transition:all .2s;
+  background:var(--grad);border:none;border-radius:20px;
+  padding:6px 14px;display:inline-flex;align-items:center;white-space:nowrap;
 }
-.nav-link:hover{color:var(--text);}
+.nav-link:hover{opacity:.85;transform:translateY(-1px);box-shadow:0 4px 14px rgba(124,92,252,.4);}
 
 .header-right{display:flex;align-items:center;gap:12px;}
 
@@ -522,6 +524,7 @@ body::before{
   margin-bottom:14px;display:none;
 }
 .auth-error.show{display:block;}
+.auth-error.success{background:rgba(6,214,160,.08);border-color:rgba(6,214,160,.3);color:var(--success);}
 .ripple-circle{
   position:absolute;border-radius:50%;
   background:rgba(255,255,255,.25);
@@ -1121,6 +1124,66 @@ body::before{
   .reco-card{padding:14px 16px;}
   .p-av{width:44px;height:44px;font-size:1.1rem;}
 }
+
+/* ═══════════════════════════════════════════
+   PORTAL VORTEX
+═══════════════════════════════════════════ */
+#portalOverlay{
+  position:fixed;inset:0;z-index:99999;
+  display:none;pointer-events:all;overflow:hidden;
+}
+.portal-wrap{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.portal-disk{
+  width:220vmax;height:220vmax;
+  border-radius:50%;flex-shrink:0;
+  background:
+    radial-gradient(circle at 50% 50%,
+      rgba(5,8,18,.95) 0%,
+      rgba(5,8,18,.25) 18%,
+      transparent 36%,
+      rgba(5,8,18,.15) 54%,
+      rgba(5,8,18,.85) 74%,
+      rgba(5,8,18,.99) 100%
+    ),
+    conic-gradient(
+      from 0deg,
+      #050812 0%,#0a0e1c 5%,#0d1535 11%,#0e1a3d 17%,
+      #0a1228 23%,#050812 29%,#080b16 34%,
+      #3d1c6e 37%,#6d28d9 39%,#7c3aed 40%,#5b21b6 42%,#3d1c6e 44%,
+      #0e1a3d 49%,#0d1535 56%,#050812 63%,#0a0e1c 69%,
+      #0d1535 74%,#111e48 80%,#0a1228 85%,
+      #050812 91%,#080b16 96%,#050812 100%
+    );
+}
+#portalOverlay.opening .portal-wrap{animation:portalMaskOpen 1s cubic-bezier(.4,0,.2,1) forwards}
+#portalOverlay.opening .portal-disk{animation:portalSpinOpen 1s cubic-bezier(.4,0,.2,1) forwards}
+#portalOverlay.closing .portal-wrap{animation:portalMaskClose 1s cubic-bezier(.4,0,.2,1) forwards}
+#portalOverlay.closing .portal-disk{animation:portalSpinClose 1s cubic-bezier(.4,0,.2,1) forwards}
+
+@keyframes portalMaskOpen{
+  0%  {clip-path:circle(0% at 50% 50%);opacity:1}
+  55% {clip-path:circle(85% at 50% 50%);opacity:1}
+  80% {clip-path:circle(100% at 50% 50%);opacity:1}
+  100%{clip-path:circle(100% at 50% 50%);opacity:0}
+}
+@keyframes portalMaskClose{
+  0%  {clip-path:circle(100% at 50% 50%);opacity:1}
+  20% {clip-path:circle(100% at 50% 50%);opacity:1}
+  100%{clip-path:circle(0% at 50% 50%);opacity:1}
+}
+@keyframes portalSpinOpen{
+  0%  {transform:rotate(0deg)   scale(.04)}
+  55% {transform:rotate(450deg) scale(1)}
+  100%{transform:rotate(720deg) scale(1)}
+}
+@keyframes portalSpinClose{
+  0%  {transform:rotate(0deg)    scale(1)}
+  100%{transform:rotate(-720deg) scale(.04)}
+}
 </style>
 </head>
 <body>
@@ -1135,11 +1198,6 @@ body::before{
     <img src="https://raw.githubusercontent.com/icarodrive77-art/peakup/main/logo.png" alt="PEAKUP" style="height:36px;width:36px;object-fit:contain;border-radius:8px;">
     <span class="logo-text">PEAKUP</span>
   </div>
-  <nav class="header-mid">
-    <span class="nav-link" onclick="scrollToSection('#features')" data-i="nav_features">Fonctionnalités</span>
-    <span class="nav-link" onclick="scrollToSection('#pricing')" data-i="nav_pricing">Tarifs</span>
-    <span class="nav-link" id="dashLink" onclick="goTo('dashboard')" style="display:none" data-i="nav_dashboard">Dashboard</span>
-  </nav>
   <div class="header-right">
     <div class="lang-sel">
       <button class="lb on" onclick="setLang('fr')">FR</button>
@@ -1222,8 +1280,8 @@ body::before{
     </div>
 
     <div class="auth-tabs">
-      <button class="auth-tab on" id="tabSignup" onclick="switchAuthTab('signup')">Créer un compte</button>
-      <button class="auth-tab" id="tabLogin" onclick="switchAuthTab('login')">Se connecter</button>
+      <button class="auth-tab on" id="tabSignup" onclick="switchAuthTab('signup')" data-i="auth_tab_signup">Créer un compte</button>
+      <button class="auth-tab" id="tabLogin" onclick="switchAuthTab('login')" data-i="auth_tab_login">Se connecter</button>
     </div>
 
     <div class="auth-error" id="authError"></div>
@@ -1236,27 +1294,27 @@ body::before{
         <path d="M3.964 10.706A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" fill="#FBBC05"/>
         <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.962L3.964 6.294C4.672 4.167 6.656 3.58 9 3.58z" fill="#EA4335"/>
       </svg>
-      Continuer avec Google
+      <span data-i="auth_google">Continuer avec Google</span>
     </button>
 
-    <div class="auth-divider"><span>OU</span></div>
+    <div class="auth-divider"><span data-i="auth_or">OU</span></div>
 
     <!-- SIGNUP FORM -->
     <div id="formSignup">
       <div class="auth-field">
-        <label class="auth-label">PRÉNOM</label>
-        <input class="auth-input" id="signupName" type="text" placeholder="Ton prénom"/>
+        <label class="auth-label" data-i="auth_label_name">PRÉNOM</label>
+        <input class="auth-input" id="signupName" type="text" placeholder="Ton prénom" data-ph-i="auth_ph_name"/>
       </div>
       <div class="auth-field">
         <label class="auth-label">EMAIL</label>
         <input class="auth-input" id="signupEmail" type="email" placeholder="toi@email.com"/>
       </div>
       <div class="auth-field">
-        <label class="auth-label">MOT DE PASSE</label>
-        <input class="auth-input" id="signupPwd" type="password" placeholder="8 caractères minimum"/>
+        <label class="auth-label" data-i="auth_label_pwd">MOT DE PASSE</label>
+        <input class="auth-input" id="signupPwd" type="password" placeholder="8 caractères minimum" data-ph-i="auth_ph_pwd"/>
       </div>
       <div class="auth-field">
-        <label class="auth-label">TON PSEUDO TIKTOK / YOUTUBE</label>
+        <label class="auth-label" data-i="auth_label_handle">TON PSEUDO TIKTOK / YOUTUBE</label>
         <div class="plat-field">
           <div class="plat-mini">
             <button class="pm on" id="pmTT" onclick="setAuthPlat('tiktok')">TT</button>
@@ -1268,8 +1326,8 @@ body::before{
           </div>
         </div>
       </div>
-      <button class="btn-auth" onclick="doSignup()">Créer mon compte →</button>
-      <div class="auth-footer">En créant un compte tu acceptes nos <a>CGU</a> et notre <a>Politique de confidentialité</a>.</div>
+      <button class="btn-auth" onclick="doSignup()" data-i="auth_btn_signup">Créer mon compte →</button>
+      <div class="auth-footer" data-i="auth_terms">En créant un compte tu acceptes nos <a onclick="showLegal('cgu')" style="color:var(--accent);cursor:pointer">CGU</a> et notre <a onclick="showLegal('privacy')" style="color:var(--accent);cursor:pointer">Politique de confidentialité</a>.</div>
     </div>
 
     <!-- LOGIN FORM -->
@@ -1279,11 +1337,11 @@ body::before{
         <input class="auth-input" id="loginEmail" type="email" placeholder="toi@email.com"/>
       </div>
       <div class="auth-field">
-        <label class="auth-label">MOT DE PASSE</label>
+        <label class="auth-label" data-i="auth_label_pwd">MOT DE PASSE</label>
         <input class="auth-input" id="loginPwd" type="password" placeholder="••••••••"/>
       </div>
-      <button class="btn-auth" onclick="doLogin()">Se connecter →</button>
-      <div class="auth-footer"><a>Mot de passe oublié ?</a></div>
+      <button class="btn-auth" onclick="doLogin()" data-i="auth_btn_login">Se connecter →</button>
+      <div class="auth-footer"><a onclick="doForgotPassword()" style="cursor:pointer" data-i="auth_forgot">Mot de passe oublié ?</a></div>
     </div>
   </div>
 </div>
@@ -1311,7 +1369,7 @@ body::before{
 
   <button class="btn-back" onclick="goTo('landing')" title="Retour">
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    ← Nouvelle analyse
+    <span data-i="new_analysis">← Nouvelle analyse</span>
   </button>
 
   <div class="profile-bar">
@@ -1421,7 +1479,7 @@ body::before{
   <div style="max-width:720px;margin:0 auto;padding:60px 32px;font-family:'Space Grotesk',sans-serif;color:var(--t2);line-height:1.7;">
     <button class="btn-back" onclick="goTo('landing')" style="margin-bottom:32px">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      ← Retour
+      <span data-i="auth_back">← Retour</span>
     </button>
     <div id="legalContent"></div>
   </div>
@@ -1430,11 +1488,14 @@ body::before{
 <!-- ═══════ FOOTER ═══════ -->
 <div id="pageDashboard" class="z1 hidden">
   <div class="dash-header">
-    <div>
-      <div class="dash-welcome" id="dashWelcome">Bonjour, <em style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Creator</em> 👋</div>
-      <div class="dash-sub" data-i="dash_sub">Voici ton tableau de bord PEAKUP</div>
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+      <div>
+        <div class="dash-welcome" id="dashWelcome">Bonjour, <em style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Creator</em> 👋</div>
+        <div class="dash-sub" data-i="dash_sub">Voici ton tableau de bord PEAKUP</div>
+      </div>
+      <button id="dashShareBtn" class="dash-pro-badge" onclick="handleShareReward()" data-i="dash_share_btn" style="cursor:pointer;border:none;background:var(--grad);color:#fff;">Partager</button>
     </div>
-    <div class="dash-pro-badge">PRO · Actif</div>
+    <div class="dash-pro-badge" data-i="dash_pro_active">PRO · Actif</div>
   </div>
 
   <div class="dash-tabs">
@@ -1542,11 +1603,32 @@ const COPY = {
     pw_cta:"Débloquer l'analyse complète",
     price:"9,99€",per_month:" / mois · ",cancel:"Annulable à tout moment",
     new_analysis:"← Nouvelle analyse",
+    fomo_label:"⚡ Offre de lancement",fomo_sub:"Premier mois à moitié prix — 4,99€",
     share_title:"🎁 Partage ton score sur TikTok",
     share_sub:"En échange, débloque une analyse bonus gratuite 🔓",
     share_btn:"Partager →",
     transparency_note:"⚠️ Les statistiques sont des estimations IA. Les recommandations sont réelles et actionnables.",
     err_empty:"// Entre un nom d'utilisateur",
+    auth_back:"← Retour",
+    auth_tab_signup:"Créer un compte",auth_tab_login:"Se connecter",
+    auth_google:"Continuer avec Google",auth_or:"OU",
+    auth_label_name:"PRÉNOM",auth_ph_name:"Ton prénom",
+    auth_label_pwd:"MOT DE PASSE",auth_ph_pwd:"8 caractères minimum",
+    auth_label_handle:"TON PSEUDO TIKTOK / YOUTUBE",
+    auth_btn_signup:"Créer mon compte →",auth_btn_login:"Se connecter →",
+    auth_terms:'En créant un compte tu acceptes nos <a onclick="showLegal(\'cgu\')" style="color:var(--accent);cursor:pointer">CGU</a> et notre <a onclick="showLegal(\'privacy\')" style="color:var(--accent);cursor:pointer">Politique de confidentialité</a>.',
+    auth_forgot:"Mot de passe oublié ?",
+    auth_err_name:"// Entre ton prénom",auth_err_email:"// Email invalide",
+    auth_err_pwd_short:"// Mot de passe trop court (8 car. min)",
+    auth_err_handle:"// Entre ton pseudo TikTok ou YouTube",
+    auth_err_email_used:"// Email déjà utilisé — connecte-toi",
+    auth_err_pwd_weak:"// Mot de passe trop faible",
+    auth_err_generic:"// Erreur : ",auth_err_pwd_empty:"// Entre ton mot de passe",
+    auth_err_credentials:"// Email ou mot de passe incorrect",
+    auth_err_google:"// Erreur Google : ",
+    auth_err_reset_no_email:"// Entre ton email pour réinitialiser ton mot de passe",
+    auth_err_reset_not_found:"// Aucun compte trouvé avec cet email",
+    auth_reset_sent:"Email de réinitialisation envoyé — vérifie ta boîte mail.",
     steps:["Récupération du profil","Analyse hooks & titres","Calcul de l'engagement","Génération des recommandations"],
     score_levels:["Débutant","En progression","Solide","Très fort","Viral"],
     reco_free:"1 recommandation gratuite sur 5",
@@ -1609,6 +1691,21 @@ const COPY = {
       {date:"27 fév. 2026",desc:"PEAKUP Pro · Mensuel",amt:"9,99€",status:"Payée"},
       {date:"27 jan. 2026",desc:"PEAKUP Pro · Mensuel",amt:"9,99€",status:"Payée"},
     ],
+    beta_notice:'⚡ Beta — Analyse IA · Scores basés sur IA, pas sur données réelles TikTok · <a onclick="showLegal(\'cgu\')" style="color:var(--accent);cursor:pointer">En savoir plus</a>',
+    dqs_viral_score:"Score viral",dqs_analyses:"Analyses ce mois",dqs_challenges:"Défis complétés",dqs_streak:"Jours de suite",
+    comp_reward_title:"🔓 Analyse comparative débloquée !",
+    comp_reward_sub:"Tu es abonné depuis plus d'un mois — compare ton profil à d'autres créateurs de ta niche.",
+    comp_reward_btn:"Lancer une comparaison →",
+    footer_logout:"Déconnexion",footer_privacy:"Confidentialité",
+    reco_all:"{n} recommandations IA",alert_see:"→ Voir",
+    faq_title:"Questions fréquentes",
+    defi_header:"DÉFI SEMAINE #12",defi_btn:"Relever le défi →",
+    defi_hist_label:"HISTORIQUE",
+    defi_hist_1:"Semaine 11 — Hook question sur tes vidéos",
+    defi_hist_2:"Semaine 10 — Publier 5x en 7 jours",
+    defi_hist_3:"Semaine 9 — Utiliser un son trending",
+    dash_pro_active:"PRO · Actif",
+    dash_share_btn:"Partager",
   },
   en:{
     nav_features:"Features",nav_pricing:"Pricing",nav_dashboard:"Dashboard",
@@ -1630,11 +1727,32 @@ const COPY = {
     pw_cta:"Unlock full analysis",
     price:"€9.99",per_month:" / month · ",cancel:"Cancel anytime",
     new_analysis:"← New analysis",
+    fomo_label:"⚡ Launch Offer",fomo_sub:"First month half price — €4.99",
     share_title:"🎁 Share your score on TikTok",
     share_sub:"In return, unlock a free bonus analysis 🔓",
     share_btn:"Share →",
     transparency_note:"⚠️ Stats are AI estimates based on similar profiles. Recommendations are real and actionable.",
     err_empty:"// Enter a username",
+    auth_back:"← Back",
+    auth_tab_signup:"Create account",auth_tab_login:"Log in",
+    auth_google:"Continue with Google",auth_or:"OR",
+    auth_label_name:"FIRST NAME",auth_ph_name:"Your first name",
+    auth_label_pwd:"PASSWORD",auth_ph_pwd:"8 characters minimum",
+    auth_label_handle:"YOUR TIKTOK / YOUTUBE HANDLE",
+    auth_btn_signup:"Create my account →",auth_btn_login:"Log in →",
+    auth_terms:'By creating an account you accept our <a onclick="showLegal(\'cgu\')" style="color:var(--accent);cursor:pointer">Terms</a> and our <a onclick="showLegal(\'privacy\')" style="color:var(--accent);cursor:pointer">Privacy Policy</a>.',
+    auth_forgot:"Forgot password?",
+    auth_err_name:"// Enter your first name",auth_err_email:"// Invalid email",
+    auth_err_pwd_short:"// Password too short (8 chars min)",
+    auth_err_handle:"// Enter your TikTok or YouTube handle",
+    auth_err_email_used:"// Email already in use — log in",
+    auth_err_pwd_weak:"// Password too weak",
+    auth_err_generic:"// Error: ",auth_err_pwd_empty:"// Enter your password",
+    auth_err_credentials:"// Incorrect email or password",
+    auth_err_google:"// Google error: ",
+    auth_err_reset_no_email:"// Enter your email to reset your password",
+    auth_err_reset_not_found:"// No account found with that email",
+    auth_reset_sent:"Reset email sent — check your inbox.",
     steps:["Fetching profile","Analyzing hooks & titles","Computing engagement","Generating recommendations"],
     score_levels:["Beginner","Progressing","Solid","Very strong","Viral"],
     reco_free:"1 free recommendation out of 5",
@@ -1693,6 +1811,21 @@ const COPY = {
       {date:"Feb 27, 2026",desc:"PEAKUP Pro · Monthly",amt:"€9.99",status:"Paid"},
       {date:"Jan 27, 2026",desc:"PEAKUP Pro · Monthly",amt:"€9.99",status:"Paid"},
     ],
+    beta_notice:'⚡ Beta — AI Analysis · Scores are AI-based estimates, not official TikTok data · <a onclick="showLegal(\'cgu\')" style="color:var(--accent);cursor:pointer">Learn more</a>',
+    dqs_viral_score:"Viral score",dqs_analyses:"Analyses this month",dqs_challenges:"Challenges done",dqs_streak:"Day streak",
+    comp_reward_title:"🔓 Comparative analysis unlocked!",
+    comp_reward_sub:"You've been subscribed for over a month — compare your profile to other creators in your niche.",
+    comp_reward_btn:"Start a comparison →",
+    footer_logout:"Log out",footer_privacy:"Privacy",
+    reco_all:"{n} AI recommendations",alert_see:"→ View",
+    faq_title:"Frequently asked questions",
+    defi_header:"WEEK #12 CHALLENGE",defi_btn:"Take the challenge →",
+    defi_hist_label:"HISTORY",
+    defi_hist_1:"Week 11 — Question hook on your videos",
+    defi_hist_2:"Week 10 — Post 5x in 7 days",
+    defi_hist_3:"Week 9 — Use a trending sound",
+    dash_pro_active:"PRO · Active",
+    dash_share_btn:"Share",
   },
   es:{
     nav_features:"Funciones",nav_pricing:"Precios",nav_dashboard:"Dashboard",
@@ -1714,11 +1847,32 @@ const COPY = {
     pw_cta:"Desbloquear análisis completo",
     price:"9,99€",per_month:" / mes · ",cancel:"Cancela cuando quieras",
     new_analysis:"← Nuevo análisis",
+    fomo_label:"⚡ Oferta de lanzamiento",fomo_sub:"Primer mes a mitad de precio — 4,99€",
     share_title:"🎁 Comparte tu score en TikTok",
     share_sub:"A cambio, desbloquea un análisis bonus gratis 🔓",
     share_btn:"Compartir →",
     transparency_note:"⚠️ Las estadísticas son estimaciones IA. Las recomendaciones son reales y accionables.",
     err_empty:"// Introduce un nombre de usuario",
+    auth_back:"← Volver",
+    auth_tab_signup:"Crear cuenta",auth_tab_login:"Iniciar sesión",
+    auth_google:"Continuar con Google",auth_or:"O",
+    auth_label_name:"NOMBRE",auth_ph_name:"Tu nombre",
+    auth_label_pwd:"CONTRASEÑA",auth_ph_pwd:"Mínimo 8 caracteres",
+    auth_label_handle:"TU USUARIO TIKTOK / YOUTUBE",
+    auth_btn_signup:"Crear mi cuenta →",auth_btn_login:"Iniciar sesión →",
+    auth_terms:'Al crear una cuenta aceptas nuestros <a onclick="showLegal(\'cgu\')" style="color:var(--accent);cursor:pointer">TDU</a> y nuestra <a onclick="showLegal(\'privacy\')" style="color:var(--accent);cursor:pointer">Política de privacidad</a>.',
+    auth_forgot:"¿Olvidaste tu contraseña?",
+    auth_err_name:"// Introduce tu nombre",auth_err_email:"// Email inválido",
+    auth_err_pwd_short:"// Contraseña muy corta (8 car. mín)",
+    auth_err_handle:"// Introduce tu usuario TikTok o YouTube",
+    auth_err_email_used:"// Email ya en uso — inicia sesión",
+    auth_err_pwd_weak:"// Contraseña demasiado débil",
+    auth_err_generic:"// Error: ",auth_err_pwd_empty:"// Introduce tu contraseña",
+    auth_err_credentials:"// Email o contraseña incorrectos",
+    auth_err_google:"// Error de Google: ",
+    auth_err_reset_no_email:"// Introduce tu email para restablecer la contraseña",
+    auth_err_reset_not_found:"// No se encontró ninguna cuenta con ese email",
+    auth_reset_sent:"Email de restablecimiento enviado — revisa tu bandeja de entrada.",
     steps:["Obteniendo perfil","Analizando hooks y títulos","Calculando engagement","Generando recomendaciones"],
     score_levels:["Principiante","En progreso","Sólido","Muy fuerte","Viral"],
     reco_free:"1 recomendación gratuita de 5",
@@ -1777,6 +1931,21 @@ const COPY = {
       {date:"27 feb. 2026",desc:"PEAKUP Pro · Mensual",amt:"9,99€",status:"Pagada"},
       {date:"27 ene. 2026",desc:"PEAKUP Pro · Mensual",amt:"9,99€",status:"Pagada"},
     ],
+    beta_notice:'⚡ Beta — Análisis IA · Puntuaciones basadas en IA, no en datos reales de TikTok · <a onclick="showLegal(\'cgu\')" style="color:var(--accent);cursor:pointer">Más info</a>',
+    dqs_viral_score:"Puntuación viral",dqs_analyses:"Análisis este mes",dqs_challenges:"Retos completados",dqs_streak:"Días seguidos",
+    comp_reward_title:"🔓 ¡Análisis comparativo desbloqueado!",
+    comp_reward_sub:"Llevas más de un mes suscrito — compara tu perfil con otros creadores de tu nicho.",
+    comp_reward_btn:"Iniciar comparación →",
+    footer_logout:"Cerrar sesión",footer_privacy:"Privacidad",
+    reco_all:"{n} recomendaciones IA",alert_see:"→ Ver",
+    faq_title:"Preguntas frecuentes",
+    defi_header:"RETO SEMANA #12",defi_btn:"Aceptar el reto →",
+    defi_hist_label:"HISTORIAL",
+    defi_hist_1:"Semana 11 — Hook pregunta en tus vídeos",
+    defi_hist_2:"Semana 10 — Publicar 5x en 7 días",
+    defi_hist_3:"Semana 9 — Usar un sonido trending",
+    dash_pro_active:"PRO · Activo",
+    dash_share_btn:"Compartir",
   }
 };
 
@@ -1844,6 +2013,11 @@ function renderStatic(){
     const k=el.getAttribute('data-i');
     if(COPY[lang][k]) el.innerHTML=COPY[lang][k];
   });
+  // data-ph-i — placeholder translations
+  document.querySelectorAll('[data-ph-i]').forEach(el=>{
+    const k=el.getAttribute('data-ph-i');
+    if(COPY[lang][k]) el.placeholder=COPY[lang][k];
+  });
 }
 
 /* ════════════════════════════════
@@ -1881,10 +2055,7 @@ function goToAuth(){
 async function simulateSubscribe(fomoOverride){
   try{
     const email = loggedIn ? (fbAuth.currentUser?.email || '') : '';
-    // FOMO actif si override explicite OU timer device encore actif
-    const fomoActive = fomoOverride === true || (
-      localStorage.getItem(getFomoUsedKey()) !== 'used' &&
-      !!localStorage.getItem(getFomoKey()));
+    const fomoActive = fomoOverride === true;
 
     const res = await fetch('/api/checkout',{
       method:'POST',
@@ -1938,14 +2109,16 @@ function setAuthPlat(p){
 
 function showAuthError(msg){
   const el = document.getElementById('authError');
+  el.classList.remove('success');
   el.textContent = msg; el.classList.add('show');
+}
+function showAuthSuccess(msg){
+  const el = document.getElementById('authError');
+  el.textContent = msg; el.classList.add('show','success');
 }
 
 function authWithGoogle(){
-  // En prod : Firebase Auth / Supabase Google OAuth
-  // Simulation MVP :
-  const name = 'Creator';
-  completeAuth(name, '', 'tiktok');
+  completeAuth('Creator', '', 'tiktok', false, true);
 }
 
 function doSignup(){
@@ -1954,27 +2127,31 @@ function doSignup(){
   const pwd   = document.getElementById('signupPwd').value;
   const handle= document.getElementById('signupHandle').value.trim();
 
-  if(!name)   { showAuthError('// Entre ton prénom'); return; }
-  if(!email || !email.includes('@')) { showAuthError('// Email invalide'); return; }
-  if(pwd.length < 8) { showAuthError('// Mot de passe trop court (8 car. min)'); return; }
-  if(!handle) { showAuthError('// Entre ton pseudo TikTok ou YouTube'); return; }
+  if(!name)   { showAuthError(t('auth_err_name')); return; }
+  if(!email || !email.includes('@')) { showAuthError(t('auth_err_email')); return; }
+  if(pwd.length < 8) { showAuthError(t('auth_err_pwd_short')); return; }
+  if(!handle) { showAuthError(t('auth_err_handle')); return; }
 
-  completeAuth(name, handle, authPlatform);
+  completeAuth(name, handle, authPlatform, false, true);
 }
 
 function doLogin(){
   const email = document.getElementById('loginEmail').value.trim();
   const pwd   = document.getElementById('loginPwd').value;
 
-  if(!email || !email.includes('@')) { showAuthError('// Email invalide'); return; }
-  if(!pwd) { showAuthError('// Entre ton mot de passe'); return; }
+  if(!email || !email.includes('@')) { showAuthError(t('auth_err_email')); return; }
+  if(!pwd) { showAuthError(t('auth_err_pwd_empty')); return; }
 
-  // En prod : vérification Firebase/Supabase
-  // Simulation MVP : connexion directe
-  completeAuth('Creator', '', 'tiktok');
+  completeAuth('Creator', '', 'tiktok', false, true);
 }
 
-function completeAuth(name, handle, plat){
+function doForgotPassword(){
+  const email = document.getElementById('loginEmail').value.trim();
+  if(!email || !email.includes('@')){ showAuthError(t('auth_err_reset_no_email')); return; }
+  showAuthSuccess(t('auth_reset_sent'));
+}
+
+function completeAuth(name, handle, plat, isPro=false, animate=false){
   loggedIn = true;
   userHandle = handle;
   userPlatform = plat || 'tiktok';
@@ -1982,7 +2159,7 @@ function completeAuth(name, handle, plat){
   // Mettre à jour le header
   document.getElementById('loginBtn').textContent = name;
   document.getElementById('ctaBtn').style.display = 'none';
-  document.getElementById('dashLink').style.display = 'block';
+  document.getElementById('dashLink').style.display = 'inline-flex';
 
   // Si pseudo renseigné → lancer l'analyse auto
   if(handle){
@@ -1991,7 +2168,8 @@ function completeAuth(name, handle, plat){
     platform = userPlatform;
     startAnalysis();
   } else {
-    goTo('dashboard');
+    if(animate) showPortal('open', () => goTo('dashboard'));
+    else goTo('dashboard');
   }
 }
 
@@ -2116,11 +2294,11 @@ async function runSteps(){
     </div>`).join('');
   startPortalParticles();
   for(let i=0;i<steps.length;i++){
-    await delay(680);
+    await delay(100);
     document.getElementById('sr'+i).classList.add('act');
     if(i>0) document.getElementById('sr'+(i-1)).classList.add('done');
   }
-  await delay(680);
+  await delay(100);
   document.getElementById('sr'+(steps.length-1)).classList.add('done');
 }
 
@@ -2159,7 +2337,7 @@ async function startAnalysis(){
         currentPage='loading';
         runSteps();
         startAnalysisAudio();
-        await delay(2000); // Animation courte pour le cache
+        await delay(0); // Animation courte pour le cache
         if(btnGo) { btnGo.disabled=false; }
         if(btnMobile) { btnMobile.disabled=false; btnMobile.style.opacity=''; }
         document.getElementById('btnGoTxt').textContent=t('analyze_btn');
@@ -2181,34 +2359,52 @@ async function startAnalysis(){
   const platName = platform==='tiktok' ? 'TikTok' : 'YouTube';
   const langMap = {fr:'français', en:'English', es:'español'};
 
-  const prompt=`You are PEAKUP, an elite AI analytics tool for content creators.
-Analyze the ${platName} profile @${handle}. Respond ONLY in ${langMap[lang]}.
+  const prompt=`You are PEAKUP, an elite AI analytics engine for content creators.
+
+Your task: generate a realistic, deeply personalized profile analysis for @${handle} on ${platName}. Respond ONLY in ${langMap[lang]}.
+
+STEP 1 — Infer who @${handle} is before writing anything:
+- Decode the handle: language, keywords, numbers, style (e.g. "fitnessbymaria" → fitness niche, female creator, personal brand; "xXdark_edit99Xx" → edits/AMV, young male, anime/gaming adjacent)
+- Estimate their growth stage: hobbyist / rising / established / viral
+- Infer their likely content format, posting cadence, and audience age group
+
+STEP 2 — Use those inferences to produce outputs that could ONLY apply to @${handle}, not to any other creator.
+
+MANDATORY VARIABILITY RULES:
+- Scores must span the full range. Map growth stage → score: hobbyist 15–45, rising 40–65, established 62–80, viral 75–95. Never default to 62–68 without specific justification.
+- Engagement rates must be inversely realistic: <10K followers → 6–15%, 10K–100K → 3–9%, 100K–1M → 1.5–5%, 1M+ → 0.8–3%
+- Stats must be internally consistent (video count ↔ frequency ↔ avg_duration ↔ follower count must all cohere)
+- All 5 recommendations must target @${handle}'s specific inferred weaknesses — never copy-paste generic advice like "post consistently" unless you tie it to a concrete pattern you inferred from their handle/niche
 
 Use EXACTLY this structure (no deviations):
 
 SCORE: [integer 0-100]
 
 STATS:
-followers: [value like 45K or 2.1M]
-videos: [integer]
-engagement: [like 4.7%]
-frequency: [like 4/week]
-avg_duration: [like 42s]
+followers: [realistic for their stage, e.g. 3.2K / 87K / 1.4M]
+videos: [integer consistent with frequency and account age]
+engagement: [% consistent with follower tier above]
+frequency: [x/week consistent with video count]
+avg_duration: [typical for their niche and platform]
 
-ANALYSIS_HOOKS: [2 sentences]
-ANALYSIS_STYLE: [2 sentences]
-ANALYSIS_ENGAGEMENT: [2 sentences]
+ANALYSIS_HOOKS: [2 sentences — reference @${handle}'s inferred niche and hook style]
+ANALYSIS_STYLE: [2 sentences — reference their likely visual/editing approach based on niche]
+ANALYSIS_ENGAGEMENT: [2 sentences — reference their specific follower tier and audience behaviour]
 
 RECOMMENDATIONS:
-1. [Short title] — [1-2 sentence explanation]
-2. [Short title] — [1-2 sentence explanation]
-3. [Short title] — [1-2 sentence explanation]
-4. [Short title] — [1-2 sentence explanation]
-5. [Short title] — [1-2 sentence explanation]
+1. [Specific actionable title] — [1-2 sentences tied to @${handle}'s inferred niche and weakness]
+2. [Specific actionable title] — [1-2 sentences]
+3. [Specific actionable title] — [1-2 sentences]
+4. [Specific actionable title] — [1-2 sentences]
+5. [Specific actionable title] — [1-2 sentences]
 
-KEY_OPPORTUNITY: [1 paragraph]
+KEY_OPPORTUNITY: [1 paragraph — name @${handle} explicitly, describe their single biggest untapped growth lever based on their niche and current stage]`;
 
-If profile is unknown, extrapolate realistically from similar creator profiles.`;
+  const resetBtns = () => {
+    if(btnGo) { btnGo.disabled=false; }
+    if(btnMobile) { btnMobile.disabled=false; btnMobile.style.opacity=''; }
+    document.getElementById('btnGoTxt').textContent=t('analyze_btn');
+  };
 
   try{
     const res=await fetch('/api/analyze',{
@@ -2217,26 +2413,57 @@ If profile is unknown, extrapolate realistically from similar creator profiles.`
       body:JSON.stringify({prompt})
     });
     if(!res.ok) throw new Error('API '+res.status);
-    const data=await res.json();
-    if(data.error) throw new Error(data.error);
-    const text = data.text || '';
-    await delay(2800);
 
-    // 4 — Sauvegarder en cache (empêche analyses répétées gratuites)
-    try{
-      localStorage.setItem(cacheKey, JSON.stringify({text, platName, ts: Date.now()}));
-    }catch(e){}
+    // Lecture SSE en streaming
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let text = '';
+    let sseBuf = '';
+    let switched = false;
 
-    if(btnGo) { btnGo.disabled=false; }
-    if(btnMobile) { btnMobile.disabled=false; btnMobile.style.opacity=''; }
-    document.getElementById('btnGoTxt').textContent=t('analyze_btn');
+    while(true){
+      const {done, value} = await reader.read();
+      if(done) break;
+      sseBuf += decoder.decode(value, {stream:true});
+      const lines = sseBuf.split('\n');
+      sseBuf = lines.pop();
+      for(const line of lines){
+        if(!line.startsWith('data: ')) continue;
+        const raw = line.slice(6).trim();
+        if(raw === '[DONE]') continue;
+        try{
+          const ev = JSON.parse(raw);
+          if(ev.type === 'error') throw new Error(ev.error?.message || 'API error');
+          if(ev.type === 'content_block_delta' && ev.delta?.type === 'text_delta'){
+            text += ev.delta.text;
+          }
+        }catch(e){ if(!(e instanceof SyntaxError)) throw e; }
+      }
+      // Dès que le score est disponible, passer à la page résultats
+      if(!switched && /SCORE:\s*\d+/.test(text)){
+        switched = true;
+        stopPortalParticles();
+        document.getElementById('pageLoading').classList.add('hidden');
+        document.getElementById('pageResults').classList.remove('hidden');
+        currentPage = 'results';
+        const sm = text.match(/SCORE:\s*(\d+)/);
+        if(sm){
+          document.getElementById('scoreN').textContent = Math.min(100, parseInt(sm[1]));
+          document.getElementById('pAv').textContent = handle[0].toUpperCase();
+          document.getElementById('pNm').textContent = '@'+handle;
+        }
+      }
+    }
+
+    // 4 — Sauvegarder en cache
+    try{ localStorage.setItem(cacheKey, JSON.stringify({text, platName, ts: Date.now()})); }catch(e){}
+
+    resetBtns();
     renderResults(handle, platName, text);
   }catch(e){
     document.getElementById('pageLoading').classList.add('hidden');
     document.getElementById('pageLanding').classList.remove('hidden');
-    if(btnGo) { btnGo.disabled=false; }
-    if(btnMobile) { btnMobile.disabled=false; btnMobile.style.opacity=''; }
-    document.getElementById('btnGoTxt').textContent=t('analyze_btn');
+    resetBtns();
     showErr('// Erreur : '+e.message);
     currentPage='landing';
   }
@@ -2527,7 +2754,8 @@ function animNum(id,from,to,dur){
 ════════════════════════════════ */
 function handleShareReward(){
   const btn = document.getElementById('shareBtn');
-  if(btn.classList.contains('used')) return;
+  const dashBtn = document.getElementById('dashShareBtn');
+  if(btn?.classList.contains('used') || dashBtn?.classList.contains('used')) return;
 
   const score = document.getElementById('scoreN')?.textContent || '?';
   const handle = userHandle || 'mon compte';
@@ -2566,8 +2794,9 @@ function handleShareReward(){
     }
   }
 
-  btn.classList.add('used');
-  btn.innerHTML = '<span>✓ ' + (lang==='fr'?'Partagé !':lang==='es'?'¡Compartido!':'Shared!') + '</span>';
+  const sharedLabel = '<span>✓ ' + (lang==='fr'?'Partagé !':lang==='es'?'¡Compartido!':'Shared!') + '</span>';
+  if(btn){ btn.classList.add('used'); btn.innerHTML = sharedLabel; }
+  if(dashBtn){ dashBtn.classList.add('used'); dashBtn.innerHTML = sharedLabel; }
 }
 
 function showVerifiedBadgeInDash(){
@@ -2652,6 +2881,61 @@ function updateShareRewardUI(){
   if(btnTxt) btnTxt.textContent = lang==='fr' ? 'Partager →' : lang==='es' ? 'Compartir →' : 'Share →';
 }
 
+/* ════════════════════════════════
+   PORTAL VORTEX
+════════════════════════════════ */
+let _pendingPortal = false;
+
+function playPortalSound(){
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const dur = 0.95, sr = ctx.sampleRate;
+    const buf = ctx.createBuffer(1, sr*dur, sr);
+    const d = buf.getChannelData(0);
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for(let i=0;i<d.length;i++){
+      const w=Math.random()*2-1;
+      b0=.99886*b0+w*.0555179;b1=.99332*b1+w*.0750759;b2=.9690*b2+w*.153852;
+      b3=.8665*b3+w*.3104856;b4=.55*b4+w*.5329522;b5=-.7616*b5-w*.016898;
+      d[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.09; b6=w*.115926;
+    }
+    const src=ctx.createBufferSource(); src.buffer=buf;
+    const osc=ctx.createOscillator(); osc.type='sine';
+    osc.frequency.setValueAtTime(55,ctx.currentTime);
+    osc.frequency.linearRampToValueAtTime(22,ctx.currentTime+dur);
+    const oscG=ctx.createGain();
+    oscG.gain.setValueAtTime(0,ctx.currentTime);
+    oscG.gain.linearRampToValueAtTime(.18,ctx.currentTime+.1);
+    oscG.gain.linearRampToValueAtTime(0,ctx.currentTime+dur);
+    const lpf=ctx.createBiquadFilter(); lpf.type='lowpass'; lpf.Q.value=7;
+    lpf.frequency.setValueAtTime(60,ctx.currentTime);
+    lpf.frequency.linearRampToValueAtTime(550,ctx.currentTime+.18);
+    lpf.frequency.linearRampToValueAtTime(120,ctx.currentTime+.65);
+    lpf.frequency.linearRampToValueAtTime(40,ctx.currentTime+dur);
+    const gain=ctx.createGain();
+    gain.gain.setValueAtTime(0,ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(.55,ctx.currentTime+.07);
+    gain.gain.linearRampToValueAtTime(.4,ctx.currentTime+.45);
+    gain.gain.linearRampToValueAtTime(0,ctx.currentTime+dur);
+    src.connect(lpf); lpf.connect(gain);
+    osc.connect(oscG); oscG.connect(gain);
+    gain.connect(ctx.destination);
+    src.start(); osc.start();
+    src.stop(ctx.currentTime+dur); osc.stop(ctx.currentTime+dur);
+  }catch(e){}
+}
+
+function showPortal(type, callback){
+  playPortalSound();
+  const ov=document.getElementById('portalOverlay');
+  ov.style.display='block';
+  ov.className='';
+  void ov.offsetWidth;
+  ov.className=type==='open'?'opening':'closing';
+  setTimeout(callback, type==='open'?420:160);
+  setTimeout(()=>{ ov.style.display='none'; ov.className=''; },1060);
+}
+
 let fomoInterval = null;
 const FOMO_DURATION = 10 * 60;
 
@@ -2683,9 +2967,9 @@ function initFomo(handle){
   document.getElementById('pwFomo').style.display = 'block';
   document.getElementById('pwBtn').classList.add('fomo-active');
   document.getElementById('pwBtnText').textContent =
-    lang==='fr' ? 'Débloquer à 4,99€ ce mois-ci !' :
-    lang==='es' ? '¡Desbloquear por 4,99€ este mes!' :
-    'Unlock for €4.99 this month!';
+    lang==='fr' ? 'Offre de lancement — 4,99€ ce mois-ci !' :
+    lang==='es' ? '¡Oferta de lanzamiento — 4,99€ este mes!' :
+    'Launch Offer — €4.99 this month!';
   document.getElementById('pwPriceAmt').textContent =
     lang==='fr' ? '4,99€ ce mois, puis 9,99€/mois' :
     lang==='es' ? '4,99€ este mes, luego 9,99€/mes' :
@@ -2889,9 +3173,17 @@ if(localStorage.getItem('peakup_verified') === 'true'){
   <span style="margin:0 12px">·</span>
   <a href="#" onclick="showLegal('cgu')" style="color:var(--t2);text-decoration:none">CGU</a>
   <span style="margin:0 12px">·</span>
-  <a href="#" onclick="showLegal('privacy')" style="color:var(--t2);text-decoration:none">Confidentialité</a>
+  <a href="#" onclick="showLegal('privacy')" style="color:var(--t2);text-decoration:none" data-i="footer_privacy">Confidentialité</a>
   <span style="margin:0 12px">·</span>
   <a href="mailto:support@scoreviral.eu" style="color:var(--t2);text-decoration:none">Contact</a>
 </footer>
+
+<!-- PORTAL VORTEX OVERLAY -->
+<div id="portalOverlay">
+  <div class="portal-wrap">
+    <div class="portal-disk"></div>
+  </div>
+</div>
+
 </body>
 </html>
