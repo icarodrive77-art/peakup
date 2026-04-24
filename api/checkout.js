@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   if (!STRIPE_SECRET_KEY) return res.status(500).json({ error: 'Stripe key not configured' });
 
   try {
-    const { email, fomo } = req.body;
+    const { email, fomo, firebaseUid } = req.body;
     const origin = req.headers.origin || 'https://scoreviral.eu';
 
     const params = new URLSearchParams({
@@ -19,6 +19,7 @@ export default async function handler(req, res) {
     });
 
     if (email) params.append('customer_email', email);
+    if (firebaseUid) params.append('metadata[firebaseUid]', firebaseUid);
 
     if (fomo === true) {
       // FOMO — coupon 50% premier mois, PAS de allow_promotion_codes

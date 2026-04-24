@@ -1308,10 +1308,56 @@ body::before{
   0%  {transform:rotate(0deg)    scale(1)}
   100%{transform:rotate(-720deg) scale(.04)}
 }
+
+/* ─── Dashboard Analyze Modal ───────────────────────────────────── */
+.dam-overlay{position:fixed;inset:0;background:rgba(4,5,10,.88);z-index:3000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);}
+.dam-card{background:var(--s2);border:1px solid var(--b2);border-radius:18px;padding:28px 28px 24px;max-width:500px;width:calc(100% - 32px);max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.6);}
+.dam-close{position:absolute;top:14px;right:18px;background:none;border:none;color:var(--t3);font-size:1.5rem;cursor:pointer;line-height:1;padding:2px 6px;border-radius:6px;transition:color .2s;}
+.dam-close:hover{color:var(--text);}
+.dam-title{font-family:'Exo 2',sans-serif;font-size:1.15rem;font-weight:800;margin-bottom:20px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.dam-plat{display:flex;gap:8px;margin-bottom:14px;}
+.dam-pb{flex:1;padding:9px;background:var(--b1);border:1px solid var(--b2);border-radius:8px;color:var(--t2);font-family:'Space Grotesk',sans-serif;font-size:.82rem;cursor:pointer;transition:all .18s;}
+.dam-pb.on{background:var(--b2);border-color:var(--accent);color:var(--text);}
+.dam-input-wrap{display:flex;align-items:center;background:var(--b1);border:1px solid var(--b2);border-radius:8px;padding:0 14px;margin-bottom:12px;transition:border-color .18s;}
+.dam-input-wrap:focus-within{border-color:var(--accent);}
+.dam-at{color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:.9rem;}
+.dam-input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.88rem;padding:13px 8px;}
+.dam-btn{width:100%;padding:13px;background:var(--grad);border:none;border-radius:8px;color:#fff;font-family:'Exo 2',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;letter-spacing:.04em;transition:opacity .18s;}
+.dam-btn:disabled{opacity:.45;cursor:not-allowed;}
+.dam-btn-secondary{background:var(--b1);border:1px solid var(--b2);color:var(--t2);margin-top:8px;}
+.dam-btn-secondary:hover{border-color:var(--accent);color:var(--text);}
+.dam-err{color:var(--danger);font-family:'JetBrains Mono',monospace;font-size:.72rem;margin-top:8px;min-height:18px;}
+.dam-loading{text-align:center;padding:28px 0;}
+.dam-spinner{width:42px;height:42px;border:3px solid var(--b2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
+.dam-loading-txt{color:var(--t2);font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.06em;}
+.dam-score-wrap{display:flex;align-items:center;gap:18px;margin-bottom:18px;}
+.dam-score-ring{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .6s,box-shadow .6s;}
+.dam-score-n{font-family:'Exo 2',sans-serif;font-size:1.7rem;font-weight:800;line-height:1;}
+.dam-score-lbl{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--accent);letter-spacing:.12em;margin-bottom:4px;}
+.dam-score-ttl{font-family:'Exo 2',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:8px;}
+.dam-bar-track{background:var(--b2);border-radius:4px;height:5px;width:160px;}
+.dam-bar-fill{height:100%;border-radius:4px;background:var(--grad);width:0;transition:width 1s ease;}
+.dam-handle-info{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--t2);margin-bottom:14px;}
+.dam-metrics{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+.dam-metric{background:var(--b1);border:1px solid var(--b2);border-radius:8px;padding:9px 13px;flex:1;min-width:80px;}
+.dam-metric-lbl{color:var(--t3);font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.06em;margin-bottom:4px;}
+.dam-metric-val{font-family:'Exo 2',sans-serif;font-weight:700;font-size:.88rem;}
+.dam-reco-section-title{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent);letter-spacing:.1em;margin-bottom:10px;}
+.dam-recos{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+.dam-reco-card{background:var(--b1);border:1px solid var(--b2);border-radius:8px;padding:12px 14px;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;}
+.dam-reco-card.in{opacity:1;transform:none;}
+.dam-reco-title{font-size:.84rem;font-weight:600;margin-bottom:4px;}
+.dam-reco-desc{font-size:.77rem;color:var(--t2);line-height:1.55;}
+.dam-reco-locked{filter:blur(4px);user-select:none;pointer-events:none;opacity:.4;}
+.dam-upgrade-nudge{background:var(--b1);border:1px solid var(--accent);border-radius:8px;padding:12px 14px;text-align:center;font-size:.8rem;color:var(--t2);cursor:pointer;transition:border-color .2s;}
+.dam-upgrade-nudge:hover{border-color:var(--accentL);}
+.dam-upgrade-nudge strong{color:var(--accent);}
+@media(max-width:600px){.dam-card{padding:20px 16px;}.dam-bar-track{width:120px;}}
 </style>
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyC5bdhouvJpeNG54Fs70WPVsgLc9Sogo8A",
@@ -1324,6 +1370,7 @@ body::before{
     };
     firebase.initializeApp(firebaseConfig);
     const fbAuth = firebase.auth();
+    const fbDb  = firebase.firestore();
     const googleProvider = new firebase.auth.GoogleAuthProvider();
   </script>
 </head>
@@ -1566,6 +1613,11 @@ body::before{
 <!-- ═══════ RESULTS ═══════ -->
 <div id="pageResults" class="z1 hidden">
 
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:20px;padding-top:4px;">
+    <img src="https://raw.githubusercontent.com/icarodrive77-art/peakup/main/logo.png" alt="PEAKUP" style="height:44px;width:44px;object-fit:contain;border-radius:10px;">
+    <span style="color:#fff;font-family:'Exo 2',sans-serif;font-weight:800;font-size:.9rem;letter-spacing:.12em;">PEAKUP</span>
+  </div>
+
   <button class="btn-back" onclick="goTo('landing')" title="Retour">
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <span data-i="new_analysis">← Nouvelle analyse</span>
@@ -1693,9 +1745,61 @@ body::before{
         <div class="dash-welcome" id="dashWelcome">Bonjour, <em style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Creator</em> 👋</div>
         <div class="dash-sub" id="dashMotivMsg">Voici ton tableau de bord PEAKUP</div>
       </div>
-      <button id="dashShareBtn" class="dash-pro-badge" onclick="handleShareReward()" data-i="dash_share_btn" style="cursor:pointer;border:none;background:var(--grad);color:#fff;">Partager</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <button onclick="openDashAnalyze()" style="padding:9px 18px;background:var(--grad);border:none;border-radius:8px;color:#fff;font-family:'Exo 2',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;letter-spacing:.04em;white-space:nowrap;" id="dashAnalyzeBtn">⚡ Analyser</button>
+        <button id="dashShareBtn" class="dash-pro-badge" onclick="handleShareReward()" data-i="dash_share_btn" style="cursor:pointer;border:none;background:var(--grad);color:#fff;">Partager</button>
+      </div>
     </div>
     <div class="dash-pro-badge" id="dashProBadge" style="display:none">PRO · Actif</div>
+
+  <!-- Modal : Analyser depuis le dashboard -->
+  <div id="dashAnalyzeModal" class="dam-overlay hidden">
+    <div class="dam-card">
+      <button class="dam-close" onclick="closeDashAnalyze()">×</button>
+
+      <!-- État : formulaire -->
+      <div id="damForm">
+        <div class="dam-title" id="damTitle">⚡ Analyser un profil</div>
+        <div class="dam-plat">
+          <button class="dam-pb on" id="damPlatTT" onclick="setDamPlat('tiktok',this)">TikTok</button>
+          <button class="dam-pb" id="damPlatYT" onclick="setDamPlat('youtube',this)">YouTube</button>
+        </div>
+        <div class="dam-input-wrap">
+          <span class="dam-at">@</span>
+          <input id="damHandle" class="dam-input" type="text" placeholder="pseudonyme" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter')startDashAnalysis()">
+        </div>
+        <button class="dam-btn" id="damAnalyzeBtn" onclick="startDashAnalysis()">
+          <span id="damBtnTxt">Analyser →</span>
+        </button>
+        <div class="dam-err" id="damErr"></div>
+      </div>
+
+      <!-- État : chargement -->
+      <div id="damLoading" class="dam-loading" style="display:none">
+        <div class="dam-spinner"></div>
+        <div class="dam-loading-txt" id="damLoadTxt">Analyse en cours…</div>
+      </div>
+
+      <!-- État : résultats -->
+      <div id="damResults" style="display:none">
+        <div class="dam-score-wrap">
+          <div class="dam-score-ring" id="damScoreRing">
+            <div class="dam-score-n" id="damScoreN">0</div>
+          </div>
+          <div>
+            <div class="dam-score-lbl">// SCORE VIRAL</div>
+            <div class="dam-score-ttl" id="damScoreTtl">—</div>
+            <div class="dam-bar-track"><div class="dam-bar-fill" id="damBarFill"></div></div>
+          </div>
+        </div>
+        <div class="dam-handle-info" id="damHandleInfo"></div>
+        <div class="dam-metrics" id="damMetrics"></div>
+        <div class="dam-reco-section-title">RECOMMANDATIONS IA</div>
+        <div class="dam-recos" id="damRecos"></div>
+        <button class="dam-btn dam-btn-secondary" onclick="resetDashAnalyze()">← Nouvelle analyse</button>
+      </div>
+    </div>
+  </div>
   </div>
 
   <!-- STATS RAPIDES EN HAUT -->
@@ -2286,18 +2390,19 @@ function goToAuth(){
 async function simulateSubscribe(fomoOverride){
   try{
     const email = loggedIn ? (fbAuth.currentUser?.email || '') : '';
+    const firebaseUid = loggedIn ? (fbAuth.currentUser?.uid || '') : '';
     const fomoActive = fomoOverride === true;
 
     const res = await fetch('/api/checkout',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ email, fomo: fomoActive })
+      body: JSON.stringify({ email, firebaseUid, fomo: fomoActive })
     });
     const data = await res.json();
     if(data.url) window.location.href = data.url;
-    else alert('Erreur checkout: ' + (data.error || 'inconnue'));
+    else showToast((lang==='fr'?'Erreur checkout : ':lang==='es'?'Error checkout: ':'Checkout error: ')+(data.error||'inconnue'),'error');
   }catch(e){
-    alert('Erreur: ' + e.message);
+    showToast((lang==='fr'?'Erreur : ':lang==='es'?'Error: ':'Error: ')+e.message,'error');
   }
 }
 
@@ -2349,23 +2454,43 @@ function showAuthSuccess(msg){
 /* ════════════════════════════════
    FIREBASE AUTH
 ════════════════════════════════ */
-// Emails Pro — accès illimité + badge Verified
-const PRO_EMAILS = [
+// Ambassadeurs — accès illimité offert (hors paywall Stripe)
+// blindspottedb · chubby.buby · corbeuro · 2Fousdefou!
+const AMBASSADOR_EMAILS = [
   'icarodrive.77@gmail.com',
   'lalindacastings@gmail.com',
-  'allan.taxi77@gmail.com'
+  'allan.taxi77@gmail.com',
+  'gatofoumedellin@gmail.com'
 ];
 
-function isProEmail(email){
-  return PRO_EMAILS.includes(email?.toLowerCase().trim());
+function isAmbassador(email){
+  return AMBASSADOR_EMAILS.includes(email?.toLowerCase().trim());
+}
+
+// Vérifie le statut Pro : ambassadeurs en whitelist, sinon lecture Firestore.
+// Le champ `isPro` est positionné à true par le webhook Stripe (api/webhook.js)
+// sur l'événement customer.subscription.created / updated.
+async function checkProStatus(user){
+  if(isAmbassador(user.email)){
+    localStorage.setItem('peakup_is_pro', 'true');
+    localStorage.setItem('peakup_verified', 'true');
+    return true;
+  }
+  try{
+    const snap = await fbDb.collection('users').doc(user.uid).get();
+    const isPro = snap.exists && snap.data().isPro === true;
+    localStorage.setItem('peakup_is_pro', isPro ? 'true' : 'false');
+    return isPro;
+  }catch(e){
+    localStorage.setItem('peakup_is_pro', 'false');
+    return false;
+  }
 }
 
 // Écouter les changements d'état de connexion
-fbAuth.onAuthStateChanged(user => {
+fbAuth.onAuthStateChanged(async user => {
   if(user){
-    const isPro = isProEmail(user.email);
-    localStorage.setItem('peakup_is_pro', isPro ? 'true' : 'false');
-    if(isPro) localStorage.setItem('peakup_verified', 'true');
+    const isPro = await checkProStatus(user);
     const name = user.displayName || user.email.split('@')[0];
     // Seulement si pas encore connecté dans cette session
     if(!loggedIn){ completeAuth(name, '', 'tiktok', isPro, _pendingPortal); _pendingPortal=false; }
@@ -2378,9 +2503,7 @@ async function authWithGoogle(){
     const result = await fbAuth.signInWithPopup(googleProvider);
     if(result.user){
       const name = result.user.displayName || result.user.email.split('@')[0];
-      const isPro = isProEmail(result.user.email);
-      localStorage.setItem('peakup_is_pro', isPro ? 'true' : 'false');
-      if(isPro) localStorage.setItem('peakup_verified', 'true');
+      const isPro = await checkProStatus(result.user);
       _pendingPortal = false; // empêcher l'observer de re-déclencher
       completeAuth(name, '', 'tiktok', isPro, true);
     }
@@ -2409,9 +2532,7 @@ async function doSignup(){
     showAuthLoading(true);
     const cred = await fbAuth.createUserWithEmailAndPassword(email, pwd);
     await cred.user.updateProfile({ displayName: name });
-    const isPro = isProEmail(email);
-    localStorage.setItem('peakup_is_pro', isPro ? 'true' : 'false');
-    if(isPro) localStorage.setItem('peakup_verified', 'true');
+    const isPro = await checkProStatus(cred.user);
     completeAuth(name, handle, authPlatform, isPro, true);
     _pendingPortal = false;
   }catch(e){
@@ -2437,7 +2558,7 @@ async function doLogin(){
     const result = await fbAuth.signInWithEmailAndPassword(email, pwd);
     if(result.user){
       const name = result.user.displayName || result.user.email.split('@')[0];
-      const isPro = isProEmail(result.user.email);
+      const isPro = await checkProStatus(result.user);
       _pendingPortal = false;
       completeAuth(name, '', 'tiktok', isPro, true);
     }
@@ -3484,7 +3605,7 @@ function renderDashboard(){
       <td style="font-size:.82rem;">${inv.desc}</td>
       <td style="font-family:'Exo 2',sans-serif;font-weight:700;">${inv.amt}</td>
       <td><span class="inv-status inv-paid">✓ ${inv.status}</span></td>
-      <td><button class="btn-dl" onclick="alert('PDF — Stripe à connecter')">${lang==='fr'?'PDF':'PDF'}</button></td>
+      <td><button class="btn-dl" onclick="showToast(lang==='fr'?'PDF disponible prochainement':lang==='es'?'PDF próximamente':'PDF coming soon','warn')">${lang==='fr'?'PDF':'PDF'}</button></td>
     </tr>`).join('')}`;
 
   document.querySelectorAll('[data-i]').forEach(el=>{
@@ -3813,7 +3934,7 @@ function showVerifiedBadgeInDash(){
 /* ════════════════════════════════
    LISTE BLANCHE VERIFIED
 ════════════════════════════════ */
-const VERIFIED_WHITELIST = ['blindspottedb','chubby.buby','corbeuro'];
+const VERIFIED_WHITELIST = ['blindspottedb','chubby.buby','corbeuro','2fousdefou','2fousdefou!'];
 
 function isWhitelisted(handle){
   return VERIFIED_WHITELIST.includes(handle.toLowerCase().replace('@',''));
@@ -4192,6 +4313,192 @@ if(localStorage.getItem('peakup_verified') === 'true'){
   setTimeout(shine, 1500);
   setInterval(shine, 5000);
 })();
+
+/* ════════════════════════════════
+   DASHBOARD ANALYZE MODAL
+════════════════════════════════ */
+let damPlatform = 'tiktok';
+
+function openDashAnalyze(){
+  document.getElementById('dashAnalyzeModal').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('damHandle').focus(), 80);
+}
+
+function closeDashAnalyze(){
+  document.getElementById('dashAnalyzeModal').classList.add('hidden');
+  resetDashAnalyze();
+}
+
+function setDamPlat(plat, btn){
+  damPlatform = plat;
+  document.querySelectorAll('.dam-pb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function resetDashAnalyze(){
+  document.getElementById('damForm').style.display = '';
+  document.getElementById('damLoading').style.display = 'none';
+  document.getElementById('damResults').style.display = 'none';
+  document.getElementById('damHandle').value = '';
+  document.getElementById('damErr').textContent = '';
+  const btn = document.getElementById('damAnalyzeBtn');
+  if(btn) btn.disabled = false;
+  document.getElementById('damBtnTxt').textContent = lang==='fr'?'Analyser →':lang==='es'?'Analizar →':'Analyze →';
+}
+
+async function startDashAnalysis(){
+  const raw = document.getElementById('damHandle').value.trim();
+  if(!raw){ document.getElementById('damErr').textContent = t('err_empty'); return; }
+  const handle = raw.replace(/[^a-zA-Z0-9_.!-]/g,'').toLowerCase();
+  if(handle.length < 2){ document.getElementById('damErr').textContent = t('err_empty'); return; }
+
+  const btn = document.getElementById('damAnalyzeBtn');
+  btn.disabled = true;
+  document.getElementById('damBtnTxt').textContent = '...';
+  document.getElementById('damErr').textContent = '';
+  document.getElementById('damForm').style.display = 'none';
+  document.getElementById('damLoading').style.display = 'block';
+
+  const platName = damPlatform==='tiktok' ? 'TikTok' : 'YouTube';
+  const langMap = {fr:'français', en:'English', es:'español'};
+
+  const prompt = `You are PEAKUP, an elite AI analytics engine for content creators.
+
+Your task: generate a realistic, deeply personalized profile analysis for @${handle} on ${platName}. Respond ONLY in ${langMap[lang]}.
+
+STEP 1 — Infer who @${handle} is before writing anything:
+- Decode the handle: language, keywords, numbers, style
+- Estimate their growth stage: hobbyist / rising / established / viral
+- Infer their likely content format, posting cadence, and audience age group
+
+STEP 2 — Use those inferences to produce outputs that could ONLY apply to @${handle}.
+
+MANDATORY VARIABILITY RULES:
+- Scores must span the full range. Map growth stage → score: hobbyist 15–45, rising 40–65, established 62–80, viral 75–95.
+- Engagement rates must be inversely realistic: <10K followers → 6–15%, 10K–100K → 3–9%, 100K–1M → 1.5–5%, 1M+ → 0.8–3%
+- All 5 recommendations must target @${handle}'s specific inferred weaknesses
+
+Use EXACTLY this structure:
+
+SCORE: [integer 0-100]
+
+STATS:
+followers: [realistic for their stage]
+videos: [integer]
+engagement: [%]
+frequency: [x/week]
+avg_duration: [typical for niche]
+
+RECOMMENDATIONS:
+1. [Specific actionable title] — [1-2 sentences tied to @${handle}'s inferred niche and weakness]
+2. [Specific actionable title] — [1-2 sentences]
+3. [Specific actionable title] — [1-2 sentences]
+4. [Specific actionable title] — [1-2 sentences]
+5. [Specific actionable title] — [1-2 sentences]
+
+KEY_OPPORTUNITY: [1 paragraph — name @${handle} explicitly]`;
+
+  try{
+    const res = await fetch('/api/analyze',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({prompt})
+    });
+    if(!res.ok) throw new Error('API '+res.status);
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let text = '';
+    let sseBuf = '';
+
+    while(true){
+      const {done, value} = await reader.read();
+      if(done) break;
+      sseBuf += decoder.decode(value, {stream:true});
+      const lines = sseBuf.split('\n');
+      sseBuf = lines.pop();
+      for(const line of lines){
+        if(!line.startsWith('data: ')) continue;
+        const raw = line.slice(6).trim();
+        if(raw==='[DONE]') continue;
+        try{
+          const ev = JSON.parse(raw);
+          if(ev.type==='error') throw new Error(ev.error?.message||'API error');
+          if(ev.type==='content_block_delta'&&ev.delta?.type==='text_delta') text += ev.delta.text;
+        }catch(e){ if(!(e instanceof SyntaxError)) throw e; }
+      }
+    }
+
+    document.getElementById('damLoading').style.display = 'none';
+    document.getElementById('damResults').style.display = 'block';
+    renderDamResults(handle, platName, text);
+  }catch(e){
+    document.getElementById('damLoading').style.display = 'none';
+    document.getElementById('damForm').style.display = '';
+    btn.disabled = false;
+    document.getElementById('damBtnTxt').textContent = lang==='fr'?'Analyser →':lang==='es'?'Analizar →':'Analyze →';
+    document.getElementById('damErr').textContent = '// Erreur : '+e.message;
+  }
+}
+
+function renderDamResults(handle, platName, text){
+  const get = k => { const m=text.match(new RegExp(k+':\\s*([^\\n]+)')); return m?m[1].trim():'—'; };
+
+  const sm = text.match(/SCORE:\s*(\d+)/);
+  const score = sm ? Math.min(100, parseInt(sm[1])) : 65;
+
+  let scoreColor;
+  if(score<=30) scoreColor='#ef233c';
+  else if(score<=49) scoreColor='#ff9f1c';
+  else if(score<=69) scoreColor='#06d6a0';
+  else scoreColor='#7c5cfc';
+
+  const deg = Math.round(score*3.6);
+  const ring = document.getElementById('damScoreRing');
+  const scoreN = document.getElementById('damScoreN');
+  ring.style.background = `conic-gradient(${scoreColor} 0deg, ${scoreColor}99 ${deg}deg, var(--b2) ${deg}deg)`;
+  ring.style.boxShadow = `0 0 0 1px var(--b2), 0 8px 24px ${scoreColor}55`;
+  scoreN.style.color = scoreColor;
+  setTimeout(()=>animNum('damScoreN',0,score,1000), 150);
+
+  const levels = t('score_levels');
+  const lvl = score<20?levels[0]:score<40?levels[1]:score<60?levels[2]:score<80?levels[3]:levels[4];
+  document.getElementById('damScoreTtl').textContent = lvl;
+  setTimeout(()=>{ document.getElementById('damBarFill').style.background=scoreColor; document.getElementById('damBarFill').style.width=score+'%'; }, 250);
+
+  document.getElementById('damHandleInfo').textContent = '@'+handle+' · '+platName+' · '+new Date().toLocaleDateString(lang==='fr'?'fr-FR':lang==='es'?'es-ES':'en-GB');
+
+  document.getElementById('damMetrics').innerHTML = [
+    {lbl:t('engagement'), val:get('engagement')},
+    {lbl:lang==='fr'?'Fréquence':lang==='es'?'Frecuencia':'Frequency', val:get('frequency')},
+    {lbl:lang==='fr'?'Durée moy.':lang==='es'?'Duración med.':'Avg. duration', val:get('avg_duration')},
+    {lbl:lang==='fr'?'Abonnés':lang==='es'?'Seguidores':'Followers', val:get('followers')},
+  ].map(m=>`<div class="dam-metric"><div class="dam-metric-lbl">${m.lbl}</div><div class="dam-metric-val">${m.val}</div></div>`).join('');
+
+  const rre = /(\d+)\.\s*([^\n—–-]+?)(?:\s*[—–-]\s*)([^\n]+)/g;
+  const recos=[]; let rm;
+  while((rm=rre.exec(text))!==null) recos.push({title:rm[2].trim(), desc:rm[3].trim()});
+
+  const isPro = localStorage.getItem('peakup_is_pro')==='true';
+  const showAll = isPro || isWhitelisted(handle);
+  const visible = showAll ? recos : recos.slice(0,1);
+
+  const recosEl = document.getElementById('damRecos');
+  recosEl.innerHTML = visible.map((r,i)=>`
+    <div class="dam-reco-card" id="drc${i}">
+      <div class="dam-reco-title">${r.title}</div>
+      <div class="dam-reco-desc">${r.desc}</div>
+    </div>`).join('');
+  visible.forEach((_,i)=>setTimeout(()=>document.getElementById('drc'+i)?.classList.add('in'),150+i*90));
+
+  if(!showAll && recos.length>1){
+    recosEl.insertAdjacentHTML('beforeend',`
+      <div class="dam-upgrade-nudge" onclick="closeDashAnalyze();simulateSubscribe()">
+        🔒 <strong>+${recos.length-1} ${lang==='fr'?'recommandations Pro':lang==='es'?'recomendaciones Pro':'Pro recommendations'}</strong><br>
+        <span style="font-size:.75rem">${lang==='fr'?'Passe en Pro pour tout voir →':lang==='es'?'Pasa a Pro →':'Upgrade to Pro →'}</span>
+      </div>`);
+  }
+}
 
 </script>
 
