@@ -2375,10 +2375,17 @@ fbAuth.onAuthStateChanged(user => {
 async function authWithGoogle(){
   try{
     showAuthLoading(true);
-    _pendingPortal = true;
-    await fbAuth.signInWithPopup(googleProvider);
-    // onAuthStateChanged prend le relais
+    const result = await fbAuth.signInWithPopup(googleProvider);
+    if(result.user){
+      const name = result.user.displayName || result.user.email.split('@')[0];
+      const isPro = isProEmail(result.user.email);
+      localStorage.setItem('peakup_is_pro', isPro ? 'true' : 'false');
+      if(isPro) localStorage.setItem('peakup_verified', 'true');
+      _pendingPortal = false; // empêcher l'observer de re-déclencher
+      completeAuth(name, '', 'tiktok', isPro, true);
+    }
   }catch(e){
+    _pendingPortal = false;
     if(e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request'){
       showAuthError(t('auth_err_google') + e.message);
     }
@@ -2427,10 +2434,15 @@ async function doLogin(){
 
   try{
     showAuthLoading(true);
-    _pendingPortal = true;
-    await fbAuth.signInWithEmailAndPassword(email, pwd);
-    // onAuthStateChanged prend le relais
+    const result = await fbAuth.signInWithEmailAndPassword(email, pwd);
+    if(result.user){
+      const name = result.user.displayName || result.user.email.split('@')[0];
+      const isPro = isProEmail(result.user.email);
+      _pendingPortal = false;
+      completeAuth(name, '', 'tiktok', isPro, true);
+    }
   }catch(e){
+    _pendingPortal = false;
     const msg = e.code === 'auth/user-not-found' || e.code === 'auth/wrong-password' ||
       e.code === 'auth/invalid-credential' ?
       t('auth_err_credentials') :
