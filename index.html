@@ -2596,6 +2596,9 @@ function renderBilling(){
     if(nextEl) nextEl.textContent = lang==='fr'?'Passe en Pro pour accéder aux fonctionnalités avancées.':lang==='es'?'Pásate a Pro para acceder a las funciones avanzadas.':'Go Pro to access advanced features.';
     if(tbl) tbl.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--t2);padding:24px;font-size:.85rem;">'+(lang==='fr'?'Aucune facture \u2014 tu n\'es pas encore abonn\u00e9.':lang==='es'?'Sin facturas \u2014 a\u00fan no est\u00e1s suscrito.':'No invoices \u2014 you\'re not subscribed yet.')+'</td></tr>';
     document.querySelectorAll('.btn-manage').forEach(b=>b.style.display='none');
+    // CTA upgrade
+    const nextEl2 = document.getElementById('billingNext');
+    if(nextEl2) nextEl2.innerHTML += ' &nbsp;<button onclick="simulateSubscribe()" style="background:var(--grad);border:none;border-radius:6px;color:#fff;font-family:\'Exo 2\',sans-serif;font-weight:700;font-size:.8rem;padding:7px 16px;cursor:pointer;margin-left:8px;">'+(lang==='fr'?'Passer Pro \u2192':lang==='es'?'Ir a Pro \u2192':'Go Pro \u2192')+'</button>';
     return;
   }
 
@@ -2625,7 +2628,7 @@ function renderBilling(){
       +'<td style="font-size:.82rem;">'+inv.desc+'</td>'
       +'<td style="font-family:\'Exo 2\',sans-serif;font-weight:700;">'+inv.amt+'</td>'
       +'<td><span class="inv-status inv-paid">\u2713 '+inv.status+'</span></td>'
-      +'<td><button class="btn-dl">PDF</button></td>'
+      +'<td><button class="btn-dl" onclick="showToast(lang===\'fr\'?\'PDF disponible prochainement\':lang===\'es\'?\'PDF próximamente\':\'PDF coming soon\',\'warn\')">PDF</button></td>'
       +'</tr>').join('')
     +'<tr><td colspan="5" style="font-size:.7rem;color:var(--t3);padding-top:12px;font-family:\'JetBrains Mono\',monospace;">'+demoNote+'</td></tr>';
 
@@ -3121,16 +3124,17 @@ function renderResults(handle,platName,text){
     {tag:lang==='fr'?'Durée moy.':lang==='es'?'Duración med.':'Avg duration',val:get('avg_duration'),cls:'up',icon:'⏱'},
   ].map(m=>`<div class="m-tile"><span class="m-icon">${m.icon}</span><div class="m-tag">${m.tag}</div><div class="m-val ${m.cls}">${m.val}</div></div>`).join('');
 
-  // Recos — whitelist = toutes les recos visibles, sinon 1 gratuite + paywall
-  const rre=/(\d+)\.\s*([^\n—–-]+?)(?:\s*[—–-]\s*)([^\n]+)/g;
+  // Recos — Pro ou whitelist = toutes les recos visibles, sinon 1 gratuite + paywall
+  const rre=/(\d+)\.\s*([^\n]+?)(?:\s+[-—–]\s+)([^\n]+)/g;
   const recos=[];let rm;
   while((rm=rre.exec(text))!==null) recos.push({title:rm[2].trim(),desc:rm[3].trim()});
 
   const badges=['rb-hot','rb-key','rb-tip','rb-tip','rb-tip'];
   const bLabels=[t('tag_hot'),t('tag_key'),t('tag_tip'),t('tag_tip'),t('tag_tip')];
 
-  if(isWhitelisted(handle)){
-    // Compte whitelist — toutes les recos visibles, pas de paywall
+  const isProUser = localStorage.getItem('peakup_is_pro') === 'true';
+  if(isWhitelisted(handle) || isProUser){
+    // Compte Pro ou whitelist — toutes les recos visibles, pas de paywall
     document.getElementById('recoCt').textContent = t('reco_all').replace('{n}', recos.length);
     document.getElementById('recoFree').innerHTML = recos.map((r,i)=>`
       <div class="reco-card" id="rc${i}">
@@ -4162,53 +4166,18 @@ function checkStripeReturn(){
 /* ════════════════════════════════
    LEGAL PAGES
 ════════════════════════════════ */
+const H1='font-family:\'Exo 2\',sans-serif;font-style:italic;font-size:1.8rem;color:var(--text);margin-bottom:8px';
+const H2='font-family:\'Exo 2\',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px';
 const legalContent = {
   cgu: {
-    fr: `<h1 style="font-family:'Exo 2',sans-serif;font-style:italic;font-size:1.8rem;color:var(--text);margin-bottom:8px">Conditions Générales d'Utilisation</h1>
-<p style="font-size:.75rem;color:var(--t3);margin-bottom:32px">Dernière mise à jour : mars 2026</p>
-
-<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">1. Objet</h2>
-<p>PEAKUP est un service d'analyse de profils de créateurs de contenu TikTok et YouTube utilisant l'intelligence artificielle. Le service est accessible sur scoreviral.eu.</p>
-
-<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">2. Accès au service</h2>
-<p>L'accès à une recommandation est gratuit. L'accès à l'analyse complète (5 recommandations) nécessite un abonnement mensuel de 9,99€/mois, résiliable à tout moment.</p>
-
-<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">3. Nature des données</h2>
-<p>Les statistiques affichées (abonnés, vues, engagement) sont des estimations générées par intelligence artificielle et ne constituent pas des données officielles. Les recommandations sont générées par IA et fournies à titre indicatif.</p>
-
-<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">4. Abonnement et paiement</h2>
-<p>Les paiements sont traités par Stripe. L'abonnement est renouvelé automatiquement chaque mois. Vous pouvez résilier à tout moment depuis votre espace client.</p>
-
-<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">5. Propriété intellectuelle</h2>
-<p>L'ensemble du contenu de PEAKUP (marque, design, code) est protégé. Toute reproduction sans autorisation est interdite.</p>
-
-<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">6. Responsabilité</h2>
-<p>PEAKUP ne peut être tenu responsable des décisions prises sur la base des recommandations IA. Les résultats peuvent varier selon les créateurs.</p>
-
-<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">7. Contact</h2>
-<p>Pour toute question : <a href="mailto:support@scoreviral.eu" style="color:var(--accent)">support@scoreviral.eu</a></p>`,
+    fr: `<h1 style="${H1}">Conditions Générales d'Utilisation</h1><p style="font-size:.75rem;color:var(--t3);margin-bottom:32px">Dernière mise à jour : mars 2026</p><h2 style="${H2}">1. Objet</h2><p>PEAKUP est un service d'analyse de profils de créateurs de contenu TikTok et YouTube utilisant l'intelligence artificielle. Le service est accessible sur scoreviral.eu.</p><h2 style="${H2}">2. Accès au service</h2><p>L'accès à une recommandation est gratuit. L'accès à l'analyse complète (5 recommandations) nécessite un abonnement mensuel de 9,99€/mois, résiliable à tout moment.</p><h2 style="${H2}">3. Nature des données</h2><p>Les statistiques affichées (abonnés, vues, engagement) sont des estimations générées par intelligence artificielle et ne constituent pas des données officielles. Les recommandations sont générées par IA et fournies à titre indicatif.</p><h2 style="${H2}">4. Abonnement et paiement</h2><p>Les paiements sont traités par Stripe. L'abonnement est renouvelé automatiquement chaque mois. Vous pouvez résilier à tout moment depuis votre espace client.</p><h2 style="${H2}">5. Propriété intellectuelle</h2><p>L'ensemble du contenu de PEAKUP (marque, design, code) est protégé. Toute reproduction sans autorisation est interdite.</p><h2 style="${H2}">6. Responsabilité</h2><p>PEAKUP ne peut être tenu responsable des décisions prises sur la base des recommandations IA. Les résultats peuvent varier selon les créateurs.</p><h2 style="${H2}">7. Contact</h2><p>Pour toute question : <a href="mailto:support@scoreviral.eu" style="color:var(--accent)">support@scoreviral.eu</a></p>`,
+    en: `<h1 style="${H1}">Terms of Service</h1><p style="font-size:.75rem;color:var(--t3);margin-bottom:32px">Last updated: March 2026</p><h2 style="${H2}">1. Purpose</h2><p>PEAKUP is an AI-powered analytics service for TikTok and YouTube content creators, available at scoreviral.eu.</p><h2 style="${H2}">2. Access</h2><p>One recommendation is free. Full analysis (5 recommendations) requires a monthly subscription at €9.99/month, cancellable at any time.</p><h2 style="${H2}">3. Data nature</h2><p>Displayed statistics (followers, views, engagement) are AI-generated estimates and do not constitute official data. Recommendations are provided for informational purposes only.</p><h2 style="${H2}">4. Subscription & payment</h2><p>Payments are processed by Stripe. Subscription renews automatically each month. You can cancel at any time from your account.</p><h2 style="${H2}">5. Intellectual property</h2><p>All PEAKUP content (brand, design, code) is protected. Reproduction without authorization is prohibited.</p><h2 style="${H2}">6. Liability</h2><p>PEAKUP cannot be held liable for decisions made based on AI recommendations. Results may vary.</p><h2 style="${H2}">7. Contact</h2><p>For any questions: <a href="mailto:support@scoreviral.eu" style="color:var(--accent)">support@scoreviral.eu</a></p>`,
+    es: `<h1 style="${H1}">Condiciones Generales de Uso</h1><p style="font-size:.75rem;color:var(--t3);margin-bottom:32px">Última actualización: marzo 2026</p><h2 style="${H2}">1. Objeto</h2><p>PEAKUP es un servicio de análisis de perfiles de creadores de contenido en TikTok y YouTube usando inteligencia artificial, disponible en scoreviral.eu.</p><h2 style="${H2}">2. Acceso</h2><p>Una recomendación es gratuita. El análisis completo (5 recomendaciones) requiere una suscripción mensual de 9,99€/mes, cancelable en cualquier momento.</p><h2 style="${H2}">3. Naturaleza de los datos</h2><p>Las estadísticas mostradas son estimaciones generadas por IA y no constituyen datos oficiales. Las recomendaciones se proporcionan con carácter informativo.</p><h2 style="${H2}">4. Suscripción y pago</h2><p>Los pagos son procesados por Stripe. La suscripción se renueva automáticamente cada mes. Puedes cancelar en cualquier momento desde tu cuenta.</p><h2 style="${H2}">5. Propiedad intelectual</h2><p>Todo el contenido de PEAKUP (marca, diseño, código) está protegido. Cualquier reproducción sin autorización está prohibida.</p><h2 style="${H2}">6. Responsabilidad</h2><p>PEAKUP no se hace responsable de las decisiones tomadas en base a las recomendaciones de IA. Los resultados pueden variar.</p><h2 style="${H2}">7. Contacto</h2><p>Para cualquier consulta: <a href="mailto:support@scoreviral.eu" style="color:var(--accent)">support@scoreviral.eu</a></p>`,
   },
   privacy: {
-    fr: `<h1 style="font-family:'Exo 2',sans-serif;font-style:italic;font-size:1.8rem;color:var(--text);margin-bottom:8px">Politique de Confidentialité</h1>
-<p style="font-size:.75rem;color:var(--t3);margin-bottom:32px">Dernière mise à jour : mars 2026</p>
-
-<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">1. Données collectées</h2>
-<p>PEAKUP collecte uniquement les données nécessaires au fonctionnement du service : pseudo TikTok/YouTube saisi, adresse email (si fournie lors du paiement), données de paiement traitées par Stripe.</p>
-
-<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">2. Utilisation des données</h2>
-<p>Vos données sont utilisées uniquement pour fournir le service d'analyse. Nous ne vendons ni ne partageons vos données avec des tiers à des fins commerciales.</p>
-
-<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">3. Cookies</h2>
-<p>PEAKUP utilise uniquement des données de session localStorage pour mémoriser vos préférences et l'état de l'offre spéciale. Aucun cookie de tracking publicitaire n'est utilisé.</p>
-
-<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">4. Vos droits (RGPD)</h2>
-<p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Contactez-nous à <a href="mailto:support@scoreviral.eu" style="color:var(--accent)">support@scoreviral.eu</a>.</p>
-
-<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">5. Sécurité</h2>
-<p>Les paiements sont sécurisés par Stripe (certifié PCI-DSS). Nous ne stockons aucune donnée bancaire.</p>
-
-<h2 style="font-family:'Exo 2',sans-serif;font-style:italic;color:var(--text);margin:24px 0 8px">6. Contact</h2>
-<p>DPO : <a href="mailto:support@scoreviral.eu" style="color:var(--accent)">support@scoreviral.eu</a></p>`,
+    fr: `<h1 style="${H1}">Politique de Confidentialité</h1><p style="font-size:.75rem;color:var(--t3);margin-bottom:32px">Dernière mise à jour : mars 2026</p><h2 style="${H2}">1. Données collectées</h2><p>PEAKUP collecte uniquement les données nécessaires au fonctionnement du service : pseudo TikTok/YouTube saisi, adresse email (si fournie lors du paiement), données de paiement traitées par Stripe.</p><h2 style="${H2}">2. Utilisation des données</h2><p>Vos données sont utilisées uniquement pour fournir le service d'analyse. Nous ne vendons ni ne partageons vos données avec des tiers à des fins commerciales.</p><h2 style="${H2}">3. Cookies</h2><p>PEAKUP utilise uniquement des données de session localStorage pour mémoriser vos préférences et l'état de l'offre spéciale. Aucun cookie de tracking publicitaire n'est utilisé.</p><h2 style="${H2}">4. Vos droits (RGPD)</h2><p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Contactez-nous à <a href="mailto:support@scoreviral.eu" style="color:var(--accent)">support@scoreviral.eu</a>.</p><h2 style="${H2}">5. Sécurité</h2><p>Les paiements sont sécurisés par Stripe (certifié PCI-DSS). Nous ne stockons aucune donnée bancaire.</p><h2 style="${H2}">6. Contact</h2><p>DPO : <a href="mailto:support@scoreviral.eu" style="color:var(--accent)">support@scoreviral.eu</a></p>`,
+    en: `<h1 style="${H1}">Privacy Policy</h1><p style="font-size:.75rem;color:var(--t3);margin-bottom:32px">Last updated: March 2026</p><h2 style="${H2}">1. Data collected</h2><p>PEAKUP only collects data necessary to provide the service: TikTok/YouTube username entered, email address (if provided at payment), payment data processed by Stripe.</p><h2 style="${H2}">2. Data use</h2><p>Your data is used solely to provide the analysis service. We do not sell or share your data with third parties for commercial purposes.</p><h2 style="${H2}">3. Cookies</h2><p>PEAKUP only uses localStorage session data to remember your preferences and special offer status. No advertising tracking cookies are used.</p><h2 style="${H2}">4. Your rights (GDPR)</h2><p>Under GDPR, you have the right to access, correct, and delete your data. Contact us at <a href="mailto:support@scoreviral.eu" style="color:var(--accent)">support@scoreviral.eu</a>.</p><h2 style="${H2}">5. Security</h2><p>Payments are secured by Stripe (PCI-DSS certified). We do not store any banking data.</p><h2 style="${H2}">6. Contact</h2><p>DPO: <a href="mailto:support@scoreviral.eu" style="color:var(--accent)">support@scoreviral.eu</a></p>`,
+    es: `<h1 style="${H1}">Política de Privacidad</h1><p style="font-size:.75rem;color:var(--t3);margin-bottom:32px">Última actualización: marzo 2026</p><h2 style="${H2}">1. Datos recopilados</h2><p>PEAKUP solo recopila los datos necesarios para el servicio: nombre de usuario de TikTok/YouTube, dirección de correo (si se proporcionó al pagar), datos de pago procesados por Stripe.</p><h2 style="${H2}">2. Uso de datos</h2><p>Tus datos se usan únicamente para proporcionar el servicio de análisis. No vendemos ni compartimos tus datos con terceros con fines comerciales.</p><h2 style="${H2}">3. Cookies</h2><p>PEAKUP solo utiliza localStorage para recordar tus preferencias y el estado de la oferta especial. No se utilizan cookies de seguimiento publicitario.</p><h2 style="${H2}">4. Tus derechos (RGPD)</h2><p>Según el RGPD, tienes derecho a acceder, rectificar y eliminar tus datos. Contáctanos en <a href="mailto:support@scoreviral.eu" style="color:var(--accent)">support@scoreviral.eu</a>.</p><h2 style="${H2}">5. Seguridad</h2><p>Los pagos están asegurados por Stripe (certificado PCI-DSS). No almacenamos ningún dato bancario.</p><h2 style="${H2}">6. Contacto</h2><p>DPO: <a href="mailto:support@scoreviral.eu" style="color:var(--accent)">support@scoreviral.eu</a></p>`,
   }
 };
 
