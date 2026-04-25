@@ -2638,19 +2638,26 @@ function renderBilling(){
     await fbAuth.signOut();
     loggedIn = false;
     userHandle = '';
-    localStorage.removeItem('peakup_is_pro');
+    // Effacer toutes les données utilisateur du localStorage
+    ['peakup_is_pro','peakup_verified','peakup_sub_start','peakup_share_reward','peakup_visited'].forEach(k=>localStorage.removeItem(k));
+    Object.keys(localStorage)
+      .filter(k=>k.startsWith('peakup_cache_')||k.startsWith('peakup_verified_')||k.startsWith('peakup_streak_')||k.startsWith('peakup_reward'))
+      .forEach(k=>localStorage.removeItem(k));
     // Remettre le header
     document.getElementById('loginBtn').textContent = t('login');
     document.getElementById('ctaBtn').style.display = '';
     const _dl=document.getElementById('dashLink'); if(_dl) _dl.style.display='none';
-    const badge = document.getElementById('headerProBadge');
-    if(badge) badge.remove();
+    const hBadge = document.getElementById('headerProBadge');
+    if(hBadge) hBadge.remove();
+    const vBadge = document.getElementById('dashVerifiedBadge');
+    if(vBadge) vBadge.remove();
     showPortal('close', () => goTo('landing'));
     showToast(lang==='fr'?'Déconnecté.':lang==='es'?'Sesión cerrada.':'Logged out.','warn');
   }catch(e){ console.warn('Logout error:', e); }
 }
 
 function completeAuth(name, handle, plat, isPro=false, animate=false){
+  if(loggedIn) return; // évite le double appel onAuthStateChanged + doLogin/authWithGoogle
   loggedIn = true;
   userHandle = handle || userHandle;
   userPlatform = plat || 'tiktok';
@@ -2695,8 +2702,8 @@ function completeAuth(name, handle, plat, isPro=false, animate=false){
     dashProBadge.textContent = t('dash_pro_active');
   }
 
-  // Badge Verified
-  if(typeof showVerifiedBadgeInDash === 'function') showVerifiedBadgeInDash();
+  // Badge Verified — seulement si Pro ou ambassadeur
+  if(isPro && typeof showVerifiedBadgeInDash === 'function') showVerifiedBadgeInDash();
 
   // Bouton déconnexion footer
   const footerLogout = document.getElementById('footerLogout');
@@ -4218,10 +4225,7 @@ renderStatic();
 renderDashboard();
 checkStripeReturn();
 
-// Afficher le badge Verified dans le dashboard si déjà obtenu
-if(localStorage.getItem('peakup_verified') === 'true'){
-  setTimeout(showVerifiedBadgeInDash, 500);
-}
+// Le badge Verified est géré par completeAuth après vérification du statut Pro
 
 // Synchroniser le compteur hero avec localStorage au chargement
 (function(){
