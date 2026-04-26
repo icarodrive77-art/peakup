@@ -552,11 +552,14 @@ body::before{
 /* Tabs login/signup */
 .auth-tabs{display:flex;background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:3px;margin-bottom:24px;}
 .auth-tab{
-  flex:1;padding:8px;border-radius:6px;border:none;
+  flex:1;padding:9px;border-radius:6px;border:none;
   font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.1em;
   cursor:pointer;background:transparent;color:var(--t3);transition:all .2s;
 }
-.auth-tab.on{background:var(--s1);color:var(--text);box-shadow:0 1px 6px rgba(0,0,0,.4);}
+/* Créer un compte — accent violet */
+#tabSignup.on{background:var(--grad);color:#fff;box-shadow:0 2px 10px rgba(124,92,252,.35);}
+/* Se connecter — style neutre distinct */
+#tabLogin.on{background:var(--s1);color:var(--text);box-shadow:0 1px 6px rgba(0,0,0,.4);border:1px solid var(--b2);}
 
 /* Google SSO btn */
 .btn-google{
@@ -1528,6 +1531,7 @@ body::before{
       <button class="auth-tab on" id="tabSignup" onclick="switchAuthTab('signup')" data-i="auth_tab_signup">Créer un compte</button>
       <button class="auth-tab" id="tabLogin" onclick="switchAuthTab('login')" data-i="auth_tab_login">Se connecter</button>
     </div>
+    <div id="authTabHint" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--t3);margin:-12px 0 16px;letter-spacing:.04em;">// Nouveau sur PEAKUP ? Crée ton compte ci-dessous</div>
 
     <div class="auth-error" id="authError"></div>
 
@@ -2383,6 +2387,17 @@ function switchAuthTab(tab){
   document.getElementById('formSignup').classList.toggle('hidden', tab!=='signup');
   document.getElementById('formLogin').classList.toggle('hidden', tab!=='login');
   document.getElementById('authError').classList.remove('show');
+  const hint = document.getElementById('authTabHint');
+  if(hint) hint.textContent = tab==='signup'
+    ? (lang==='fr'?'// Nouveau sur PEAKUP ? Crée ton compte ci-dessous':lang==='es'?'// ¿Nuevo en PEAKUP? Crea tu cuenta abajo':'// New to PEAKUP? Create your account below')
+    : (lang==='fr'?'// Déjà membre ? Entre tes identifiants ci-dessous':lang==='es'?'// ¿Ya eres miembro? Introduce tus datos abajo':'// Already a member? Enter your credentials below');
+  // Focus automatique sur le premier champ visible
+  setTimeout(()=>{
+    const first = tab==='signup'
+      ? document.getElementById('signupName')
+      : document.getElementById('loginEmail');
+    if(first && !first.value) first.focus();
+  }, 50);
 }
 
 function setAuthPlat(p){
@@ -2417,33 +2432,55 @@ function isAmbassador(email){
   return AMBASSADOR_EMAILS.includes(email?.toLowerCase().trim());
 }
 
-// Vérifie le statut Pro : ambassadeurs en whitelist, sinon lecture Firestore.
-// Le champ `isPro` est positionné à true par le webhook Stripe (api/webhook.js)
-// sur l'événement customer.subscription.created / updated.
-async function checkProStatus(user){
+// ── Pro status : check rapide (sync, cache) + refresh arrière-plan (Firestore) ──
+
+function checkProFast(user){
+  // Ambassadeur → Pro immédiat, sans réseau
   if(isAmbassador(user.email)){
     localStorage.setItem('peakup_is_pro', 'true');
     localStorage.setItem('peakup_verified', 'true');
     return true;
   }
-  try{
-    const snap = await fbDb.collection('users').doc(user.uid).get();
-    const isPro = snap.exists && snap.data().isPro === true;
-    localStorage.setItem('peakup_is_pro', isPro ? 'true' : 'false');
-    return isPro;
-  }catch(e){
-    localStorage.setItem('peakup_is_pro', 'false');
-    return false;
-  }
+  // Sinon : valeur en cache (peut être obsolète, sera rafraîchie en arrière-plan)
+  return localStorage.getItem('peakup_is_pro') === 'true';
 }
 
-// Écouter les changements d'état de connexion
-fbAuth.onAuthStateChanged(async user => {
+function refreshProInBackground(user){
+  // Ne pas refaire un appel Firestore pour les ambassadeurs
+  if(isAmbassador(user.email)) return;
+  fbDb.collection('users').doc(user.uid).get().then(snap => {
+    const isPro = snap.exists && snap.data().isPro === true;
+    const wasPro = localStorage.getItem('peakup_is_pro') === 'true';
+    localStorage.setItem('peakup_is_pro', isPro ? 'true' : 'false');
+    if(isPro === wasPro) return; // Rien n'a changé
+    // Statut changé → mettre à jour les badges sans recharger la page
+    const dashBadge = document.getElementById('dashProBadge');
+    if(dashBadge){ dashBadge.style.display = isPro ? '' : 'none'; if(isPro) dashBadge.textContent = t('dash_pro_active'); }
+    if(isPro){
+      if(!document.getElementById('headerProBadge')){
+        const b = document.createElement('span');
+        b.id = 'headerProBadge';
+        b.style.cssText = 'font-size:.55rem;background:var(--accent);color:#fff;padding:2px 6px;border-radius:4px;font-family:JetBrains Mono,monospace;letter-spacing:.1em;margin-left:4px;';
+        b.textContent = 'PRO';
+        document.getElementById('loginBtn').after(b);
+      }
+    } else {
+      document.getElementById('headerProBadge')?.remove();
+    }
+  }).catch(()=>{}); // Echec silencieux — le cache reste valide
+}
+
+// Écouter les changements d'état de connexion (rechargement de page, session persistante)
+fbAuth.onAuthStateChanged(user => {
   if(user){
-    const isPro = await checkProStatus(user);
+    const quickPro = checkProFast(user);
     const name = user.displayName || user.email.split('@')[0];
-    // Seulement si pas encore connecté dans cette session
-    if(!loggedIn){ completeAuth(name, '', 'tiktok', isPro, _pendingPortal); _pendingPortal=false; }
+    if(!loggedIn){
+      completeAuth(name, '', 'tiktok', quickPro, _pendingPortal);
+      _pendingPortal = false;
+    }
+    // Toujours rafraîchir en arrière-plan (après navigation)
+    setTimeout(() => refreshProInBackground(user), 500);
   }
 });
 
@@ -2453,9 +2490,10 @@ async function authWithGoogle(){
     const result = await fbAuth.signInWithPopup(googleProvider);
     if(result.user){
       const name = result.user.displayName || result.user.email.split('@')[0];
-      const isPro = await checkProStatus(result.user);
-      _pendingPortal = false; // empêcher l'observer de re-déclencher
-      completeAuth(name, '', 'tiktok', isPro, true);
+      const quickPro = checkProFast(result.user);
+      _pendingPortal = false;
+      completeAuth(name, '', 'tiktok', quickPro, true);
+      refreshProInBackground(result.user);
     }
   }catch(e){
     _pendingPortal = false;
@@ -2482,15 +2520,27 @@ async function doSignup(){
     showAuthLoading(true);
     const cred = await fbAuth.createUserWithEmailAndPassword(email, pwd);
     await cred.user.updateProfile({ displayName: name });
-    const isPro = await checkProStatus(cred.user);
-    completeAuth(name, handle, authPlatform, isPro, true);
+    const quickPro = checkProFast(cred.user);
     _pendingPortal = false;
+    completeAuth(name, handle, authPlatform, quickPro, true);
+    refreshProInBackground(cred.user);
   }catch(e){
-    const msg = e.code === 'auth/email-already-in-use' ?
-      t('auth_err_email_used') :
-      e.code === 'auth/weak-password' ? t('auth_err_pwd_weak') :
-      t('auth_err_generic') + e.message;
-    showAuthError(msg);
+    if(e.code === 'auth/email-already-in-use'){
+      // Basculer automatiquement sur l'onglet connexion avec l'email pré-rempli
+      switchAuthTab('login');
+      document.getElementById('loginEmail').value = email;
+      document.getElementById('loginPwd').focus();
+      showAuthError(lang==='fr'
+        ? '// Ce compte existe déjà — entre ton mot de passe ci-dessous'
+        : lang==='es'
+        ? '// Esta cuenta ya existe — introduce tu contraseña abajo'
+        : '// Account already exists — enter your password below');
+    } else {
+      showAuthError(
+        e.code === 'auth/weak-password' ? t('auth_err_pwd_weak') :
+        t('auth_err_generic') + e.message
+      );
+    }
   }finally{
     showAuthLoading(false);
   }
@@ -2508,9 +2558,10 @@ async function doLogin(){
     const result = await fbAuth.signInWithEmailAndPassword(email, pwd);
     if(result.user){
       const name = result.user.displayName || result.user.email.split('@')[0];
-      const isPro = await checkProStatus(result.user);
+      const quickPro = checkProFast(result.user);
       _pendingPortal = false;
-      completeAuth(name, '', 'tiktok', isPro, true);
+      completeAuth(name, '', 'tiktok', quickPro, true);
+      refreshProInBackground(result.user);
     }
   }catch(e){
     _pendingPortal = false;
